@@ -2687,9 +2687,14 @@ compile it from source with support for Universal Ctags and also
 configure Universal Ctags in order to get acceptable results.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref gtags :exports none :lexical t
-  (use-package ggtags
-      :ensure t
-      :config (add-hook 'scala-mode-hook (lambda () (ggtags-mode 1))))
+  (defvar install-ggtags
+    (lambda ()
+      `(use-package ggtags
+         :ensure t
+         :config (add-hook 'scala-mode-hook (lambda () (ggtags-mode 1)))))
+    "The code to call to install ggtags when we start my Emacs rather than when we compile it.")
+
+  (eval (funcall install-ggtags))
 #+END_SRC
 
 ** Smartscan Mode
