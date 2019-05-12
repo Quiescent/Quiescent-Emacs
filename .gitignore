@@ -18,8 +18,15 @@ server/
 cedet/
 predictive/
 elpa/
+games/
+org-settings/
+system-specific-tasks/
+transient/
 
 # Files
+bbdb
+notes
+conf/system-conf.el
 org-settings/inbox.org
 conf/quiescent-system-choice.el
 conf/mail-settings.el
