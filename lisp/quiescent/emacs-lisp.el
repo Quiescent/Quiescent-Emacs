@@ -15,6 +15,8 @@
   "Remove the `flex' completion style from completion styles."
   (setq-local completion-styles '(basic partial-completion emacs22)))
 
+(add-hook 'emacs-lisp-mode-hook #'quiescent-remove-flex)
+
 (add-hook 'emacs-lisp-mode-hook #'eros-mode)
 
 (defvar quiescent-edebug-previous-value nil
