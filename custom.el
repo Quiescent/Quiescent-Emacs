@@ -32,6 +32,7 @@
  '(magit-tag-arguments nil)
  '(mail-source-delete-incoming 10)
  '(max-specpdl-size 32000)
+ '(menu-bar-mode nil)
  '(minibuffer-auto-raise nil)
  '(minibuffer-depth-indicate-mode t)
  '(org-agenda-files '("~/.emacs.d/org-settings/work.org"))
@@ -40,12 +41,14 @@
    '(docker-tramp ggtags use-package dockerfile forge org-re-reveal expand-region sql-indent ensime realgud ivy cobol-mode key-chords doom-modeline writeroom-mode centered-cursor-mode json-mode avy doom-themes visible-mark intero flymake-haskell-multi flymake-hlint ereader zerodark-theme bbdb zenburn-theme esh-autosuggest company-ghc js2-highlight-vars paredit sass-mode ob-mongo restclient editorconfig wgrep-ag wgrep crontab-mode tide xref-js2 rjsx-mode esup ace-jump-mode company-statistics company-tern company-mode hindent diff-hl ag emr org-tree-slide demo-it slack 4clojure org-beautify-theme org-bullets org-plus-contrib nlinum exec-path-from-shell sbt-mode projectile zerodark make-it-so smex recentf-ext indium dot-mode julia-mode tern jade js2-refactor jade-mode git-timemachine eros helm cider slime epresent pt kanban plantuml-mode ox-reveal htmlize flx-ido flx typescript-mode yasnippet yaml-mode window-jump web-mode vimgolf use-package-chords typing trie tiny thingatpt+ synonyms swiper swap-regions sr-speedbar smartscan smartparens smart-mode-line rust-mode rainbow-delimiters pp+ powershell page-break-lines ob-http neotree multiple-cursors markdown-mode magit macrostep langtool lacarte keyfreq js2-mode javap-mode javadoc-lookup jammer iy-go-to-char info+ iedit icomplete+ ibuffer-projectile hydra haskell-mode groovy-mode graphviz-dot-mode goto-chg god-mode gnuplot fuzzy-match fsharp-mode frame-cmds fireplace firefox-controller feature-mode fancy-narrow ecb doremi-frm dockerfile-mode docker dired-subtree dired-filter csv-mode crosshairs composable chess bookmark+ auto-highlight-symbol auctex apropos-fn+var aggressive-indent ace-window))
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
+ '(scroll-bar-mode nil)
  '(send-mail-function 'smtpmail-send-it)
  '(show-paren-mode t)
  '(smtpmail-smtp-server "smtp.gmail.com")
  '(smtpmail-smtp-service 25)
  '(tags-revert-without-query t)
- '(tide-imenu-flatten t))
+ '(tide-imenu-flatten t)
+ '(tool-bar-mode nil))
 
 ;; Rainbow delimeters theme from: https://ericscrivner.me/2015/06/better-emacs-rainbow-delimiters-color-scheme/
 (custom-set-faces
