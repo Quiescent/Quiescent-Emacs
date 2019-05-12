@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: Makes a setter
+# key: set
+# --
+/**
+     * Set the value of $1.
+     * @param $1 value to set it to
+     */
+    public void set${1:$$(kaushalmodi-capitalize-first-char yas-text)} (final $2 $1) {
+        this.$1 = $1;
+    }

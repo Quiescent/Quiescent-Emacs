@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: probe
+# key: p
+# --
+function probe(msg: string) {
+  if (!msg) msg = "";
+  return (x: any) => {
+    console.log(msg, "\n", JSON.stringify(x, null, 2));
+    return x;
+  };
+}

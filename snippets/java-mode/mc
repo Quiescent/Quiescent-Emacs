@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: method-comment
+# key: mc
+# --
+/**
+ * ${1:Comment}
+ */$0

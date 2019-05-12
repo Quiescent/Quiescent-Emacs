@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: getter with setter & private variable
+# key: getset
+# --
+private ${2:type} $1;
+
+    /**
+     * Get the value of $1.
+     * @return the value of $1.
+     */
+    public $2 get${1:$$(kaushalmodi-capitalize-first-char yas-text)} () {
+        return $1;
+    }
+
+    /**
+     * Set the value of $1.
+     * @param $1 value to set it to
+     */
+    public void set${1:$$(kaushalmodi-capitalize-first-char yas-text)} (final $2 $1) {
+        this.$1 = $1;
+    }

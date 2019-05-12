@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: chai
+# key: chai
+# --
+import chai from "chai";
+
+const assert = chai.assert;
+$0

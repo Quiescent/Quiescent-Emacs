@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: probe
+# key: p
+# --
+def probe(msg) = x =>  {
+  println(s"msg: $x")
+  x
+}

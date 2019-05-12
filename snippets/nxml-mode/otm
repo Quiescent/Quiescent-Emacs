@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: hibernate-one-to-many
+# key: otm
+# --
+<one-to-many name="${1:name}" type="${2:class}" fetch="join" lazy="true">
+  <column name="${3:column}" />
+</one-to-many>

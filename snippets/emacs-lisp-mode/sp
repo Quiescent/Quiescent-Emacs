@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: split-string
+# key: sp
+# --
+(split-string ${1:string} ${2:separators} ${3:omit-nulls} ${4:trim})

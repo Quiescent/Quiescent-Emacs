@@ -1,0 +1,83 @@
+;;; early-init --- config to perform before main loading of emacs -*- mode: emacs-lisp; lexical-binding: t; -*-
+
+;;; Commentary:
+
+;;; Code:
+
+(require 'package)
+
+;; ===Package===
+;; Loaded here because of overrides.
+(setq package-archive-priorities '((org   . 3)
+                                   (melpa . 2)
+                                   (gnu   . 1)))
+(setq package-archives
+      (quote
+       (("gnu"          . "http://elpa.gnu.org/packages/")
+        ("org"          . "http://orgmode.org/elpa/")
+        ("melpa"        . "http://melpa.org/packages/"))))
+
+(package-initialize)
+
+(add-to-list 'load-path "~/.emacs.d/conf")
+(require 'system-conf)
+
+(when (not (package-installed-p 'use-package))
+  (package-install 'use-package))
+
+(use-package key-chord
+    :ensure t)
+
+(use-package use-package-chords
+    :ensure t)
+
+(defvar quiescent-toggle-buffer-backwards t
+  "Whether we should go forwards or backwards when we next toggle buffers.")
+
+(defun quiescent-toggle-buffer ()
+  "Toggle buffers switching to either the previous buffer or the next buffer."
+  (interactive)
+  (progn
+    (if quiescent-toggle-buffer-backwards
+        (switch-to-prev-buffer)
+        (switch-to-next-buffer))
+    (setq quiescent-toggle-buffer-backwards
+          (not quiescent-toggle-buffer-backwards))))
+
+(global-set-key (kbd "s-b") #'quiescent-toggle-buffer)
+(global-set-key (kbd "s-z") #'isearchb-activate)
+(global-set-key (kbd "s-n") #'switch-to-next-buffer)
+(global-set-key (kbd "s-p") #'switch-to-prev-buffer)
+
+(when quiescent-exwm-machine
+  (use-package xelb
+      :ensure t)
+  (use-package exwm
+      :ensure t
+      :init (when quiescent-exwm-multiple-monitors
+              ;; From https://github.com/ch11ng/exwm/wiki
+              (require 'exwm-randr)
+              (when quiescent-work-machine
+                (setq exwm-randr-workspace-output-plist
+                      '(0 "DP-2" 1 "DP-2"
+                        2 "DP-1" 3 "DP-1"
+                        4 "DP-1" 5 "DP-1"
+                        6 "DP-1" 7 "DP-1"))
+                (add-hook 'exwm-randr-screen-change-hook
+                          (lambda ()
+                            (start-process-shell-command
+                             "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
+                (start-process-shell-command
+                 "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
+              (exwm-randr-enable))
+      (require 'exwm-config)
+      (defun exwm-config-ido ()
+        "Override the config function for ido to do nothing since I don't use it."
+        nil)
+      (exwm-config-default)
+      (fringe-mode 15)
+      (exwm-input-set-key (kbd "C-c C-j") #'exwm-input-grab-keyboard)
+      (exwm-input-set-key (kbd "s-z")     #'isearchb-activate)))
+
+(provide 'early-init-file)
+;;; early-init ends here

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: activate-mode
+# key: act
+# --
+(defun quiescent-activate-${1:mode-name} ()
+  ($1 1))

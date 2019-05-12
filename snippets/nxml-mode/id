@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: hibernate-id
+# key: id
+# --
+<id name="${1:name}" access="field">
+  <column name="${2:column}" />
+</id>

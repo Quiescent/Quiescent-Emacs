@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: select
+# key sel
+# --
+SELECT *
+FROM   ${1:Table-Name}$0

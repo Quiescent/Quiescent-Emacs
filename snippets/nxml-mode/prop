@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: hibernate-property
+# key: prop
+# --
+<property name="${1:name}" type="${2:type}">
+  <column name="${3:column}" />
+</property>

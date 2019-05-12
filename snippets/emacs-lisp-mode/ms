@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: mset
+# key: ms
+# --
+(aset (aref ${1:matrix} ${2:y}) ${3:x} ${4:newelt})$0

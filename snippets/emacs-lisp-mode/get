@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map-elt
+# key: get
+# --
+(map-elt ${1:map} ${2:key} ${3:default})

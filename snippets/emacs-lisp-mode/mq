@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: make-queue
+# key: mq
+# --
+(make-queue)

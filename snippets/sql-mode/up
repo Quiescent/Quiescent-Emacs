@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: update
+# key up
+# --
+UPDATE ${1:table-name}
+SET    ${2:column} = ${3:value}$0

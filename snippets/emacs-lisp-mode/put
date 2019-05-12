@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map-put
+# key: put
+# --
+(setf (map-elt ${1:map} ${2:key}) ${3:value})

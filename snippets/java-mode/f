@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: final-member
+# key: f
+# --
+final ${1:type} ${2:name};$0

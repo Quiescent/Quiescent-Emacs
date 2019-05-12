@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: aset
+# key: as
+# --
+(aset ${1:array} ${2:idx} ${3:newelt})$0

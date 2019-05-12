@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pcase-lambda
+# key: pl
+# --
+(pcase-lambda (${1:pattern})
+  $0)

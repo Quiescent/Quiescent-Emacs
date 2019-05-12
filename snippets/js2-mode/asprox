@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: assertApproximately
+# key: asprox
+# --
+assert.approximately(${1:value}, ${2:expected}, ${3:delta});$0

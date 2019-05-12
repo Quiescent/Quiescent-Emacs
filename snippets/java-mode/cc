@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: comment-class
+# key: cc
+# --
+/**
+ * ${1:Comment}
+ * @author ${user-full-name}
+ * @date `(quiescent-absolute-date-to-string (org-today))`
+ * TaskNumber: ${3:task#}
+ */$0

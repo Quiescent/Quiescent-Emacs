@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: aref
+# key: ar
+# --
+(aref ${1:array} ${2:idx})$0

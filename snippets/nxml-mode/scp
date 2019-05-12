@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: maven-dependency-scope
+# key: scp
+# --
+<scope>${1:scope}</scope>$0

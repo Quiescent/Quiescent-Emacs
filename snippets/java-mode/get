@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: getter
+# key: get
+# --
+/**
+ * Get ${1:name}.
+ * @return $1
+ */$0
+public ${2:type} get$1 () {
+    return $1;
+}

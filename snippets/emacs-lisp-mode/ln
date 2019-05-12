@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: split-lines-string
+# key: ln
+# --
+(split-string ${1:string} "\n" t " ")

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pcase
+# key: p
+# --
+(pcase ${1:expression}
+  (${2:pattern} ${3:expression})$0)

@@ -1,0 +1,40 @@
+# Ignored File Types
+*.cache
+*.data
+*.elc
+*.eld
+*.jpg
+*.out
+*.zip
+*~
+
+# Folders
+.cask/
+url/
+4clojure-answers/
+request/
+semanticdb/
+server/
+cedet/
+predictive/
+elpa/
+
+# Files
+org-settings/inbox.org
+conf/quiescent-system-choice.el
+conf/mail-settings.el
+eshell/history
+eshell/lastdir
+abbrev_defs
+bookmarks
+history
+org-clock-save.el
+places
+recentf
+snippets/**/.yas*.el
+srecode-map.el
+startup.el
+tramp
+company-statistics-cache.el
+recentf
+.org-id-locations

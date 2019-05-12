@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: selectw
+# key sel
+# --
+SELECT *
+FROM   ${1:Table-Name} a
+WHERE  a.$0;
