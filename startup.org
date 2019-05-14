@@ -4027,12 +4027,12 @@ makes the sub directory opening more like a tree view.
                                      "cp" "cpp" "go" "f"
                                      "for" "ftn" "f90" "f95"
                                      "f03" "f08" "s" "rs"
-                                     "hi" "hs" "py" "java")))))
-                (add-hook 'dired-mode-hook #'dired-filter-group-mode)))
+                                     "hi" "hs" "py" "java"))))))
+      :hook (dired-mode . dired-filter-group-mode))
 
   (use-package all-the-icons-dired
       :ensure t
-      :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode))
+      :hook (dired-mode . all-the-icons-dired-mode))
 
   (use-package diredfl
       :ensure t
