@@ -763,8 +763,9 @@ same way even with composable turned on!
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref composable :exports none :lexical t
   (use-package composable
     :ensure t
-    :init (composable-mode)
-    :config (composable-mark-mode))
+    :config (progn
+	      (composable-mode)
+	      (composable-mark-mode)))
 #+END_SRC
 
 ** Completion Setup
