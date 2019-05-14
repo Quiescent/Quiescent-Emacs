@@ -2691,7 +2691,11 @@ configure Universal Ctags in order to get acceptable results.
     (lambda ()
       `(use-package ggtags
          :ensure t
-         :config (add-hook 'scala-mode-hook (lambda () (ggtags-mode 1)))))
+         :config (progn
+                   (add-hook 'scala-mode-hook (lambda () (ggtags-mode 1)))
+                   (define-key ggtags-mode-map (kbd "M-.") nil)
+                   (define-key ggtags-mode-map (kbd "C-c M-.") #'xref-find-definitions)
+                   (define-key ggtags-mode-map (kbd "C-c M-?") #'xref-find-references))))
     "The code to call to install ggtags when we start my Emacs rather than when we compile it.")
 
   (eval (funcall install-ggtags))
@@ -3720,36 +3724,36 @@ of the application.  I'm planning on learning as I go.
   <<scala-tags>>
   <<scala-edit-string>>
 
-  (use-package expand-region
+  (use-package scala-mode
+      :ensure t
+      :mode "\\.s\\(cala\\|bt\\)$")
+
+  (use-package sbt-mode
+      :ensure t
+      :commands sbt-start sbt-command
+      :config
+      ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+      ;; allows using SPACE when in the minibuffer
+      (substitute-key-definition
+       'minibuffer-complete-word
+       'self-insert-command
+       minibuffer-local-completion-map))
+
+  (use-package lsp-mode
+      :ensure t
+      :init (setq lsp-prefer-flymake nil))
+
+  (use-package lsp-ui
       :ensure t)
 
-  (use-package ensime
+  (use-package company-lsp
+      :ensure t)
+
+  (use-package lsp-scala
       :ensure t
-      :config (progn
-                (when quiescent-macbook
-                  (add-to-list 'exec-path "/usr/local/bin"))
-                (advice-add 'ensime-edit-definition :after #'quiescent-pulse-line)
-                (setq ensime-startup-notification nil)))
-
-  (defun quiescent-pulse-line (&rest _)
-    "Pulse the current line for effect."
-    (xref-pulse-momentarily))
-
-  (define-key ensime-mode-map (kbd "C-c C-r") #'quiescent-vc-git-grep)
-
-  (defun janco-setup-root-dir-for-ensime-search ()
-    "Setup `default-directory' as project root in `ensime-search-classic'."
-    (setq default-directory (vc-git-root default-directory)))
-
-  (advice-add #'ensime-search-classic :after
-              #'janco-setup-root-dir-for-ensime-search)
-
-  (defun quiescent-disable-flycheck-in-sbt-mode (&rest _)
-    "Disable flycheck in sbt files."
-    (when (string-match "\.sbt$" (buffer-file-name))
-      (quiescent-disable-flycheck)))
-
-  ;(add-hook 'scala-mode-hook #'quiescent-disable-flycheck-in-sbt-mode)
+      :after scala-mode
+      :demand t
+      :hook (scala-mode . lsp))
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
