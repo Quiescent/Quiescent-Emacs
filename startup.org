@@ -764,8 +764,8 @@ same way even with composable turned on!
   (use-package composable
     :ensure t
     :config (progn
-	      (composable-mode)
-	      (composable-mark-mode)))
+              (composable-mode)
+              (composable-mark-mode)))
 #+END_SRC
 
 ** Completion Setup
@@ -783,13 +783,8 @@ supported completion framework.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-mode :exports none :lexical t
   (use-package company
    :ensure t
-   :init
-   (progn
-     (add-hook 'prog-mode-hook        #'quiescent-activate-company-mode)
-     ;; TODO: this would be awesome if it had everything.
-     ;; (add-hook 'minibuffer-setup-hook #'quiescent-activate-company-mode)
-     (add-hook 'text-mode-hook        #'quiescent-activate-company-mode))
-   :config 
+   :hook ((prog-mode-hook text-mode-hook) . quiescent-activate-company-mode)
+   :config
    (progn
      (define-key company-active-map (kbd "C-'") #'company-complete-selection)
      (define-key company-active-map (kbd "M-'") #'company-complete-selection)
@@ -853,8 +848,7 @@ good expericence.  Company has a mode for that called
 
   (use-package company-statistics
    :ensure t
-   :config
-   (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
+   :hook (company-mode . quiescent-activate-company-statistics))
 #+END_SRC
 
 ** Emacs Complete Lines
@@ -968,15 +962,11 @@ so far.
   ;; TODO more carefully consider which modes need flycheck
   (use-package flycheck
       :ensure t
-      :init (progn
-              (add-hook 'prog-mode-hook     #'quiescent-enable-flycheck-prog)
-              (add-hook 'latex-mode-hook    #'quiescent-enable-flycheck)
-              (add-hook 'message-mode-hook  #'quiescent-enable-flycheck)
-              (add-hook 'org-mode-hook      #'quiescent-enable-flycheck)
-              (add-hook 'text-mode-hook     #'quiescent-enable-flycheck)
-              (add-hook 'gfm-mode           #'quiescent-enable-flycheck)
-              (add-hook 'markdown-mode-hook #'quiescent-enable-flycheck)
-              (add-hook 'LaTeX-mode-hook    #'quiescent-enable-flycheck)))
+      :hook (((latex-mode message-mode
+               org-mode text-mode
+               gfm-mode markdown-mode LaTeX-mode)
+             . quiescent-enable-flycheck)
+             (prog-mode . quiescent-enable-flycheck-prog)))
 
   (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode)
     "Modes in which flycheck should not be activated.
@@ -1232,17 +1222,12 @@ I've chosen a few language modes to load show hide in.
 
   (use-package hideshow
       :bind ("C-=" . toggle-hiding)
-      :config (progn
-                (add-hook 'c-mode-common-hook   'hs-minor-mode)
-                (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-                (add-hook 'java-mode-hook       'hs-minor-mode)
-                (add-hook 'lisp-mode-hook       'hs-minor-mode)
-                (add-hook 'perl-mode-hook       'hs-minor-mode)
-                (add-hook 'sh-mode-hook         'hs-minor-mode)
-                (add-hook 'python-mode-hook     'hs-minor-mode)
-                (add-hook 'nxml-mode            'hs-minor-mode)
-                (add-hook 'sgml-mode            'hs-minor-mode)
-                (add-hook 'html-mode            'hs-minor-mode)))
+      :hook ((c-mode-common emacs-lisp-mode
+              java-mode lisp-mode
+              perl-mode sh-mode
+              python-mode nxml-mode
+              sgml-mode html-mode)
+             . hs-minor-mode))
 
 #+END_SRC
 
@@ -1633,16 +1618,13 @@ parenthesis in paredit mode.
   (use-package paredit
     :ensure t
     :config (progn
-              (add-hook 'emacs-lisp-mode-hook                  #'enable-paredit-mode)
-              (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-              (add-hook 'ielm-mode-hook                        #'enable-paredit-mode)
-              (add-hook 'lisp-mode-hook                        #'enable-paredit-mode)
-              (add-hook 'lisp-interaction-mode-hook            #'enable-paredit-mode)
-              (add-hook 'scheme-mode-hook                      #'enable-paredit-mode)
-              (add-hook 'cider-mode-hook                       #'enable-paredit-mode)
-              (add-hook 'cider-repl-mode-hook                  #'enable-paredit-mode)
               (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
-              (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)))
+              (define-key paredit-mode-map (kbd "C-M-p") #'backward-list))
+    :hook ((emacs-lisp-mode eval-expression-minibuffer-setup
+            ielm-mode lisp-mode
+            lisp-interaction-mode scheme-mode
+            cider-mode cider-repl-mode)
+           . enable-paredit-mode))
 #+END_SRC
 ** Electric Pair Mode
 So Emacs has a built in mode for pairing brackets.  It looks a lot
@@ -1708,7 +1690,7 @@ up with this.
    :ensure t
    :config
    (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-   (add-hook 'prog-mode-hook 'emr-initialize))
+   :hook (prog-mode . emr-initialize))
 #+END_SRC
 
 ** Temp Buffers
@@ -2329,17 +2311,16 @@ post it's become a package on Melpa(!)
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eshell-company-autosuggest :exports none :lexical t
   (use-package esh-autosuggest
    :ensure t
-   :init
-   (with-eval-after-load "esh-autosuggest"
-     (add-hook 'eshell-mode-hook #'company-mode)
-     (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
-     (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
-     (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
-     (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
-     (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
-     (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
-     (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-     (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)))
+   :config (progn
+             (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
+             (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
+             (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
+             (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
+             (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
+             (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
+             (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
+   :hook ((eshell-mode . company-mode)
+          (eshell-mode . esh-autosuggest-mode)))
 #+END_SRC
 
 The back end in eShell auto suggest doesn't consider all candidates,
@@ -2693,10 +2674,10 @@ configure Universal Ctags in order to get acceptable results.
       `(use-package ggtags
          :ensure t
          :config (progn
-                   (add-hook 'scala-mode-hook (lambda () (ggtags-mode 1)))
                    (define-key ggtags-mode-map (kbd "M-.") nil)
                    (define-key ggtags-mode-map (kbd "C-c M-.") #'xref-find-definitions)
-                   (define-key ggtags-mode-map (kbd "C-c M-?") #'xref-find-references))))
+                   (define-key ggtags-mode-map (kbd "C-c M-?") #'xref-find-references))
+         :hook (scala-mode . (lambda () (ggtags-mode 1)))))
     "The code to call to install ggtags when we start my Emacs rather than when we compile it.")
 
   (eval (funcall install-ggtags))
@@ -2711,9 +2692,8 @@ usages and searching logs among other things.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref smartscan :exports none :lexical t
   (use-package smartscan
     :ensure t
-    :init (progn
-            (add-hook 'prog-mode-hook 'quiescent-smartscan-enable)
-            (add-hook 'org-mode-hook  'quiescent-smartscan-enable))
+    :hook ((prog-mode . quiescent-smartscan-enable)
+           (org-mode . quiescent-smartscan-enable))
     :config (progn
               (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
               (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
@@ -3585,8 +3565,9 @@ working typescript setup I thought that I'd go ahead and set it up.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tide :exports none :lexical t
   (use-package tide
    :ensure t
-   :init
-   (add-hook 'typescript-mode-hook #'quiescent-setup-tide-mode))
+   :hook ((js2-mode . tide-mode)
+          (js2-jsx-mode . tide-mode)
+          (typescript-mode . quiescent-setup-tide-mode)))
 
   (defun quiescent-setup-tide-mode ()
     "Setup TIDE mode."
@@ -3595,8 +3576,6 @@ working typescript setup I thought that I'd go ahead and set it up.
       (define-key tide-mode-map (kbd "M-?") 'tide-references)
       (tide-hl-identifier-mode +1)
       (setq company-backends '(company-tide company-files))
-      (add-hook 'js2-mode #'tide-mode)
-      (add-hook 'js2-jsx-mode #'tide-mode)
       (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)))
 #+END_SRC
 
@@ -3637,17 +3616,15 @@ well during the workshop.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref cider :exports none :lexical t
   (use-package cider
       :ensure t
-      :init (progn
-              (add-hook 'clojure-mode-hook #'cider-mode)
-              (add-hook 'clojure-mode-hook #'eldoc-mode))
+      :hook ((clojure-mode . cider-mode)
+             (clojure-mode . eldoc-mode)
+             (cider-mode . company-mode)
+             (cider-repl-mode . company-mode))
       :config
       (progn
         (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
                                            (start-figwheel!)
                                            (cljs-repl))")))
-
-  (add-hook 'cider-mode-hook      #'company-mode)
-  (add-hook 'cider-repl-mode-hook #'company-mode)
 #+END_SRC
 
 ** Emacs Lisp
@@ -3874,7 +3851,7 @@ updated with what I find.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref gnus :exports none :lexical t
   (add-hook 'gnus-article-mode-hook
-          #'gnus-summary-toggle-header)
+            #'gnus-summary-toggle-header)
 #+END_SRC
 
 ** E Reader
@@ -4471,7 +4448,7 @@ to help write activation hook functions in Emacs Lisp.
 
   (use-package org-bullets
     :ensure t
-    :init (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode))
+    :hook (org-mode . quiescent-activate-org-bullets-mode))
 #+END_SRC
 
 =org-beautify-theme= makes all of the headings larger.  It's a theme
@@ -4578,11 +4555,11 @@ github README):
 
  - Call epresent-run on an org-buffer.
  - press t / 1 to view the top level of the presentation
- - navigate the presentation with n/f, p/b 
- - scroll with k and l 
+ - navigate the presentation with n/f, p/b
+ - scroll with k and l
  - use c and C to navigate between code blocks, e to edit them, x to
    make it run, and s / S to toggle their visibility
- - quit with q 
+ - quit with q
 
 I've decided to use it for a lightning talk I'm giving on Emacs.
 
@@ -5097,13 +5074,10 @@ the actual spell checks and use the standard British dictionary.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref ispell :exports none :lexical t
   (use-package flyspell
     :init (progn
-            (add-hook 'text-mode-hook   'turn-on-flyspell)
-            (add-hook 'bibtex-mode-hook 'turn-on-flyspell)
-            (add-hook 'LaTeX-mode-hook  'turn-on-flyspell)
-            (add-hook 'TeX-mode-hook    'turn-on-flyspell)
             (setq ispell-dictionary "british")
             (setq ispell-program-name "aspell"))
-    :config (define-key flyspell-mode-map (kbd "C-.") nil))
+    :config (define-key flyspell-mode-map (kbd "C-.") nil)
+    :hook ((text-mode bibtex-mode LaTeX-mode TeX-mode) . turn-on-flyspell))
 #+END_SRC
 
 ** Langtool
@@ -5183,32 +5157,32 @@ mode line and they're reasonably efficient.
   (use-package doom-themes
       :ensure t
       :config (progn
-		;; Global settings (defaults)
-		(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-		      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+                ;; Global settings (defaults)
+                (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+                      doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
-		;; Enable flashing mode-line on errors
-		(doom-themes-visual-bell-config)
+                ;; Enable flashing mode-line on errors
+                (doom-themes-visual-bell-config)
 
-		;; Enable custom neotree theme (all-the-icons must be installed!)
-		(doom-themes-neotree-config)
-		;; or for treemacs users
-		(doom-themes-treemacs-config)
+                ;; Enable custom neotree theme (all-the-icons must be installed!)
+                (doom-themes-neotree-config)
+                ;; or for treemacs users
+                (doom-themes-treemacs-config)
 
-		;; Corrects (and improves) org-mode's native fontification.
-		(doom-themes-org-config)
+                ;; Corrects (and improves) org-mode's native fontification.
+                (doom-themes-org-config)
 
-		(defun quiescent-load-dark-theme ()
-		  "Load my dark theme."
-		  (interactive)
-		  (load-theme 'doom-one t))
+                (defun quiescent-load-dark-theme ()
+                  "Load my dark theme."
+                  (interactive)
+                  (load-theme 'doom-one t))
 
-		(defun quiescent-load-light-theme ()
-		  "Load my light theme."
-		  (interactive)
-		  (load-theme 'doom-solarized-light t))
+                (defun quiescent-load-light-theme ()
+                  "Load my light theme."
+                  (interactive)
+                  (load-theme 'doom-solarized-light t))
 
-		(quiescent-load-dark-theme)))
+                (quiescent-load-dark-theme)))
 
   (use-package doom-modeline
       :ensure t
@@ -5226,8 +5200,7 @@ rainbow delimiters package.
 
   (use-package rainbow-delimiters
    :ensure t
-   :config
-   (add-hook 'prog-mode-hook #'quiescent-activate-rainbow-delimiters-mode))
+   :hook (prog-mode . quiescent-activate-rainbow-delimiters-mode))
 #+END_SRC
 
 Line feed is a common feature of lisp code and EMACS outputs from
@@ -5240,8 +5213,8 @@ I decided to use the package myself.
   (use-package page-break-lines
    :ensure t
    :config (progn
-	     (add-to-list 'page-break-lines-modes 'sql-mode)
-	     (global-page-break-lines-mode 1)))
+             (add-to-list 'page-break-lines-modes 'sql-mode)
+             (global-page-break-lines-mode 1)))
 #+END_SRC
 
 Another cool thing that I actually added and then forgot about is
@@ -5258,11 +5231,11 @@ of the defaults which the mode has built in.)
 
   (use-package prog-mode
    :init (progn
-           (setq prettify-symbols-unprettify-at-point 'right-edge)
-           (add-hook 'prog-mode-hook #'quiescent-activate-pretify-symbols-mode)
-           (add-hook 'text-mode-hook #'quiescent-activate-pretify-symbols-mode)
-           (add-hook 'emacs-lisp-mode-hook #'quiescent-pretify-elisp)
-           (add-hook 'prog-mode-hook #'quiescent-prettify-prog-mode)))
+           (setq prettify-symbols-unprettify-at-point 'right-edge))
+   :hook (((prog-mode text-mode prog-mode)
+           . quiescent-activate-pretify-symbols-mode)
+          (emacs-lisp-mode . quiescent-pretify-elisp)
+          (prog-mode . quiescent-prettify-prog-mode)))
 
   (defconst quiescent-prog-mode-symbols '()
     "An alist of substitutions to pretify in prog mode.")
