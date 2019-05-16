@@ -3697,6 +3697,17 @@ statically analyse the code and improve the editing experience.
 It also has some more advanced features such as debugging and running
 of the application.  I'm planning on learning as I go.
 
+I recently learned that the development of Ensime has all but halted.
+During the time that I used Ensime I found that it would sometimes
+struggle with larger projects (like the one which I worked on at work
+at the time).  With development coming to a stand still I have very
+little hope that these sorts of problems will be rectified.  I've
+decided to use the Metals language server instead and so far it's
+working just fine.  It lacks some of the auxiliary features of Ensime
+(such as interactive development with a REPL and implicit type
+conversion hints) but it does the most important stuff (navigation,
+completion and error hints) well.
+
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref scala :lexical t
   <<ensime-yasnippet>>
   <<scala-tags>>
@@ -3739,6 +3750,9 @@ corrected much like the code I have for making indentation, completion
 etc. work in other modes.  This is done by simply deferring the TAB
 binding to another mode (i.e. not overwriting it for scala-mode
 alone.)
+
+UPDATE: I'm not sure whether this is necessary since I switched to LSP
+for Scala.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref ensime-yasnippet :lexical t
   (require 'yasnippet)
