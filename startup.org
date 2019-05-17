@@ -1322,10 +1322,12 @@ complete with company or yasnippet from their post.  For reference:
         (yas-abort-snippet)
       (company-abort)))
 
-  (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
-  (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
-  (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)
+  (with-eval-after-load "company-mode"
+    (with-eval-after-load "yasnippet"
+      (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+      (define-key yas-minor-mode-map (kbd "TAB") nil)
+      (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+      (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)))
 #+END_SRC
 
 ** Skeletons
