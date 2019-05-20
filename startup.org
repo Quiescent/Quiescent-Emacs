@@ -169,8 +169,9 @@ which they're run, therefore they wont usually work across machines.
 I store these commands in a folder [[~/.emacs.d/system-specific-tasks/system-specific-tasks.el][inside my EMACS directory.]]
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref system-specific-tasks :lexical t
-  (use-package system-specific-tasks
-    :load-path "~/.emacs.d/system-specific-tasks/")
+  (let ((system-specific-tasks-file "~/.emacs.d/system-specific-tasks/system-specific-tasks.el"))
+    (when (file-exists-p system-specific-tasks-file)
+      (load-file system-specific-tasks-file)))
 #+END_SRC
 
 ** System Specific Config
@@ -4378,7 +4379,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (setq org-directory "~/.emacs.d/org-settings/")
         (setq org-mobile-inbox-for-pull "~/.emacs.d/org-settings/inbox.org")
         (setq org-todo-keywords '((sequence "TODO(t)" "IN_PROGRESS(p!)" "REVIEW(r!)" "TESTING(g!)" "SUSPENDED(q!)" "TO_DEPLOY(e!)" "DONE(d!@)")))
-        (load-file "~/.emacs.d/org-settings/org-agenda-file-list.el")
+        (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
+          (when (file-exists-p agenda-files-file)
+            (load-file agenda-files-file)))
         (setq org-refile-targets
               '((nil :maxlevel . 3)
                 (org-agenda-files :maxlevel . 2)))

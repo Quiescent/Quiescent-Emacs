@@ -23,8 +23,10 @@
 (defvar quiescent-exwm-multiple-monitors nil
   "Whether this machine uses EXWM and has multiple monitors.")
 
-(defvar quiescent-home-pc-linux nil
-  "Whether this computer is my Home Linux PC.")
+(defvar quiescent-home-pc-linux t
+  "Whether this computer is my Home Linux PC.
+
+This is the default system.")
 
 (defvar quiescent-macbook nil
   "Whether this computer is my macbook.")
