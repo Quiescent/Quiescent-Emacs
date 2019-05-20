@@ -2859,8 +2859,6 @@ switch to when doing switch buffer.
     :config (progn
               (setq recentf-max-saved-items 50)
               (run-at-time nil (* 5 60) 'recentf-save-list)
-              (add-to-list 'quiescent-post-load-hooks
-                 #'recentf-open-files)
               (global-set-key (kbd "C-h C-f") #'quiescent-open-recent-file)))
 #+END_SRC
 
