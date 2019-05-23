@@ -2678,8 +2678,8 @@ configure Universal Ctags in order to get acceptable results.
          :ensure t
          :config (progn
                    (define-key ggtags-mode-map (kbd "M-.") nil)
-                   (define-key ggtags-mode-map (kbd "C-c M-.") #'xref-find-definitions)
-                   (define-key ggtags-mode-map (kbd "C-c M-?") #'xref-find-references))
+                   (define-key ggtags-mode-map (kbd "C-c M-.") #'ggtags-find-tag-dwim)
+                   (define-key ggtags-mode-map (kbd "C-c M-?") #'ggtags-find-reference))
          :hook (scala-mode . (lambda () (ggtags-mode 1)))))
     "The code to call to install ggtags when we start my Emacs rather than when we compile it.")
 
