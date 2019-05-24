@@ -2117,8 +2117,9 @@ Before we can configure helm we need to load the package.
                ("xf"  . helm-find-files))
       :bind (("M-y" . helm-show-kill-ring)
              ("M-i" . helm-semantic-or-imenu))
-      :config ((quiescent-configure-helm)
-               (helm-mode 1)))
+      :config (progn
+                (quiescent-configure-helm)
+                (helm-mode 1)))
 #+END_SRC
 
 ** Shell
