@@ -784,7 +784,7 @@ supported completion framework.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-mode :lexical t
   (use-package company
    :ensure t
-   :hook ((prog-mode-hook text-mode-hook) . quiescent-activate-company-mode)
+   :hook (((prog-mode text-mode) . quiescent-activate-company-mode))
    :config
    (progn
      (define-key company-active-map (kbd "C-'") #'company-complete-selection)
