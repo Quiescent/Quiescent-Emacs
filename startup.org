@@ -3739,26 +3739,10 @@ completion and error hints) well.
        'self-insert-command
        minibuffer-local-completion-map))
 
-  (use-package lsp-mode
-      :ensure t
-      :init (setq lsp-prefer-flymake nil))
-
-  (use-package lsp-ui
-      :ensure t)
-
-  (use-package company-lsp
-      :ensure t)
-
-  (defun quiescent-add-lsp-xref-backend ()
-    "Add the xref backend to the current buffer."
-    (add-hook 'xref-backend-functions #'lsp--xref-backend nil t))
-
-  (use-package lsp-scala
-      :ensure t
-      :after scala-mode
-      :demand t
-      :hook ((scala-mode . lsp)
-             (scala-mode . quiescent-add-lsp-xref-backend)))
+  (use-package eglot
+      :config
+      (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
+      :hook (scala-mode . eglot-ensure))
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
