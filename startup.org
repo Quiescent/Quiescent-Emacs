@@ -2491,7 +2491,13 @@ In the interim it would seem that projectile is broken with the latest
 Emacs (26) so I'm going to go ahead and bind project find file.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref project-find-file :lexical t
-  (global-set-key (kbd "C-S-P") #'project-find-file)
+  (defun quiescent-find-file-in-project ()
+    "Find file in the current project using helm."
+    (interactive)
+    (let ((completing-read-function #'helm--completing-read-default))
+      (project-find-file)))
+
+  (global-set-key (kbd "C-S-P") #'quiescent-find-file-in-project)
   (global-set-key (kbd "C-S-F") #'project-find-regexp)
 #+END_SRC
 
