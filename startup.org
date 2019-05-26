@@ -3748,6 +3748,7 @@ completion and error hints) well.
        minibuffer-local-completion-map))
 
   (use-package eglot
+      :ensure t
       :config
       (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
       :hook (scala-mode . eglot-ensure))
