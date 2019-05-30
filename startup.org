@@ -414,8 +414,8 @@ list so that I can get back to where I was.
     (ignore escape-string)
     (ignore no-syntax-crossing)
     (progn
-      (push-mark)
-      (push-mark)))
+      (push-mark nil t)
+      (push-mark nil t)))
 
   (advice-add #'backward-up-list :before
               #'quiescent-push-mark-to-ring)
