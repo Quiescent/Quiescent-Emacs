@@ -40,6 +40,7 @@
         ediff-dir-diff-copy-file
         electric-pair-delete-pair
         eval-expression
+        forward-sentence
         forward-sexp
         gnus-summary-mark-as-read-forward
         haskell-indentation-common-electric-command
@@ -115,8 +116,8 @@
         wdired-next-line
         wdired-previous-line
         wgrep-finish-edit
-        yaml-electric-dash-and-dot
         yaml-electric-backspace
+        yaml-electric-dash-and-dot
         yas-expand
         ))
 
