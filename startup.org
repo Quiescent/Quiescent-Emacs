@@ -3699,6 +3699,12 @@ completion and error hints) well.
        'self-insert-command
        minibuffer-local-completion-map))
 
+  (defun quiescent-remove-flex ()
+    "Remove the `flex' completion style from completion styles."
+    (setq-local completion-styles '(basic partial-completion emacs22)))
+
+  (add-hook 'scal-mode-hook #'quiescent-remove-flex)
+
   (use-package eglot
       :ensure t
       :config
