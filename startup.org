@@ -261,7 +261,6 @@ where emacs should start.
   <<go-up>>
   <<increment-number-at-point>>
   <<recentf>>
-  <<icomplete>>
   <<ignore-regex-case>>
   <<keyboard-macros>>
   <<string-replacement>>
@@ -2113,13 +2112,23 @@ Before we can configure helm we need to load the package.
 
   (use-package helm
       :ensure t
-      :chords (("xb"  . helm-mini)
-               ("xf"  . helm-find-files))
-      :bind (("M-y" . helm-show-kill-ring)
-             ("M-i" . helm-semantic-or-imenu))
+      :bind (("M-y"     . helm-show-kill-ring)
+             ("M-i"     . helm-semantic-or-imenu)
+             ("C-x C-f" . helm-find-files)
+             ("C-x C-b" . helm-mini)
+             ("M-x"     . helm-M-x)
+             :map helm-buffer-map
+             ("C-." . helm-next-line)
+             ("C-," . helm-previous-line)
+             ("C-'" . helm-maybe-exit-minibuffer)
+             ("M-." . helm-next-line)
+             ("M-," . helm-previous-line)
+             ("M-'" . helm-maybe-exit-minibuffer))
       :config (progn
                 (quiescent-configure-helm)
-                (helm-mode 1)))
+                (helm-mode 1))
+      :init (with-eval-after-load "helm"
+              (helm-mode 1)))
 #+END_SRC
 
 ** Shell
@@ -2894,53 +2903,6 @@ recentf so that I can switch to any buffer including recently open
 ones with switch buffer... Here goes.  On second thought I shouldn't
 need this because I switch to active buffers with =C-z= so I can use a
 different binding for recent files/buffers.
-
-** IComplete
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref icomplete :exports none :lexical t
-  <<icomplete-bindings>>
-  <<icomplete-show-all-the-time>>
-#+END_SRC
-
-Icomplete is kinda like ido, except that it's only a preview of what
-you can expect to complete to based on what you've typed so far.  This
-gives it good symmetry with shell-like completion.  It also works more
-predictably than Ido and Helm so that if you know what you want to
-complete to you can get the job done faster.
-
-I've also gone and improved the key bindings for Icomplete so that
-they're symmetrical with Meta.  This is so that if I'm using Meta-X I
-can use the bindings without switching to Control.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref icomplete-bindings :lexical t
-  (require 'icomplete)
-
-  (when (not (eq system-type 'darwin))
-   (icomplete-mode))
-
-  (when (not (eq system-type 'darwin))
-   (define-key icomplete-minibuffer-map (kbd "C-'")
-     'icomplete-force-complete-and-exit)
-   (define-key icomplete-minibuffer-map (kbd "M-'")
-     'icomplete-force-complete-and-exit)
-   (define-key icomplete-minibuffer-map [?\M-.] 'icomplete-forward-completions)
-   (define-key icomplete-minibuffer-map [?\M-,] 'icomplete-backward-completions))
-#+END_SRC
-
-I also want to have Icomplete show candidates immediately so that I
-can simply accept the first option if it's applicable.  Or scan
-through them without typing.  It's worth noting at this stage that
-=M-TAB= will force complete without doing the command, so you can use
-it to name files similarly to what they were before.  I feel like this
-is much better than ivy, helm and ido for general commands in Emacs
-because it has a consistent design with Emacs's philosophy of
-everything is a buffer, i.e. you get your buffer editing commands
-while you're doing any kind of completing read.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref icomplete-show-all-the-time :lexical t
-  (setq icomplete-delay-completions-threshold 400)
-  (setq icomplete-compute-delay 0)
-  (setq icomplete-show-matches-on-no-input t)
-#+END_SRC
 
 ** Ignore That Case
 I often want a Regex to work while ignoring the case of the phrases
