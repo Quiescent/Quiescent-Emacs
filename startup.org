@@ -2098,25 +2098,22 @@ configured for helm in an [[https://tuhdo.github.io/helm-intro.html][introductio
 Before we can configure helm we need to load the package.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref helm :lexical t
-  (defun quiescent-configure-helm ()
-    "Configure helm mode."
-    (progn
-      (require 'helm-config)
-      (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-            helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-            helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-            helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-            helm-ff-file-name-history-use-recentf t)
-      (when (executable-find "curl")
-        (setq helm-google-suggest-use-curl-p t))))
-
   (use-package helm
       :ensure t
+      :custom
+      (helm-split-window-in-side-p           t)
+      (helm-move-to-line-cycle-in-source     t)
+      (helm-ff-search-library-in-sexp        t)
+      (helm-scroll-amount                    8)
+      (helm-ff-file-name-history-use-recentf t)
+      (helm-grep-input-idle-delay            0.02)
+      (helm-input-idle-delay                 0)
       :bind (("M-y"     . helm-show-kill-ring)
              ("M-i"     . helm-semantic-or-imenu)
              ("C-x C-f" . helm-find-files)
              ("C-x C-b" . helm-mini)
              ("M-x"     . helm-M-x)
+             ("C-S-f"   . helm-grep-do-git-grep)
              :map helm-buffer-map
              ("C-." . helm-next-line)
              ("C-," . helm-previous-line)
@@ -2125,7 +2122,7 @@ Before we can configure helm we need to load the package.
              ("M-," . helm-previous-line)
              ("M-'" . helm-maybe-exit-minibuffer))
       :config (progn
-                (quiescent-configure-helm)
+                (require 'helm-config)
                 (helm-mode 1))
       :init (with-eval-after-load "helm"
               (helm-mode 1)))
@@ -2509,7 +2506,6 @@ Emacs (26) so I'm going to go ahead and bind project find file.
       (project-find-file)))
 
   (global-set-key (kbd "C-S-P") #'quiescent-find-file-in-project)
-  (global-set-key (kbd "C-S-F") #'project-find-regexp)
 #+END_SRC
 
 I'd like to find a project file in a split window.  I need both a
