@@ -2,6 +2,6 @@
 # name: probe
 # key: p
 # --
-probe :: String -> a -> a
+probe :: Show a => String -> a -> a
 probe message x =
-  trace (message ++ ": " ++ show x) x
+  Debug.Trace.trace (message ++ ": " ++ show x) x
