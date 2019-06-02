@@ -49,6 +49,7 @@
         ibuffer-mark-for-delete
         ibuffer-mark-forward
         indent-for-tab-command
+        indent-new-comment-line
         iy-go-to-char--command
         jdee-kill-camel-tok
         js2-line-break
