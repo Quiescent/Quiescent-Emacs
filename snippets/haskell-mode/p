@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: probe
+# key: p
+# --
+probe :: String -> a -> a
+probe message x =
+  trace (message ++ ": " ++ show x) x
