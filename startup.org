@@ -2556,7 +2556,6 @@ to =s-s=.
       (tags-search search-term)))
 
   (global-set-key (kbd "s-s") #'quiescent-etag-isearch)
-  (global-set-key (kbd "s-N") #'tags-loop-continue)
 #+END_SRC
 
 *** Generating Tags for a Project
