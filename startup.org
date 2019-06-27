@@ -2098,6 +2098,12 @@ configured for helm in an [[https://tuhdo.github.io/helm-intro.html][introductio
 Before we can configure helm we need to load the package.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref helm :lexical t
+  (defun quiescent-helm-grep-do-git-grep (arg)
+    "Git grep with helm from the root of the project."
+    (interactive "P")
+    (let ((default-directory (vc-root-dir)))
+      (helm-grep-do-git-grep arg)))
+
   (use-package helm
       :ensure t
       :custom
@@ -2113,7 +2119,7 @@ Before we can configure helm we need to load the package.
              ("C-x C-f" . helm-find-files)
              ("C-x C-b" . helm-mini)
              ("M-x"     . helm-M-x)
-             ("C-S-f"   . helm-grep-do-git-grep))
+             ("C-S-f"   . quiescent-helm-grep-do-git-grep))
       :config (progn
                 (require 'helm-config)
                 (helm-mode 1)
