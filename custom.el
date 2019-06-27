@@ -71,7 +71,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "dark slate blue"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "navy"))))
  '(tide-hl-identifier-face ((t (:inherit nil :underline t))))
- '(visible-mark-face1 ((t (:box (:line-width 2 :color "grey75"))))))
+ '(visible-mark-face1 ((t (:background "gray11")))))
 
 (provide 'custom)
 ;;; custom ends here
