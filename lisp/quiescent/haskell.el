@@ -45,7 +45,8 @@ Used as Advice around the `interro-goto-definition' function F."
 (advice-add #'intero-goto-definition :around #'quiescent-xref-backup-advice)
 
 ;; Haskell mode
-(require 'async)
+(use-package async
+    :ensure t)
 (defun haskell-mode-generate-tags (&optional and-then-find-this-tag)
   "Generate tags using Hasktags.  This is synchronous function.
 
