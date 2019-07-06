@@ -3332,13 +3332,13 @@ dojo I'll be giving with two of my colleagues.  I've decided to enable
 js2-mode and give that a bash.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref javascript :exports none :lexical t
+  (require 'quiescent/javascript)
+
   <<eslint-fix-mode>>
   <<fix-linting-at-point>>
   <<js2-highlight-var-at-point>>
   <<js2-highlight-var-at-point-fix-timer>>
   <<js2-mode-extras>>
-
-  (require 'quiescent/javascript)
 #+END_SRC
 
 **** Eslint
@@ -3411,18 +3411,18 @@ the recommendation to the code at point.
     "Correct linting errors reported by Eslint via Flycheck at POINT."
     (interactive "d")
     (let* ((error-overlay (car (flycheck-overlays-at (point))))
-           (lint-suggestion (when error-overlay
-                              (flycheck-error-message
-                               (overlay-get error-overlay
-                                            'flycheck-error)))))
+       (lint-suggestion (when error-overlay
+                  (flycheck-error-message
+                   (overlay-get error-overlay
+                        'flycheck-error)))))
       (if lint-suggestion
        (pcase (split-string lint-suggestion)
-         (`("Delete" ,to-delete) (quiescent-correct-linting-delete to-delete
-                                                                   error-overlay))
-         (`("Replace" ,string "with" ,replacement)
-          (quiescent-correct-linting-replace string replacement error-overlay))
-         (`("Insert" ,string)
-          (quiescent-correct-linting-insert string error-overlay)))
+     (`("Delete" ,to-delete) (quiescent-correct-linting-delete to-delete
+                                   error-overlay))
+     (`("Replace" ,string "with" ,replacement)
+      (quiescent-correct-linting-replace string replacement error-overlay))
+     (`("Insert" ,string)
+      (quiescent-correct-linting-insert string error-overlay)))
        (fill-paragraph))))
 
   (defun quiescent-correct-linting-insert (string error-overlay)
@@ -3430,7 +3430,7 @@ the recommendation to the code at point.
     (save-excursion
       (goto-char (overlay-start error-overlay))
       (insert (quiescent-eslint-string-to-regexp
-               (quiescent-get-string-out-of-eslint-quotes string)))))
+           (quiescent-get-string-out-of-eslint-quotes string)))))
 
   (defun quiescent-correct-linting-compute-search-string (raw-search-string)
     "Escape RAW-SEARCH-STRING from Eslint so that it can be searched for."
@@ -3442,12 +3442,12 @@ the recommendation to the code at point.
     "Replace STRING with REPLACEMENT at the start of ERROR-OVERLAY."
     (let ((regexp-to-delete (quiescent-correct-linting-compute-search-string string)))
       (save-excursion
-        (goto-char (overlay-start error-overlay))
-        (when (re-search-forward regexp-to-delete
-                                 nil
-                                 t)
-          (replace-match (quiescent-get-string-out-of-eslint-quotes
-                          (quiescent-eslint-string-to-regexp replacement)))))))
+    (goto-char (overlay-start error-overlay))
+    (when (re-search-forward regexp-to-delete
+                 nil
+                 t)
+      (replace-match (quiescent-get-string-out-of-eslint-quotes
+              (quiescent-eslint-string-to-regexp replacement)))))))
 
   (defun quiescent-get-string-out-of-eslint-quotes (eslint-string-in-quotes)
     "Get the ESLINT-STRING-IN-QUOTES from out of it's `` quotes."
@@ -3456,19 +3456,20 @@ the recommendation to the code at point.
   (defun quiescent-eslint-string-to-regexp (eslint-string)
     "Transform ESLINT-STRING to a regexp."
     (replace-regexp-in-string "⏎" "\n"
-                              (replace-regexp-in-string "·" " "
-                                                        eslint-string)))
+                  (replace-regexp-in-string "·" " "
+                            eslint-string)))
 
   (defun quiescent-correct-linting-delete (to-delete error-overlay)
     "Find and delete the string TO-DELETE in the bounds of ERROR-OVERLAY."
     (let ((regexp-to-delete (quiescent-correct-linting-compute-search-string to-delete)))
       (save-excursion
-        (goto-char (overlay-start error-overlay))
-        (when (re-search-forward regexp-to-delete
-                                 nil
-                                 t)
-          (replace-match "")))))
+    (goto-char (overlay-start error-overlay))
+    (when (re-search-forward regexp-to-delete
+                 nil
+                 t)
+      (replace-match "")))))
 
+  (require 'js2-mode)
   (define-key js2-mode-map (kbd "M-q") #'quiescent-correct-linting-errors-at-point)
 #+END_SRC
 
