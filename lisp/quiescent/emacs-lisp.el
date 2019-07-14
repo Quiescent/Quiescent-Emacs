@@ -9,7 +9,8 @@
 
 (require 'use-package)
 
-(require 'eros)
+(use-package eros
+    :ensure t)
 
 (defun quiescent-remove-flex ()
   "Remove the `flex' completion style from completion styles."
