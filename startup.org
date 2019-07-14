@@ -3804,6 +3804,27 @@ the Dockerfile package.
       :ensure t)
 #+END_SRC
 
+** Kotlin
+At some point the developers of the best IDE out there (IntelliJ Idea)
+figured out that, with the way that Java generally gets written, it's
+pretty hard to make a robust application.  The developers embarked on
+the task of making a better Java without making it "complicated" like
+functional programming.  In my opinion this was a terrible idea
+because they've encoded a lot of ideas from functional programming
+without leveraging the rigorous methodologies which underpin it.  This
+means that their abstractions have flaws: null pointer exceptions are
+easy to come by for instance and functions aren't quite first class.
+Either way it's still better than Java for the kind of programming
+which enterprise Java made popular and I come across it from time to
+time so I decided to install it.  I also needed to work on the engine
+of the Entelect Challenge in 2019 (the year in which I'm writing this!
+:P).
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref kotlin :lexical t
+  (use-package kotlin-mode
+      :ensure t)
+#+END_SRC
+
 * Non-Programming Usages
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref non-programming-usages :exports none :lexical t
   <<gnus>>
