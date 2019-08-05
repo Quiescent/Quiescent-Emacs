@@ -1636,6 +1636,8 @@ else in my Emacs without having any irritating edge cases to deal
 with.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref electric-pair :lexical t
+  (require 'elec-pair)
+
   (mapc (lambda (mode-hook) (add-hook mode-hook #'electric-pair-local-mode))
         '(js-mode-hook
           js2-mode-hook
@@ -1653,6 +1655,8 @@ with.
           c++-mode-hook
           yaml-mode-hook
           ruby-mode-hook))
+
+  (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
 
 ** Save Place
