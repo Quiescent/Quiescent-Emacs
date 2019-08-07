@@ -4446,8 +4446,8 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   (use-package ob-shell)
   (use-package ob-python)
   (use-package cider
-      :ensure t)
-  (require 'cider)
+      :ensure t
+      :demand t)
   (use-package ob-clojure
       :init (setq org-babel-clojure-backend 'cider))
 #+END_SRC
