@@ -4950,11 +4950,11 @@ and followed the guidance of some unknown soul on the Internet.
   (use-package bbdb
     :ensure t
     :defer 10
-    :init (progn
-            (setq bbdb-file "~/.emacs.d/bbdb"
-                  bbdb-mua-auto-update-p 'query)
-            (bbdb-initialize 'gnus 'message)
-            (bbdb-mua-auto-update-init 'message)))
+    :config (progn
+              (setq bbdb-file "~/.emacs.d/bbdb"
+                    bbdb-mua-auto-update-p 'query)
+              (bbdb-initialize 'gnus 'message)
+              (bbdb-mua-auto-update-init 'message)))
 #+END_SRC
 
 ** Rest Client
