@@ -1654,7 +1654,8 @@ with.
           conf-unix-mode-hook
           c++-mode-hook
           yaml-mode-hook
-          ruby-mode-hook))
+          ruby-mode-hook
+          intero-repl-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
