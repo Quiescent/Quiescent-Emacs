@@ -227,6 +227,7 @@ where emacs should start.
   <<skeletons>>
   <<paredit>>
   <<electric-pair>>
+  <<electric-pair-ignore-comments>>
   <<save-place>>
   <<emacs-refactor>>
   <<temp-view>>
@@ -1658,6 +1659,27 @@ with.
           intero-repl-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
+#+END_SRC
+
+*** Notes about ~elec-pair~
+**** Not a Bug: Comments with lists across lines
+When there's a comment with a list across lines then it finds that
+things are unbalanced.  This can be tested by moving forward list in
+the current buffer until Emacs errors out.  I wonder whether there's a
+way of fixing this problem.
+
+ADDENDUM: It looks like the problem is actually that it finds
+unbalanced pairs in comments and thinks that the current pair is
+unbalanced.
+
+I've since discovered that this is behaving as it was
+designed. There's something which you have to set (not sure where it
+was always this way) which ignores the balanced parentheses in
+comments when scanning.  Scanning is used by ~electric-pair~ to help
+you keep brackets balanced.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref electric-pair-ignore-comments :lexical t 
+  (setq-local parse-sexp-ignore-comments t)
 #+END_SRC
 
 ** Save Place
