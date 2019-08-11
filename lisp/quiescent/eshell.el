@@ -48,7 +48,9 @@
            (eshell-buffer-name (if possible-roots
                                    (format "*eshell: %s*" (car possible-roots))
                                    "*popup-eshell*")))
-      (eshell))
+      (eshell)
+      (switch-to-prev-buffer)
+      (switch-to-buffer-other-window eshell-buffer-name))
     (goto-char (point-max))
     (unless (eq dir default-directory)
       (cd dir)
