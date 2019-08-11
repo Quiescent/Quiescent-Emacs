@@ -43,10 +43,16 @@ all_windows: clean bootstrap compile
 
 # Temporarily use my staging repo to check out how it's working
 get_external_dependencies:
-	@echo "==========No Externals ATM=========="
+	@echo "> Fetching too-long-lines-mode"
+	cd ~/.emacs.d/ && git submodule update --init lisp/too-long-lines-mode/
+	@echo "> Fetching calctex"
+	cd ~/.emacs.d/ && git submodule update --init lisp/calctex/
 
 build_external_dependencies:
-	@echo "==========No Externals ATM=========="
+	@echo "> Building too-long-lines-mode"
+	cd ~/.emacs.d/lisp/too-long-lines-mode/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"too-long-lines-mode.el\")"
+	@echo "> Building calctex"
+	cd ~/.emacs.d/lisp/calctex/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"calctex.el\")"
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="
