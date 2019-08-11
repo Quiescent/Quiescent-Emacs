@@ -1,3 +1,6 @@
 [submodule "calctex"]
 	path = lisp/calctex
 	url = git@github.com:johnbcoughlin/calctex.git
+[submodule "too-long-lines"]
+	path = lisp/too-long-lines-mode
+	url = git@github.com:rakete/too-long-lines-mode.git
