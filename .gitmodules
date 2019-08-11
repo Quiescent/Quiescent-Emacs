@@ -1,0 +1,3 @@
+[submodule "calctex"]
+	path = lisp/calctex
+	url = git@github.com:johnbcoughlin/calctex.git

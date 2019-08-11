@@ -5001,6 +5001,22 @@ RET= and find the entry on highlight.
   (require 'wiki/linkd)
 #+END_SRC
 
+** CalcTex
+[[Github.com]] recently added a feature (or they always had it and I had
+no idea) where you it shows you repositories which you might be
+interested in.  Recently it pointed me at some Emacs Lisp so naturally
+I was very interested.  The repository was called CalcTex and it's
+basically a WYSIWIG editor for LaTeX equations with built in support
+for ~calc-mode~ which is the Emacs symbolic calculator.  I find this
+idea very appealing so I'm adding it here with the intention of
+showing it off to people soon.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
+  (add-to-list 'load-path "~/.emacs.d/lisp/calctex/")
+
+  (require 'calctex)
+#+END_SRC
+
 * Writing Natural Language
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
   <<ia-writer>>
