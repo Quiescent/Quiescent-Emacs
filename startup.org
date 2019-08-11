@@ -5013,9 +5013,9 @@ idea very appealing so I'm adding it here with the intention of
 showing it off to people soon.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
-  (add-to-list 'load-path "~/.emacs.d/lisp/calctex/")
-
-  (require 'calctex)
+  (eval-and-compile
+    (add-to-list 'load-path "~/.emacs.d/lisp/calctex/")
+    (require 'calctex))
 #+END_SRC
 
 * Writing Natural Language
