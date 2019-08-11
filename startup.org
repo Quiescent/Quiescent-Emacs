@@ -3000,6 +3000,7 @@ across the board.
   <<emacs-lisp>>
   <<scala>>
   <<dockerfile>>
+  <<kotlin>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
