@@ -1656,7 +1656,8 @@ with.
           c++-mode-hook
           yaml-mode-hook
           ruby-mode-hook
-          intero-repl-mode-hook))
+          intero-repl-mode-hook
+          makefile-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
