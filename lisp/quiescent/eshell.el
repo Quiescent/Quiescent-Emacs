@@ -44,7 +44,7 @@
   (interactive)
   (let ((dir default-directory))
     ;; TODO create a project shell function
-    (let* ((possible-roots     (project-roots (project-current)))
+    (let* ((possible-roots     (ignore-errors (project-roots (project-current))))
            (eshell-buffer-name (if possible-roots
                                    (format "*eshell: %s*" (car possible-roots))
                                    "*popup-eshell*")))
