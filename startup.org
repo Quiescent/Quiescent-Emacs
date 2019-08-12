@@ -2746,6 +2746,7 @@ usages and searching logs among other things.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref smartscan :lexical t
   (use-package smartscan
     :ensure t
+    :demand t
     :hook ((prog-mode . quiescent-smartscan-enable)
            (org-mode . quiescent-smartscan-enable))
     :config (progn
