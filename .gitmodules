@@ -4,3 +4,6 @@
 [submodule "too-long-lines"]
 	path = lisp/too-long-lines-mode
 	url = git@github.com:rakete/too-long-lines-mode.git
+[submodule "composable"]
+	path = lisp/composable.el
+	url = git@github.com:Quiescent/composable.el.git
