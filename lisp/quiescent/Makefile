@@ -47,12 +47,17 @@ get_external_dependencies:
 	cd ~/.emacs.d/ && git submodule update --init lisp/too-long-lines-mode/
 	@echo "> Fetching calctex"
 	cd ~/.emacs.d/ && git submodule update --init lisp/calctex/
+	@echo "> Fetching composable"
+	cd ~/.emacs.d/ && git submodule update --init lisp/composable.el
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
 	cd ~/.emacs.d/lisp/too-long-lines-mode/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"too-long-lines-mode.el\")"
 	@echo "> Building calctex"
 	cd ~/.emacs.d/lisp/calctex/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"calctex.el\")"
+	@echo "> Building composable"
+	cd ~/.emacs.d/lisp/composable.el/ && cask install && (make || echo 0) && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable.el\")" && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable-mark.el\")"
+
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="
