@@ -17,7 +17,7 @@
 (require 'em-prompt)
 (require 'vc-git)
 
-(defconst quiescent-eshell-project-buffer-regexp "\*eshell .*\*"
+(defconst quiescent-eshell-project-buffer-regexp "\*eshell.*\*"
   "A regular expression which matches project eshell buffer names.")
 
 (defun quiescent-eshell ()
@@ -43,7 +43,6 @@
   "Switch to eshell and make sure we're in the directory the current buffer is in."
   (interactive)
   (let ((dir default-directory))
-    ;; TODO create a project shell function
     (let* ((possible-roots     (ignore-errors (project-roots (project-current))))
            (eshell-buffer-name (if possible-roots
                                    (format "*eshell: %s*" (car possible-roots))
