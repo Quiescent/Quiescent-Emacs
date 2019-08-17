@@ -764,7 +764,8 @@ same way even with composable turned on!
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref composable :lexical t
   (eval-and-compile
       (add-to-list 'load-path "~/.emacs.d/lisp/composable.el/")
-      (require 'calctex)
+      (require 'composable)
+      (require 'composable-mark)
       (progn (composable-mode)
              (composable-mark-mode)))
 #+END_SRC
