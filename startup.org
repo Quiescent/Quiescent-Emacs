@@ -265,6 +265,7 @@ where emacs should start.
   <<ignore-regex-case>>
   <<keyboard-macros>>
   <<string-replacement>>
+  <<aligned-navigation>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -2974,6 +2975,71 @@ across the board.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref string-replacement :lexical t
 (global-set-key (kbd "C-c r") 'replace-string)
+#+END_SRC
+
+** Moving In Aligned Text
+I often find myself in a large buffer with an data laid out with one
+entry per line.  If I'm in a profile report (which I'm in a lot
+recently) then this data is usually a call graph and it's organised
+one entry per line and indented to indicate the level of the call
+graph.
+
+Navigating this data can be frustrating, because you might want to see
+the other entries at the same level as the one which you're on at the
+moment.  What fallows is an implementation of a simple next/previous
+entry at same level command so that it's easier to work with this
+data.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref aligned-navigation :lexical t
+  (defmacro aligned-searcher (backward)
+    "Create an aligned move function.
+
+  A non-nil BACKWARD argument means move backwards."
+    `(let* ((indentation (buffer-substring (line-beginning-position)
+                                           (save-excursion
+                                             (move-beginning-of-line nil)
+                                             (while (looking-at "[[:space:]]") (forward-char))
+                                             (point))))
+            (number-of-lines-to-move (- (save-excursion
+                                          (,(if backward `search-backward-regexp `search-forward-regexp)
+                                            (format "^%s[^[:space:]]" indentation) nil nil)
+                                          (line-number-at-pos))
+                                        (line-number-at-pos)))
+            line-move-visual)
+       (push-mark nil t)
+       (line-move number-of-lines-to-move)))
+
+  (defun aligned-next ()
+    "Move forward to the next line which is at the same indentation."
+    (interactive)
+    (aligned-searcher nil))
+
+  (defun aligned-previous ()
+    "Move back to the next line which is at the same indentation."
+    (interactive)
+    (aligned-searcher t))
+
+  (defvar aligned-movement-mode-map
+      (let ((keymap (make-sparse-keymap)))
+        (define-key keymap (kbd "s-n") #'aligned-next)
+        (define-key keymap (kbd "s-p") #'aligned-previous)
+        keymap)
+    "The keymap for `aligned-search-mode'")
+
+  (define-minor-mode aligned-movement-mode ()
+    "Enable bindings locally for aligned record movement.
+
+  Aligned record movement means moving backwards and forwards by
+  lines which have the same leved of indentation.  This is very
+  useful when inspecting call graphs and other similarly formatted
+  buffers.  (might be useful in programming languages like
+  Python!)
+
+  Forward is S-n.
+  Backward is S-p."
+    :init-value nil
+    :ligther nil
+    :global nil)
 #+END_SRC
 
 * Modifications to Specific Programming Language Modes
