@@ -3635,7 +3635,8 @@ configuration section to help out with that.
   <<tide>>
 
   (use-package typescript-mode
-    :ensure t)
+      :ensure t
+      :config (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
 #+END_SRC
 
 I've recently found the TIDE package for developing in typescript and
