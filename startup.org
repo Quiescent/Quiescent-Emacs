@@ -3966,6 +3966,8 @@ would be nice.
   <<bbdb>>
   <<rest-client>>
   <<linkd>>
+  <<calctex>>
+  <<excorporate>>
 #+END_SRC
 
 ** GNUs
@@ -5093,10 +5095,20 @@ for ~calc-mode~ which is the Emacs symbolic calculator.  I find this
 idea very appealing so I'm adding it here with the intention of
 showing it off to people soon.
 
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref calctex :exports none :lexical t
   (eval-and-compile
     (add-to-list 'load-path "~/.emacs.d/lisp/calctex/")
     (require 'calctex))
+#+END_SRC
+
+** Excorporate
+It turns out that you can read your Outlook email from Emacs instead
+of using the horrible web interface which takes ages to load and can't
+find anything at all.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref excorporate :exports none :lexical t
+  (use-package excorporate
+      :ensure t)
 #+END_SRC
 
 * Writing Natural Language
