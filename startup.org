@@ -4667,6 +4667,10 @@ simple way of doing things but it lets you be productive.
       :ensure t)
 
   (setq org-re-reveal-root "reveal.js")
+
+  (use-package ox-reveal
+      :ensure t
+      :demand t)
 #+END_SRC
 
 ** Htmlize
