@@ -184,8 +184,11 @@ where emacs should start.
   (use-package system-vars
     :load-path "~/.emacs.d/conf")
 
-  (use-package mail-settings
-    :load-path "~/.emacs.d/conf")
+  (defconst mail-settings-path "~/.emacs.d/conf/mail-settings.el"
+    "The path to my mail settings")
+
+  (when (file-exists-p mail-settings-path)
+    (load-file mail-settings-path))
 #+END_SRC
 
 * Programming Modifications Across the Board
