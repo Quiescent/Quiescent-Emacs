@@ -3702,7 +3702,9 @@ inspiration for many modes after it.
                        (warn "Slime helper file not found"))
                    (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
                    (slime-setup '(slime-fancy slime-company)))
-      :hook (slime-mode . quiescent-setup-slime-completion))
+      :hook ((slime-mode . quiescent-setup-slime-completion)
+             (slime-repl-mode . quiescent-setup-slime-completion)
+             (slime-repl-mode . company-mode)))
 #+END_SRC
 
 Instructions for setup:
