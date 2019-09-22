@@ -1631,7 +1631,8 @@ parenthesis in paredit mode.
     :hook ((emacs-lisp-mode eval-expression-minibuffer-setup
             ielm-mode lisp-mode
             lisp-interaction-mode scheme-mode
-            cider-mode cider-repl-mode)
+            cider-mode cider-repl-mode
+            slime-repl-mode)
            . enable-paredit-mode))
 #+END_SRC
 ** Electric Pair Mode
