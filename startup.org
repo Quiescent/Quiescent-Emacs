@@ -1271,8 +1271,8 @@ snippets would be overridden every time that I upgrade the package.
   (require 'use-package)
 
   (use-package yasnippet
-    :ensure t
-    :config (progn
+      :ensure t
+      :init (progn
               (yas-global-mode 1)
               (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
 #+END_SRC
