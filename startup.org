@@ -3168,7 +3168,6 @@ extending to support more languages.
   (setq c-default-style "linux"
         c-basic-offset  4)
   (setq auto-mode-alist (cons '("\.ino$" . c-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\.cl$" . c-mode) auto-mode-alist))
 
   (defconst quiescent-clean-buffer-max-size 100000
     "The maximum size of buffer to consider for cleaning when saving.")
@@ -3684,11 +3683,32 @@ provides interactive development and debugging and has been the
 inspiration for many modes after it.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref slime :lexical t
+  (defconst slime--sbcl-helper-path "~/quicklisp/slime-helper.el"
+    "Path to sbcl-generated slime helper elisp file.")
+
   (use-package slime
    :ensure t
-   :init (progn (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
+   :init (progn (setq inferior-lisp-program "sbcl")
+                (if (file-exists-p slime--sbcl-helper-path)
+                    (load slime--sbcl-helper-path)
+                    (warn "Slime helper file not found"))
+                (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
                 (setq slime-contribs '(slime-fancy))))
 #+END_SRC
+
+Instructions for setup:
+ 1. Download ~sbcl~ binary release from
+    http://www.sbcl.org/platform-table.html.
+ 2. Install ~sbcl~ with ~su -c "sh install.sh"~.
+ 3. Download ~quicklisp~ from
+    https://beta.quicklisp.org/quicklisp.lisp.
+ 4. Load ~quicklisp~ with ~sbcl --load "<path-to-quicklisp>"~.
+ 5. Install ~quicklisp~ with ~(quicklisp-quickstart:install)~ (the
+    previous command should have dropped you into the ~sbcl~ REPL).
+ 6. Add ~quicklisp~ to the startup of ~sbcl~ with
+    ~(ql:add-to-init-file)~.
+ 7. Run ~(ql:quickload "quicklisp-slime-helper")~ to get a helper
+    ~elisp~ file to start slime.
 
 ** Clojure
 Yet another server-based program for editing code in Emacs is CIDER.
