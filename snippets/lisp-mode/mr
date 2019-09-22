@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: mref
+# key: mr
+# --
+(aref ${1:matrix} ${2:x} ${3: y})$0

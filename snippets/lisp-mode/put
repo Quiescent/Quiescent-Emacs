@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map-put
+# key: put
+# --
+(setf (gethash ${2:key} ${1:map}) ${3:value})$0

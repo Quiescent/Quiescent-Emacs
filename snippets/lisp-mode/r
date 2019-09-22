@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cl-remove-if
+# key: r
+# --
+(remove-if ${1:predicate} ${2:list})$0

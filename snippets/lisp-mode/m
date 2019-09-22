@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: mapcar
+# key: m
+# --
+(mapcar ${1:function} ${2:list})$0
