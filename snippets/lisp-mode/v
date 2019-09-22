@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: defvar-without-fluff
+# key: v
+# --
+(defvar ${1:name} $0)
