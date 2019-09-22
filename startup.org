@@ -3686,14 +3686,22 @@ inspiration for many modes after it.
   (defconst slime--sbcl-helper-path "~/quicklisp/slime-helper.el"
     "Path to sbcl-generated slime helper elisp file.")
 
+  (use-package slime-company
+      :ensure t)
+
+  (defun quiescent-setup-slime-completion ()
+    "Setup company for slime."
+    (setq-local company-backends '(company-slime)))
+
   (use-package slime
-   :ensure t
-   :init (progn (setq inferior-lisp-program "sbcl")
-                (if (file-exists-p slime--sbcl-helper-path)
-                    (load slime--sbcl-helper-path)
-                    (warn "Slime helper file not found"))
-                (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
-                (setq slime-contribs '(slime-fancy))))
+      :ensure t
+      :init (progn (setq inferior-lisp-program "sbcl")
+                   (if (file-exists-p slime--sbcl-helper-path)
+                       (load slime--sbcl-helper-path)
+                       (warn "Slime helper file not found"))
+                   (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
+                   (slime-setup '(slime-fancy slime-company)))
+      :hook (slime-mode . quiescent-setup-slime-completion))
 #+END_SRC
 
 Instructions for setup:
