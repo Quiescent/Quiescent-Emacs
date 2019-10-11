@@ -5249,6 +5249,7 @@ find anything at all.
   <<editing>>
   <<ispell>>
   <<langtool>>
+  <<pdf-tools>>
 #+END_SRC
 
 Emacs can be used for much more than just writing code and interacting
@@ -5382,6 +5383,26 @@ invoke it in order to check the grammar of what I'm writing.
                 (when quiescent-macbook
                   (setq langtool-language-tool-jar
                         "/opt/langtool/languagetool-commandline.jar"))))
+#+END_SRC
+
+** PDF Tools
+Emacs has built in support for pre-rendering a PDF document and then
+displaying images corresponding to the pages of the PDF in a buffer.
+This approach leaves a bit to be desired.  It's a bit slow, the
+quality of the rendered PDF isn't all that great and it's just an
+image.  It not being an image is a problem because you can't isearch
+through an image.  It's for these reasons that I usually don't view
+PDFs in Emacs.
+
+Recently, though, Henry made me aware of a package called PDF tools.
+It's great because it renders the pages of a PDF on demand and
+supports richer features.  Such as searching, occur and more.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref pdf-tools :lexical t
+  (use-package pdf-tools
+      :ensure t
+      :init (pdf-tools-install)
+      :config (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save))
 #+END_SRC
 
 * Controlling Emacs
