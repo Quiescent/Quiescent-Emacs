@@ -1663,7 +1663,8 @@ with.
           yaml-mode-hook
           ruby-mode-hook
           intero-repl-mode-hook
-          makefile-mode-hook))
+          makefile-mode-hook
+          rust-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
@@ -3674,6 +3675,10 @@ still manages to be memory safe.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rust :lexical t
   (use-package rust-mode
       :ensure t)
+
+  (use-package flycheck-rust
+      :ensure t
+      :hook (rust-mode . flycheck-rust-setup))
 #+END_SRC
 
 ** Common Lisp
