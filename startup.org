@@ -4608,6 +4608,12 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (global-set-key (kbd "C-c C-M-f") #'org-next-block)
         (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
 
+  (setq org-capture-templates
+        (quote (("p" "Programming Notes" entry (file "~/notes/programming.org")
+                     "* %? \n%U\n%a\n")
+                ("s" "Social" entry (file "~/notes/social.org")
+                     "* %? \n%U\n%a\n"))))
+
   (define-key org-mode-map (kbd "M-i") #'org-goto)
   (advice-add #'org-goto :before #'push-mark)
   (define-key org-mode-map (kbd "C-c C--") #'q-insert-checkbox)
