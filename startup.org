@@ -4656,7 +4656,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (quote (("p" "Programming Notes" entry (file "~/notes/programming.org")
                      "* %? \n%U\n%a\n")
                 ("s" "Social" entry (file "~/notes/social.org")
-                     "* %? \n%U\n%a\n"))))
+                     "* %? \n%U\n%a\n")
+                ("j" "Journal" entry (file+olp+datetree "~/wip/journal/journal.org")
+                     "** %<%H:%M> %?\n"))))
 
   (define-key org-mode-map (kbd "M-i") #'org-goto)
   (advice-add #'org-goto :before #'push-mark)
