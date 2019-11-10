@@ -3707,6 +3707,22 @@ inspiration for many modes after it.
     "Setup company for slime."
     (setq-local company-backends '(company-slime)))
 
+  (require 'cl-lib)
+
+  (defun quiescent-close-slime-help ()
+    "Close the help window."
+    (interactive)
+    (let ((original-window (selected-window)))
+      (cl-loop
+         for window being the windows
+         when (equal "*slime-description*" (buffer-name (window-buffer window)))
+           do (select-window window)
+              (call-interactively #'quit-window))
+      (select-window original-window)))
+
+
+  (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
+
   (use-package slime
       :ensure t
       :init (progn (setq inferior-lisp-program "sbcl")
@@ -5309,14 +5325,26 @@ These are the bindings which I've added to make working with Emacs,
 it's frames and it's windows faster.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref controlling-emacs :lexical t
-  (global-set-key (kbd "C-c f") 'make-frame)
-  (global-set-key (kbd "C-c B") 'browse-url-at-point)
-  (global-set-key (kbd "s-o")   'other-frame)
+  (defun quiescent-close-help ()
+    "Close the help window."
+    (interactive)
+    (let ((original-window (selected-window)))
+      (cl-loop
+         for window being the windows
+         when (equal "*Help*" (buffer-name (window-buffer window)))
+           do (select-window window)
+              (call-interactively #'quit-window))
+      (select-window original-window)))
 
-  (key-chord-define-global "x0" 'delete-window)
-  (key-chord-define-global "x1" 'delete-other-windows)
-  (key-chord-define-global "x2" 'split-window-below)
-  (key-chord-define-global "x3" 'split-window-right)
+  (global-set-key (kbd "C-c f") #'make-frame)
+  (global-set-key (kbd "C-c B") #'browse-url-at-point)
+  (global-set-key (kbd "s-o")   #'other-frame)
+  (global-set-key (kbd "s-q")   #'quiescent-close-help)
+
+  (key-chord-define-global "x0" #'delete-window)
+  (key-chord-define-global "x1" #'delete-other-windows)
+  (key-chord-define-global "x2" #'split-window-below)
+  (key-chord-define-global "x3" #'split-window-right)
 #+END_SRC
 
 Emacs is controllable via the same system of key bindings as is used
