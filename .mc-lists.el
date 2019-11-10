@@ -30,6 +30,7 @@
         completion-resolve-then-run-command
         completion-self-insert
         completion-yank
+        composable-copy-region-as-kill
         composable-kill-region
         composable-save-region
         dabbrev-completion
