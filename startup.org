@@ -4653,9 +4653,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
 
   (setq org-capture-templates
-        (quote (("p" "Programming Notes" entry (file "~/notes/programming.org")
+        (quote (("p" "Programming Notes" entry (file "~/notes/programming.gpg")
                      "* %? \n%U\n%a\n")
-                ("s" "Social" entry (file "~/notes/social.org")
+                ("s" "Social" entry (file "~/notes/social.gpg")
                      "* %? \n%U\n%a\n")
                 ("j" "Journal" entry (file+olp+datetree "~/wip/journal/journal.org")
                      "** %<%H:%M> %?\n"))))
