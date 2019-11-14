@@ -2186,7 +2186,7 @@ Before we can configure helm we need to load the package.
   (defun quiescent-helm-grep-do-git-grep (arg)
     "Git grep with helm from the root of the project."
     (interactive "P")
-    (let ((default-directory (vc-root-dir)))
+    (let ((default-directory (locate-dominating-file default-directory ".git")))
       (helm-grep-do-git-grep arg)))
 
   (use-package helm
