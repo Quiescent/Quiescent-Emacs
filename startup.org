@@ -5402,7 +5402,14 @@ supports richer features.  Such as searching, occur and more.
   (use-package pdf-tools
       :ensure t
       :init (pdf-tools-install)
+      :hook (pdf-view-mode . quiescent-disable-composable-mode)
       :config (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save))
+
+  (defun quiescent-disable-composable-mode ()
+    "Disable composable mode."
+    (progn
+      (composable-mode -1)
+      (composable-mark-mode -1)))
 #+END_SRC
 
 * Controlling Emacs
