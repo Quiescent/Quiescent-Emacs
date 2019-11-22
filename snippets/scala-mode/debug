@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debug
+# key: de
+# --
+println(s"$1: $${{$1}}")
