@@ -4657,7 +4657,8 @@ options ensure that listings is used when exporting to PDF via LaTeX.
                 (gnuplot . t)
                 (shell . t)
                 (python t)
-                (calc . t))))
+                (calc . t)
+                (lisp . t))))
         (setq org-log-into-drawer 'LOGBOOK)
         (org-babel-do-load-languages
          'org-babel-load-languages org-babel-load-languages)
