@@ -1372,6 +1372,7 @@ I've also decided to use skeletons to make general SQL statements.
       "  (:use :common-lisp)\n"
       "  (:use :debug)\n"
       "  (:use :graph)\n"
+      "  (:use :read-file)\n"
       "  (:use :iter))\n"
       "\n"
       "(in-package :" quiescent-module-name ")\n"
