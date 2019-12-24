@@ -798,6 +798,7 @@ supported completion framework.
      (define-key company-active-map (kbd "M-.") #'company-select-next)
      (define-key company-active-map (kbd "C-,") #'company-select-previous)
      (define-key company-active-map (kbd "M-,") #'company-select-previous)
+     (define-key company-active-map (kbd "C-m") nil)
      (global-set-key (kbd "C-'") #'company-complete-selection)
      (advice-add #'company-ispell :around #'quiescent-supress-message-around)
      (setq company-idle-delay 0)
