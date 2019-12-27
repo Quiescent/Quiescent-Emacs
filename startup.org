@@ -976,6 +976,11 @@ so far.
              . quiescent-enable-flycheck)
              (prog-mode . quiescent-enable-flycheck-prog)))
 
+  (with-eval-after-load "flycheck-mode"
+    (progn
+      (define-key flycheck-mode-map (kbd "M-n") #'flycheck-next-error)
+      (define-key flycheck-mode-map (kbd "M-n") #'flycheck-previous-error)))
+
   (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode)
     "Modes in which flycheck should not be activated.
 
@@ -1045,11 +1050,12 @@ Emacs features.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref flymake :lexical t
   (require 'flymake)
 
+  (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error)
+  (define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error)
 
   ;; Emacs Lisp
 
   (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
-
 
   ;; Haskell
 
@@ -2819,8 +2825,7 @@ usages and searching logs among other things.
   (use-package smartscan
     :ensure t
     :demand t
-    :hook ((prog-mode . quiescent-smartscan-enable)
-	   (org-mode . quiescent-smartscan-enable))
+    :hook ((org-mode . quiescent-smartscan-enable))
     :config (progn
 	      (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
 	      (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
