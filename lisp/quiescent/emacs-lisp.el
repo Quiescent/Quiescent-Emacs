@@ -12,6 +12,29 @@
 (use-package eros
   :ensure t)
 
+(define-key emacs-lisp-mode-map (kbd "C-c C-z") #'quiescent-switch-to-ielm-buffer)
+
+(defun quiescent-switch-to-ielm-buffer ()
+  "Switch to ielm buffer.
+
+Creates an ielm buffer if one doesn't exist yet."
+  (interactive)
+  (let ((open-window (cl-loop
+                      for window being the windows
+                      when (equal "*ielm*" (buffer-name (window-buffer window)))
+                      return window))
+        (open-buffer (cl-loop
+                      for buffer being the buffers
+                      when (equal "*ielm*" (buffer-name buffer))
+                      return buffer)))
+    (cond
+     (open-window (select-window open-window))
+     (open-buffer (switch-to-buffer-other-window open-buffer))
+     (t           (switch-to-buffer-other-window
+                   (save-window-excursion
+                     (call-interactively #'ielm)
+                     (current-buffer)))))))
+
 (defun quiescent-remove-flex ()
   "Remove the `flex' completion style from completion styles."
   (setq-local completion-styles '(basic partial-completion emacs22)))
