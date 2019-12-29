@@ -13,6 +13,7 @@
   :ensure t)
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'quiescent-switch-to-ielm-buffer)
+(define-key emacs-lisp-mode-map (kbd "C-c C-k") #'eval-buffer)
 
 (defun quiescent-switch-to-ielm-buffer ()
   "Switch to ielm buffer.
