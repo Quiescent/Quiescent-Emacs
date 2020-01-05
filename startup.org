@@ -269,6 +269,7 @@ where emacs should start.
   <<keyboard-macros>>
   <<string-replacement>>
   <<aligned-navigation>>
+  <<semantic>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -777,7 +778,6 @@ same way even with composable turned on!
 ** Completion Setup
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref completion :lexical t
   <<company-mode>>
-  <<company-no-semantic-in-jsx>>
   <<company-text-mode-backends>>
   <<company-statistics>>
 #+END_SRC
@@ -815,20 +815,6 @@ supported completion framework.
     "Supress messages when executing F with ARGS."
     (let ((inhibit-message t))
       (funcall f args)))
-#+END_SRC
-
-In JavaScript mode company tries to do completions with Semantic and
-it can be slooow.  I'm going to turn that off for now.  It's also
-immensely slow in Emacs Lisp mode inside of comments so I'm getting
-rid of that too.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-no-semantic-in-jsx :lexical t
-  (defun quiescent-remove-semantic-backend ()
-    "Remove the semantic backend for company."
-    (setq company-backends (delq 'company-semantic company-backends)))
-
-  (add-hook 'js-jsx-mode-hook #'quiescent-remove-semantic-backend)
-  (add-hook 'emacs-lisp-mode-hook #'quiescent-remove-semantic-backend)
 #+END_SRC
 
 In text mode I only want company to work from my flyspell dictionary
@@ -3117,6 +3103,34 @@ data.
     :init-value nil
     :ligther nil
     :global nil)
+#+END_SRC
+
+** Semantic
+Semantic is a parser generator and set of tools for use with Emacs
+which enables Emacs to understand more about the programming language
+which the code represents.  This information is used to improve how
+buffers are navigated, completions made etc.  There's been some recent
+discussion on the mailing list about making parsing a first class
+feature.  I'm interested in whether this can be achieved with
+semantic.
+
+This will be the latest in a long list of attempts to use semantic as
+part of my Emacs.  This time though, I have a much better
+understanding of everything that it uses and how it comes together,
+and I have a plan to make it work for large projects.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref semantic :lexical t
+  (require 'semantic)
+  (require 'semantic/db)
+  (require 'semantic/db-find)
+  (require 'semantic/ia)
+
+  (setq semantic-default-submodes
+        '(global-semantic-highlight-func-mode global-semantic-decoration-mode global-semantic-stickyfunc-mode global-semantic-idle-scheduler-mode global-semanticdb-minor-mode global-semantic-idle-local-symbol-highlight-mode global-semantic-highlight-edits-mode global-semantic-show-unmatched-syntax-mode))
+
+  (setq semanticdb-find-default-throttle '(file omniscience))
+
+  (semantic-mode t)
 #+END_SRC
 
 * Modifications to Specific Programming Language Modes
@@ -5408,11 +5422,11 @@ It's great because it renders the pages of a PDF on demand and
 supports richer features.  Such as searching, occur and more.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref pdf-tools :lexical t
-  (use-package pdf-tools
-      :ensure t
-      :init (pdf-tools-install)
-      :hook (pdf-view-mode . quiescent-disable-composable-mode)
-      :config (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save))
+  ;; (use-package pdf-tools
+  ;;     :ensure t
+  ;;     :init (pdf-tools-install)
+  ;;     :hook (pdf-view-mode . quiescent-disable-composable-mode)
+  ;;     :config (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save))
 
   (defun quiescent-disable-composable-mode ()
     "Disable composable mode."
