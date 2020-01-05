@@ -3135,6 +3135,8 @@ and I have a plan to make it work for large projects.
           global-semantic-highlight-edits-mode
           global-semantic-show-unmatched-syntax-mode))
 
+  (require 'semantic/db-el)
+
   (setq semanticdb-find-default-throttle '(file omniscience))
 
   (semantic-mode t)
