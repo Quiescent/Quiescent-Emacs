@@ -5549,7 +5549,7 @@ mode line and they're reasonably efficient.
 
   (use-package doom-modeline
       :ensure t
-      :config (doom-modeline-init))
+      :config (doom-modeline-mode t))
 #+END_SRC
 
 It can be hard to keep track of the depth of nesting that you're at.
