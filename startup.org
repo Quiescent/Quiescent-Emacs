@@ -3966,7 +3966,12 @@ completion and error hints) well.
     "Remove the `flex' completion style from completion styles."
     (setq-local completion-styles '(basic partial-completion emacs22)))
 
-  (add-hook 'scal-mode-hook #'quiescent-remove-flex)
+  (defun quiescent-add-company-dabbrev ()
+    "Add `company-dabbrev' to the list of backends for company."
+    (add-to-list company-backends 'company-dabbrev))
+
+  (add-hook 'scala-mode-hook #'quiescent-remove-flex)
+  (add-hook 'scala-mode-hook #'quiescent-add-company-dabbrev)
 
   (use-package eglot
       :ensure t
