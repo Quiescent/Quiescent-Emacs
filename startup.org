@@ -3971,13 +3971,14 @@ completion and error hints) well.
     (add-to-list company-backends 'company-dabbrev))
 
   (add-hook 'scala-mode-hook #'quiescent-remove-flex)
-  (add-hook 'scala-mode-hook #'quiescent-add-company-dabbrev)
 
   (use-package eglot
       :ensure t
       :config
       (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
       :hook (scala-mode . eglot-ensure))
+
+  (add-hook 'scala-mode-hook #'quiescent-add-company-dabbrev)
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
