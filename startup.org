@@ -3966,10 +3966,6 @@ completion and error hints) well.
     "Remove the `flex' completion style from completion styles."
     (setq-local completion-styles '(basic partial-completion emacs22)))
 
-  (defun quiescent-add-company-dabbrev ()
-    "Add `company-dabbrev' to the list of backends for company."
-    (add-to-list company-backends 'company-dabbrev))
-
   (add-hook 'scala-mode-hook #'quiescent-remove-flex)
 
   (use-package eglot
@@ -3977,8 +3973,6 @@ completion and error hints) well.
       :config
       (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
       :hook (scala-mode . eglot-ensure))
-
-  (add-hook 'scala-mode-hook #'quiescent-add-company-dabbrev)
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
