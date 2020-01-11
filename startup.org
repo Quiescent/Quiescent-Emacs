@@ -5371,7 +5371,9 @@ going to build up on it.
   (use-package writeroom-mode
     :ensure t)
 
-  (defvar highlight-current-sentance-delay 0.1
+  (require 'writeroom-mode)
+
+  (defvar ia-writer-highlight-current-sentance-delay 0.1
     "The number of seconds to wait before highlighting the current sentance.")
 
   (define-minor-mode ia-writer-mode
@@ -5380,29 +5382,52 @@ going to build up on it.
     :lighter " iA Writer"
     :keymap nil
     :group 'ia-writer
-    (progn
-      (writeroom-mode 1)
-      (blink-cursor-mode -1)
-      (visible-mark-mode -1)
-      (auto-fill-mode 1)
-      (run-at-time highlight-current-sentance-delay
-                   highlight-current-sentance-delay
-                   #'highlight-current-sentance-on-idle-timer-exirey)))
+    (if ia-writer-mode
+        (progn
+          (writeroom-mode 1)
+          (blink-cursor-mode -1)
+          (visible-mark-mode -1)
+          (auto-fill-mode 1)
+          (run-at-time ia-writer-highlight-current-sentance-delay
+                       nil
+                       (ia-writer-highlight-current-sentance-on-idle-timer-exirey
+                        (current-buffer))))
+      (progn
+        (writeroom-mode -1)
+        (blink-cursor-mode 1)
+        (visible-mark-mode 1)
+        (auto-fill-mode -1)
+        (mapc #'delete-overlay (ia-writer--overlays)))))
 
-  (defun highlight-current-sentance-on-idle-timer-exirey ()
-    "Highlight the at point when the idle timer expires."
-    (when (and ia-writer-mode (not (minibuffer-window-active-p (get-buffer-window (current-buffer)))))
-      (cl-loop for overlay being the overlays
-         when (overlay-get overlay 'hidden)
-           do (delete-overlay overlay))
-      (let* ((start  (save-excursion (backward-sentence) (point)))
-             (end    (save-excursion (ignore-errors (forward-sentence))  (point)))
-             (first  (make-overlay (point-min) start))
-             (second (make-overlay end         (point-max))))
-        (overlay-put first  'hidden t)
-        (overlay-put first  'face   '(:foreground "#666168"))
-        (overlay-put second 'hidden t)
-        (overlay-put second 'face  '(:foreground "#666168")))))
+  (defun ia-writer--overlays ()
+    "Get the overlays in the current buffer which are used by `ia-writer-mode'."
+    (cl-remove-if-not (lambda (overlay) (overlay-get overlay 'hidden))
+                      (overlays-in (point-min) (point-max))))
+
+  (defun ia-writer-highlight-current-sentance-on-idle-timer-exirey (buffer)
+    "Highlight the at point when the idle timer expires.
+
+    BUFFER is the buffer to do the highlighting in.  If that buffer
+    is gone or doesn't have the right mode then cancel the timer."
+    (lambda () (when (buffer-live-p buffer)
+                 (with-current-buffer buffer
+                   (when ia-writer-mode
+                     (let* ((start    (save-excursion (backward-sentence) (point)))
+                            (end      (save-excursion (ignore-errors (forward-sentence))  (point)))
+                            (overlays (ia-writer--overlays))
+                            (first    (or (and overlays (move-overlay (car overlays) (point-min) start))
+                                          (make-overlay (point-min) start)))
+                            (second   (or (and overlays (move-overlay (cadr overlays) end (point-max)))
+                                          (make-overlay end         (point-max)))))
+                       (when (not overlays)
+                         (overlay-put first  'hidden t)
+                         (overlay-put first  'face   '(:foreground "#666168"))
+                         (overlay-put second 'hidden t)
+                         (overlay-put second 'face  '(:foreground "#666168"))))
+                     (run-at-time ia-writer-highlight-current-sentance-delay
+                                  nil
+                                  (ia-writer-highlight-current-sentance-on-idle-timer-exirey
+                                   (current-buffer))))))))
 #+END_SRC
 
 ** LaTeX
