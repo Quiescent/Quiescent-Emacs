@@ -3968,6 +3968,21 @@ completion and error hints) well.
       :config
       (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
       :hook (scala-mode . eglot-ensure))
+
+  (defun scala-mode--find-project-root (directory)
+    "Produce the root of SBT project containing DIRECTORY.
+
+  Assumes that you use SBT."
+    (let ((sbt-root (locate-dominating-file directory "build.sbt")))
+      (when sbt-root
+        (cons 'sbt sbt-root))))
+
+  (require 'project)
+
+  (add-hook 'project-find-functions #'scala-mode--find-project-root)
+
+  (cl-defmethod project-roots ((project (head sbt)))
+    (list (cdr project)))
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
