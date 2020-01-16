@@ -5300,7 +5300,7 @@ going to build up on it.
     "The number of seconds to wait before highlighting the current sentance.")
 
   (define-minor-mode ia-writer-mode
-    "Create an iA writer like mode."
+    "An 'iA Writer' like mode."
     :init-value nil
     :lighter " iA Writer"
     :keymap nil
