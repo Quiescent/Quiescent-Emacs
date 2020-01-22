@@ -3989,6 +3989,9 @@ completion and error hints) well.
 
   (cl-defmethod project-roots ((project (head sbt)))
     (list (cdr project)))
+
+  (cl-defmethod project-files ((project (head sbt)) &optional dirs)
+    (project-files (project-try-vc (car (project-roots project))) dirs))
 #+END_SRC
 
 Ensime has a strange interaction with yasnippet.  This needs to be
