@@ -3802,26 +3802,25 @@ inspiration for many modes after it.
     (interactive)
     (let ((original-window (selected-window)))
       (cl-loop
-         for window being the windows
-         when (equal "*slime-description*" (buffer-name (window-buffer window)))
-           do (select-window window)
-              (call-interactively #'quit-window))
+	 for window being the windows
+	 when (equal "*slime-description*" (buffer-name (window-buffer window)))
+	   do (select-window window)
+	      (call-interactively #'quit-window))
       (select-window original-window)))
 
 
-  (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
-
   (use-package slime
       :ensure t
+      :config (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
       :init (progn (setq inferior-lisp-program "sbcl")
-                   (if (file-exists-p slime--sbcl-helper-path)
-                       (load slime--sbcl-helper-path)
-                       (warn "Slime helper file not found"))
-                   (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
-                   (slime-setup '(slime-fancy slime-company)))
+		   (if (file-exists-p slime--sbcl-helper-path)
+		       (load slime--sbcl-helper-path)
+		       (warn "Slime helper file not found"))
+		   (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
+		   (slime-setup '(slime-fancy slime-company)))
       :hook ((slime-mode . quiescent-setup-slime-completion)
-             (slime-repl-mode . quiescent-setup-slime-completion)
-             (slime-repl-mode . company-mode)))
+	     (slime-repl-mode . quiescent-setup-slime-completion)
+	     (slime-repl-mode . company-mode)))
 #+END_SRC
 
 Instructions for setup:
