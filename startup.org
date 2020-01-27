@@ -3139,46 +3139,51 @@ and I have a plan to make it work for large projects.
     "Fix eLisp parser in eLisp modes.
 
   I add stuff here as I find that it can't be parsed by semantic."
-    (progn
-      (semantic-elisp-setup-form-parser
-          (lambda (form start end)
-            (semantic-tag-new-function
-             (symbol-name (nth 2 form))
-             nil
-             '("form" "start" "end")
-             :form-parser t))
-        eval-and-compile
-        eval-when-compile)
-      (semantic-elisp-setup-form-parser
-          (lambda (form start end)
-            (let* ((a2 (nth 2 form))
-                   (a3 (nth 3 form))
-                   (args (if (listp a2) a2 a3))
-                   (doc (nth (if (listp a2) 3 4) form)))
+    (when (and (fboundp 'eval-and-compile)
+               (fboundp 'eval-when-compile)
+               (fboundp 'cl-defmethod)
+               (fboundp 'cl-defgeneric)
+               (fboundp 'cl-deftype))
+      (progn
+        (semantic-elisp-setup-form-parser
+            (lambda (form start end)
               (semantic-tag-new-function
-               (symbol-name (nth 1 form))
+               (symbol-name (nth 2 form))
                nil
-               (if (listp (car args))
-                   (cons (symbol-name (caar args))
-                         (semantic-elisp-desymbolify-args (cdr args)))
-                 (semantic-elisp-desymbolify-args (cdr args)))
-               :parent (if (listp (car args)) (symbol-name (cadr (car args))) nil)
-               :documentation (semantic-elisp-do-doc doc))))
-        cl-defmethod
-        cl-defgeneric)
-      (semantic-elisp-setup-form-parser
-          (lambda (form start end)
-            (let ((doc (semantic-elisp-form-to-doc-string (nth 3 form))))
-              (semantic-tag-new-variable
-               (symbol-name (nth 1 form))
-               nil
-               (nth 2 form)
-               :user-visible-flag (and doc
-                                       (> (length doc) 0)
-                                       (= (aref doc 0) ?*))
-               :constant-flag (eq (car form) 'defconst)
-               :documentation (semantic-elisp-do-doc doc))))
-        cl-deftype)))
+               '("form" "start" "end")
+               :form-parser t))
+          eval-and-compile
+          eval-when-compile)
+        (semantic-elisp-setup-form-parser
+            (lambda (form start end)
+              (let* ((a2 (nth 2 form))
+                     (a3 (nth 3 form))
+                     (args (if (listp a2) a2 a3))
+                     (doc (nth (if (listp a2) 3 4) form)))
+                (semantic-tag-new-function
+                 (symbol-name (nth 1 form))
+                 nil
+                 (if (listp (car args))
+                     (cons (symbol-name (caar args))
+                           (semantic-elisp-desymbolify-args (cdr args)))
+                   (semantic-elisp-desymbolify-args (cdr args)))
+                 :parent (if (listp (car args)) (symbol-name (cadr (car args))) nil)
+                 :documentation (semantic-elisp-do-doc doc))))
+          cl-defmethod
+          cl-defgeneric)
+        (semantic-elisp-setup-form-parser
+            (lambda (form start end)
+              (let ((doc (semantic-elisp-form-to-doc-string (nth 3 form))))
+                (semantic-tag-new-variable
+                 (symbol-name (nth 1 form))
+                 nil
+                 (nth 2 form)
+                 :user-visible-flag (and doc
+                                         (> (length doc) 0)
+                                         (= (aref doc 0) ?*))
+                 :constant-flag (eq (car form) 'defconst)
+                 :documentation (semantic-elisp-do-doc doc))))
+          cl-deftype))))
 
   (add-hook 'emacs-lisp-mode-hook #'quiescent-fix-lisp-parser)
 
