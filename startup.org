@@ -3106,7 +3106,7 @@ and I have a plan to make it work for large projects.
   (require 'semantic/bovine/el)
   (require 'semantic/db-el)
 
-  (setq semanticdb-find-default-throttle '(file omniscience))
+  (setq semanticdb-find-default-throttle '(file))
 
   (semantic-mode t)
 #+END_SRC
