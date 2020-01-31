@@ -2114,7 +2114,8 @@ Before we can configure helm we need to load the package.
              ("C-x C-f" . helm-find-files)
              ("C-x C-b" . helm-mini)
              ("M-x"     . helm-M-x)
-             ("C-S-f"   . quiescent-helm-grep-do-git-grep))
+             ("C-S-f"   . quiescent-helm-grep-do-git-grep)
+             ("C-c p s" . quiescent-helm-grep-do-git-grep))
       :config (progn
                 (require 'helm-config)
                 (helm-mode 1)
@@ -2507,6 +2508,7 @@ Emacs (26) so I'm going to go ahead and bind project find file.
       (project-find-file)))
 
   (global-set-key (kbd "C-S-P") #'quiescent-find-file-in-project)
+  (global-set-key (kbd "C-c p f") #'quiescent-find-file-in-project)
 #+END_SRC
 
 I'd like to find a project file in a split window.  I need both a
