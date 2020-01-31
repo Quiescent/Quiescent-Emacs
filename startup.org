@@ -4665,12 +4665,6 @@ options ensure that listings is used when exporting to PDF via LaTeX.
       :chords (("xc" . org-capture))
       :config
       (progn
-        (require 'org-mobile)
-        (when (or quiescent-home-pc-linux
-                  quiescent-macbook)
-          (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg"))
-        (setq org-directory "~/.emacs.d/org-settings/")
-        (setq org-mobile-inbox-for-pull "~/.emacs.d/org-settings/inbox.org")
         (setq org-todo-keywords '((sequence "TODO(t)" "IN_PROGRESS(p!)" "REVIEW(r!)" "TESTING(g!)" "SUSPENDED(q!)" "TO_DEPLOY(e!)" "DONE(d!@)")))
         (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
           (when (file-exists-p agenda-files-file)
@@ -4728,7 +4722,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
 
   (setq org-capture-templates
-        (quote (("p" "Programming Notes" entry (file "~/notes/programming.gpg")
+        (quote (("t" "Task" entry (file "~/work.org")
+                 "* TODO %? \n%U\n%a\n")
+                ("p" "Programming Notes" entry (file "~/notes/programming.gpg")
                      "* %? \n%U\n%a\n")
                 ("s" "Social" entry (file "~/notes/social.gpg")
                      "* %? \n%U\n%a\n")
