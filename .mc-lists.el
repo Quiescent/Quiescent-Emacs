@@ -99,6 +99,7 @@
         rjsx-delete-creates-full-tag
         save-some-buffers
         sh-assignment
+        slime-autodoc-space
         smartscan-symbol-go-backward
         sp-backward-delete-char
         sp-backward-kill-word
