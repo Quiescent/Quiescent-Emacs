@@ -38,11 +38,17 @@ Creates an ielm buffer if one doesn't exist yet."
 
 (defun quiescent-remove-flex ()
   "Remove the `flex' completion style from completion styles."
-  (setq-local completion-styles '(basic partial-completion emacs22)))
+  (when (null quiescent-starting-up)
+    (setq-local completion-styles '(basic partial-completion emacs22))))
 
 (add-hook 'emacs-lisp-mode-hook #'quiescent-remove-flex)
 
-(add-hook 'emacs-lisp-mode-hook #'eros-mode)
+(defun quiescent-eros-mode ()
+  "Enable `eros-mode'."
+  (when (null quiescent-starting-up)
+    (eros-mode 1)))
+
+(add-hook 'emacs-lisp-mode-hook #'quiescent-eros-mode)
 
 (defvar quiescent-edebug-previous-value nil
   "The previous value from evaling the last sexp.")

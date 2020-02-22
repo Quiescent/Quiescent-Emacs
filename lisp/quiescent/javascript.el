@@ -60,14 +60,16 @@ See URL `https://www.npmjs.com/package/jscs'."
 (add-hook 'js-jsx-mode-hook #'quiescent-select-eslint)
 
 (defun quiescent-select-eslint ()
-  "Select JSHint as the linter in this buffer."
+  "Select EsLint as the linter in this buffer."
   (interactive)
-  (flycheck-select-checker 'javascript-eslint))
+  (when (null quiescent-starting-up)
+    (flycheck-select-checker 'javascript-eslint)))
 
 (defun quiescent-select-jshint ()
   "Select JSHint as the linter in this buffer."
   (interactive)
-  (flycheck-select-checker 'javascript-jshint))
+  (when (null quiescent-starting-up)
+    (flycheck-select-checker 'javascript-jshint)))
 
 (defconst quiescent-node-url-extracting-regexp "://.*127.0.0.1:\\([0-9]+\\)/\\(.*\\)"
   "A regular expression which can extract the port and path of the node process for indium.")
@@ -203,7 +205,12 @@ Supply the (optional) list of ARGS to that process."
   "Produce t if this buffer is in `js2-mode'."
   (eq major-mode 'js2-mode))
 
-(add-hook 'js2-mode-hook #'indium-interaction-mode)
+(defun quiescent-indium-interaction-mode ()
+  "Activate `indium-interaction-mode'."
+  (when (null quiescent-starting-up)
+    (indium-interaction-mode 1)))
+
+(add-hook 'js2-mode-hook #'quiescent-indium-interaction-mode)
 
 (use-package js2-refactor
     :ensure t)

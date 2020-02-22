@@ -809,7 +809,8 @@ supported completion framework.
 
   (defun quiescent-activate-company-mode ()
     "Activate company mode."
-    (company-mode 1))
+    (when (null quiescent-starting-up)
+      (company-mode 1)))
 
   (defun quiescent-supress-message-around (f &rest args)
     "Supress messages when executing F with ARGS."
@@ -824,7 +825,8 @@ it down quite a bit.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-text-mode-backends :lexical t
   (defun quiescent-company-text-mode-hook ()
     "Keep only the backends I want in `text-mode'."
-    (setq-local company-backends '(company-bbdb company-ispell company-dabbrev)))
+    (when (null quiescent-starting-up)
+      (setq-local company-backends '(company-bbdb company-ispell company-dabbrev))))
 
   (add-hook 'text-mode-hook #'quiescent-company-text-mode-hook)
 #+END_SRC
@@ -837,7 +839,8 @@ good expericence.  Company has a mode for that called
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-statistics :lexical t
   (defun quiescent-activate-company-statistics ()
     "Activate `company-statistics-mode'."
-    (when (boundp 'company-statistics-mode)
+    (when (and (null quiescent-starting-up)
+            (boundp 'company-statistics-mode))
       (company-statistics-mode 1)))
 
   (use-package company-statistics
@@ -937,8 +940,9 @@ interactive.  I've made a couple of adjustments to it.
     (require 'ansi-color)
     (defun gavenkoa-colorize-compilation-buffer ()
       "Colerise the buffer in compilation mode."
-      (when (eq major-mode 'compilation-mode)
-        (ansi-color-apply-on-region compilation-filter-start (point-max))))
+      (when (and (null quiescent-starting-up)
+           (eq major-mode 'compilation-mode))
+     (ansi-color-apply-on-region compilation-filter-start (point-max))))
     (add-hook 'compilation-filter-hook 'gavenkoa-colorize-compilation-buffer))
 
   (key-chord-define-global "xr" 'recompile)
@@ -957,10 +961,10 @@ so far.
   (use-package flycheck
       :ensure t
       :hook (((latex-mode message-mode
-               org-mode text-mode
-               gfm-mode markdown-mode LaTeX-mode)
-             . quiescent-enable-flycheck)
-             (prog-mode . quiescent-enable-flycheck-prog)))
+            org-mode text-mode
+            gfm-mode markdown-mode LaTeX-mode)
+          . quiescent-enable-flycheck)
+          (prog-mode . quiescent-enable-flycheck-prog)))
 
   (with-eval-after-load "flycheck-mode"
     (progn
@@ -976,7 +980,8 @@ so far.
     "Decide whether flycheck should be enabled in this prog mode.
 
   Ignore REST."
-    (when (not (member major-mode quiescent-modes-not-to-activate-flycheck-in))
+    (when (and (null quiescent-starting-up)
+            (not (member major-mode quiescent-modes-not-to-activate-flycheck-in)))
       (flycheck-mode 1)))
 
   ;; From http://emacsist.com/10784
@@ -985,8 +990,8 @@ so far.
     :command ("proselint" source-inplace)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
+           (id (one-or-more (not (any " "))))
+           (message) line-end))
     :modes (text-mode markdown-mode gfm-mode message-mode latex-mode org-mode))
 
   (add-to-list 'flycheck-checkers 'proselint)
@@ -995,7 +1000,8 @@ so far.
     "Enable flycheck mode.
 
   Ignore REST."
-    (flycheck-mode 1))
+    (when (null quiescent-starting-up)
+      (flycheck-mode 1)))
 
   (defun quiescent-disable-flycheck (&optional rest)
     "Disable flycheck mode.
@@ -1008,19 +1014,21 @@ so far.
 
   We guess that the include dir is probably one up and into
   `include'."
-    (setq flycheck-clang-include-path
-          (list (expand-file-name "../include/"))))
+    (when (null quiescent-starting-up)
+      (setq flycheck-clang-include-path
+         (list (expand-file-name "../include/")))))
 
   (defun quiescent-set-flycheck-language-standard ()
     "Set the language standard for flycheck."
-    (setq flycheck-clang-language-standard "c++11"))
+    (when (null quiescent-starting-up)
+      (setq flycheck-clang-language-standard "c++11")))
 
   (add-hook 'c++-mode-hook
-            #'quiescent-set-flycheck-language-standard)
+         #'quiescent-set-flycheck-language-standard)
   (add-hook 'c++-mode-hook
-            #'quiescent-add-probable-include-dir-for-cpp)
+         #'quiescent-add-probable-include-dir-for-cpp)
   (add-hook 'c-mode-hook
-            #'quiescent-add-probable-include-dir-for-cpp)
+         #'quiescent-add-probable-include-dir-for-cpp)
 #+END_SRC
 
 ** Flymake Mode
@@ -1041,135 +1049,12 @@ Emacs features.
 
   ;; Emacs Lisp
 
+  (defun quiescent-enable-flymake-mode ()
+    "Enable `flymake-mode' in the current buffer."
+    (when (null quiescent-starting-up)
+      (flymake-mode 1)))
+
   (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
-
-  ;; Haskell
-
-  ;; This is entirely based on the python definition of Flymake.
-
-  (defgroup haskell-flymake nil
-    "Integration between Haskell and Flymake."
-    :group 'python
-    :link '(custom-group-link :tag "Flymake" flymake)
-    :version "26.1")
-
-  (defcustom haskell-flymake-command '("stack" "--nix" "--verbosity" "silent" "runghc" "--" "--ghc-arg=-i" "--ghc-arg=-Wall")
-    "The external tool which will be used to compile haskell files."
-    :version "26.1"
-    :group 'haskell-flymake
-    :type '(repeat string))
-
-  (defcustom haskell-flymake-command-output-pattern
-    (list
-     "[a-zA-Z.]+:\\([0-9]+\\):\\([0-9]+\\): \\([a-zA-Z]+\\):\\([^/]*\\)"
-     1 2 3 4)
-    "Specify how to parse the output of `haskell-flymake-command'."
-    :version "26.1"
-    :group 'haskell-flymake
-    :type '(list regexp
-                 (integer :tag "Line's index")
-                 (integer :tag "Column's index")
-                 (integer :tag "Type's index")
-                 (integer :tag "Message's index")))
-
-  (defcustom haskell-flymake-msg-alist
-    '(("^error$"   . :error)
-      ("^warning$" . :warning))
-    "Alist to associate diagnostic types to their corresponding types."
-    :version "26.1"
-    :group 'haskell-flymake
-    :type `(alist :key-type (regexp)
-                  :value-type (symbol)))
-
-  (defvar-local haskell--flymake-proc nil)
-
-  (defconst haskell-flymake-ignore-main-error-string
-    "Variable not in scope: main :: IO a0"
-    "A string which should be ignored if found.")
-
-  (defun haskell--flymake-parse-output (source proc report-fn)
-    "Collect diagnostics from the tools output line by line.
-
-  This is a straight copy from the `python-mode' method -- which
-  makes me think that this method of doing things could be more
-  general."
-    (let ((rx (nth 0 haskell-flymake-command-output-pattern))
-          (lineidx (nth 1 haskell-flymake-command-output-pattern))
-          (colidx (nth 2 haskell-flymake-command-output-pattern))
-          (typeidx (nth 3 haskell-flymake-command-output-pattern))
-          (msgidx (nth 4 haskell-flymake-command-output-pattern)))
-      (with-current-buffer (process-buffer proc)
-        (goto-char (point-min))
-        (when (search-forward-regexp haskell-flymake-ignore-main-error-string nil t)
-          (forward-line -1)
-          (delete-region (point) (point-max)))
-        (goto-char (point-min))
-        (cl-loop
-         while (search-forward-regexp rx nil t)
-         for msg = (match-string msgidx)
-         for (beg . end) = (flymake-diag-region
-                            source
-                            (string-to-number
-                             (match-string lineidx))
-                            (and colidx
-                                 (match-string colidx)
-                                 (string-to-number
-                                  (match-string colidx))))
-         for type = (or (and typeidx
-                             (match-string typeidx)
-                             (assoc-default
-                              (match-string typeidx)
-                              haskell-flymake-msg-alist
-                              #'string-match))
-                        (assoc-default msg
-                                       haskell-flymake-msg-alist
-                                       #'string-match)
-                        :error)
-         collect (flymake-make-diagnostic
-                  source beg end type msg)
-         into diags
-         finally (funcall report-fn diags)))))
-
-  (defun haskell-flymake (report-fn &rest _args)
-    "Flymake backend for Haskell.
-  This backend uses `haskell-flymake-command' (which see) to launch a process
-  that is passed the current buffer's content via stdin.
-  REPORT-FN is Flymake's callback function."
-    (unless (executable-find (car haskell-flymake-command))
-      (error "Cannot find a suitable checker"))
-
-    (when (process-live-p haskell--flymake-proc)
-      (kill-process haskell--flymake-proc))
-
-    (let ((source (current-buffer)))
-      (save-restriction
-        (widen)
-        (setq haskell--flymake-proc
-              (make-process
-               :name "haskell-flymake"
-               :noquery t
-               :connection-type 'pipe
-               :buffer (generate-new-buffer " *haskell-flymake*")
-               :command haskell-flymake-command
-               :sentinel
-               (lambda (proc _event)
-                 (when (eq 'exit (process-status proc))
-                   (unwind-protect
-                       (when (with-current-buffer source''
-                               (eq proc haskell--flymake-proc))
-                         (haskell--flymake-parse-output source proc report-fn))
-                     (kill-buffer (process-buffer proc)))))))
-        (process-send-region haskell--flymake-proc (point-min) (point-max))
-        (process-send-eof haskell--flymake-proc))))
-
-  (defun haskell-init-flymake ()
-    "Init flymake in the current buffer."
-    (advice-add #'haskell-flymake-init :around #'ignore)
-    (add-hook 'flymake-diagnostic-functions #'haskell-flymake nil t)
-    (flymake-mode))
-
-  ;(add-hook 'haskell-mode-hook #'haskell-init-flymake)
-
 #+END_SRC
 
 ** Hide Show Mode
@@ -1193,41 +1078,46 @@ I've chosen a few language modes to load show hide in.
   Requires that `hs-minor-mode' is enabled."
     (interactive "P")
     (if hs-minor-mode
-        (if (condition-case nil
-                 (hs-toggle-hiding)
-               (error t))
-            (hs-show-all))
-        (toggle-selective-display column)))
+     (if (condition-case nil
+           (hs-toggle-hiding)
+            (error t))
+         (hs-show-all))
+     (toggle-selective-display column)))
 
   ;; Fix XML folding
   (add-to-list 'hs-special-modes-alist
-               (list 'nxml-mode
-                     "<!--\\|<[^/>]*[^/]>"
-                     "-->\\|</[^/>]*[^/]>"
-                     "<!--"
-                     'nxml-forward-element
-                     nil))
+            (list 'nxml-mode
+               "<!--\\|<[^/>]*[^/]>"
+               "-->\\|</[^/>]*[^/]>"
+               "<!--"
+               'nxml-forward-element
+               nil))
 
   ;; Fix HTML folding
   (dolist (mode '(sgml-mode
-                  html-mode
-                  html-erb-mode))
+            html-mode
+            html-erb-mode))
     (add-to-list 'hs-special-modes-alist
-                 (list mode
-                       "<!--\\|<[^/>]*[^/]>"
-                       "-->\\|</[^/>]*[^/]>"
-                       "<!--"
-                       'sgml-skip-tag-forward
-                       nil)))
+           (list mode
+                 "<!--\\|<[^/>]*[^/]>"
+                 "-->\\|</[^/>]*[^/]>"
+                 "<!--"
+                 'sgml-skip-tag-forward
+                 nil)))
+
+  (defun quiescent-activate-hs-minor-mode ()
+    "Activate `hs-minor-mode'."
+    (when (null quiescent-starting-up)
+      (hs-minor-mode 1)))
 
   (use-package hideshow
       :bind ("C-=" . toggle-hiding)
       :hook ((c-mode-common emacs-lisp-mode
-              java-mode lisp-mode
-              perl-mode sh-mode
-              python-mode nxml-mode
-              sgml-mode html-mode)
-             . hs-minor-mode))
+           java-mode lisp-mode
+           perl-mode sh-mode
+           python-mode nxml-mode
+           sgml-mode html-mode) 
+         . quiescent-activate-hs-minor-mode))
 
 #+END_SRC
 
@@ -1675,17 +1565,22 @@ Emacs wiki which prevents hippi-expand from inserting an extra
 parenthesis in paredit mode.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref paredit :lexical t
+  (defun quiescent-activate-paredit-mode ()
+    "Activate paredit mode."
+    (when (null quiescent-starting-up)
+      (enable-paredit-mode)))
+
   (use-package paredit
     :ensure t
     :config (progn
-              (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
-              (define-key paredit-mode-map (kbd "C-M-p") #'backward-list))
+           (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
+           (define-key paredit-mode-map (kbd "C-M-p") #'backward-list))
     :hook ((emacs-lisp-mode eval-expression-minibuffer-setup
-            ielm-mode lisp-mode
-            lisp-interaction-mode scheme-mode
-            cider-mode cider-repl-mode
-            slime-repl-mode)
-           . enable-paredit-mode))
+         ielm-mode lisp-mode
+         lisp-interaction-mode scheme-mode
+         cider-mode cider-repl-mode
+         slime-repl-mode)
+        . quiescent-activate-paredit-mode))
 #+END_SRC
 ** Electric Pair Mode
 So Emacs has a built in mode for pairing brackets.  It looks a lot
@@ -1697,26 +1592,31 @@ with.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref electric-pair :lexical t
   (require 'elec-pair)
 
-  (mapc (lambda (mode-hook) (add-hook mode-hook #'electric-pair-local-mode))
-        '(js-mode-hook
-          js2-mode-hook
-          rjsx-mode-hook
-          python-mode-hook
-          typescript-mode-hook
-          sh-mode-hook
-          css-mode-hook
-          haskell-mode-hook
-          eshell-mode-hook
-          restclient-mode-hook
-          scala-mode-hook
-          java-mode-hook
-          conf-unix-mode-hook
-          c++-mode-hook
-          yaml-mode-hook
-          ruby-mode-hook
-          intero-repl-mode-hook
-          makefile-mode-hook
-          rust-mode-hook))
+  (defun quiescent-activate-electric-pair ()
+    "Activate electric pair local mode."
+    (when (null quiescent-starting-up)
+      (electric-pair-local-mode)))
+
+  (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-activate-electric-pair))
+     '(js-mode-hook
+       js2-mode-hook
+       rjsx-mode-hook
+       python-mode-hook
+       typescript-mode-hook
+       sh-mode-hook
+       css-mode-hook
+       haskell-mode-hook
+       eshell-mode-hook
+       restclient-mode-hook
+       scala-mode-hook
+       java-mode-hook
+       conf-unix-mode-hook
+       c++-mode-hook
+       yaml-mode-hook
+       ruby-mode-hook
+       intero-repl-mode-hook
+       makefile-mode-hook
+       rust-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
@@ -1777,7 +1677,8 @@ up with this.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref emacs-refactor :lexical t
   (defun quiescent-emr-initialize ()
     "Initialise `emr', but only if it's been loaded."
-    (when (boundp 'emr-initialize)
+    (when (and (null quiescent-starting-up)
+            (boundp 'emr-initialize))
       (emr-initialize)))
 
   (use-package emr
@@ -2069,12 +1970,12 @@ the above problems.
     "Evaluate the whole buffer and add overlays to each form."
     (when (member major-mode eval-on-save-modes-to-save-in)
       (ignore-errors
-        (save-excursion
-          (when (not (string-match "\\.org$"
-                                   (buffer-file-name)))
-            (goto-char (point-min))
-            (while (eval-on-save-forward-sexp-w/o-error)
-              (eval-on-save-result-overlay-for-form (eval-on-save-eval-form-at-point))))))))
+     (save-excursion
+       (when (not (string-match "\\.org$"
+                       (buffer-file-name)))
+         (goto-char (point-min))
+         (while (eval-on-save-forward-sexp-w/o-error)
+           (eval-on-save-result-overlay-for-form (eval-on-save-eval-form-at-point))))))))
 
   (defvar eval-on-save-evaluator nil
     "The function to call to evaluate a form.")
@@ -2094,18 +1995,18 @@ the above problems.
   (defun eval-on-save-forward-sexp-w/o-error ()
     "Go forward by an sexp and if we hit an error produce nil."
     (condition-case nil
-        (progn
-          (forward-sexp)
-          (not (= (point) (point-max))))
+     (progn
+       (forward-sexp)
+       (not (= (point) (point-max))))
       (error nil)))
 
 
   (defun eval-on-save-backward-sexp-w/o-error ()
     "Go forward by an sexp and if we hit an error produce nil."
     (condition-case nil
-        (progn
-          (forward-sexp -1)
-          (not (= (point) (point-max))))
+     (progn
+       (forward-sexp -1)
+       (not (= (point) (point-max))))
       (error nil)))
 
   (defun eval-on-save-emacs-lisp-eval (form-string)
@@ -2153,13 +2054,14 @@ killdash9 on SO has the answer [[https://stackoverflow.com/questions/9656311/con
     "Copy both regions to the result buffer."
     (interactive)
     (ediff-copy-diff ediff-current-difference nil 'C nil
-                     (concat
-                      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+               (concat
+                (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
 
   (defun add-d-to-ediff-mode-map ()
     "Add d to the keymap for ediff -- which copies both to the result buffer."
-    (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+    (when (null quiescent-starting-up)
+      (define-key ediff-mode-map "d" 'ediff-copy-both-to-C)))
 
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 #+END_SRC
@@ -2286,15 +2188,15 @@ height so that I make better use of space.
 
   ;; Change what you want in this new face
   (set-face-attribute 'quiescent-shell-like-mode-line nil
-                      :height 0.8)
+                :height 0.8)
 
   (set-face-attribute 'quiescent-shell-like-mode-line nil
-                       :box nil)
+                 :box nil)
 
   ;; The function to use the new face
   (defun quiescent-set-shell-like-mode-line-face ()
     (set (make-local-variable 'mode-line) ; This is how to make it local
-         'quiescent-shell-like-mode-line))
+      'quiescent-shell-like-mode-line))
 
   
 
@@ -2307,24 +2209,25 @@ height so that I make better use of space.
   (defun quiescent-in-a-mode (window modes)
     "Produce t if buffer in WINDOW is in mode contained in MODES."
     (cl-some (apply-partially #'quiescent-window-contains-buffer-in-mode window)
-             modes))
+          modes))
 
   (defvar quiescent-kill-fringes-modes '(shell-mode compilation-mode eshell-mode)
     "The modes in which fringes should be killed.")
 
   (defun quiescent-setup-fringe-widths ()
     "Make the fringe width 0 in windows with certain modes active."
-    (walk-windows (lambda (window)
-                    (when (quiescent-in-a-mode window quiescent-kill-fringes-modes)
-                      (quiescent-nuke-fringe window)))
-                  nil
-                  'visible))
+    (when (null quiescent-starting-up)
+      (walk-windows (lambda (window)
+                (when (quiescent-in-a-mode window quiescent-kill-fringes-modes)
+               (quiescent-nuke-fringe window)))
+              nil
+              'visible)))
 
   (defun quiescent-window-contains-buffer-in-mode (window mode)
     "Produce t if WINDOW displays a buffer in mode MODE."
     (eq (buffer-local-value 'major-mode
-                            (window-buffer window))
-        mode))
+                   (window-buffer window))
+     mode))
 
   (add-hook 'buffer-list-update-hook #'quiescent-setup-fringe-widths)
 #+END_SRC
@@ -2385,17 +2288,17 @@ finds errors in the output of the last command.
       :group      'quiescent-global-eshell-compilation-mode
       :global     t
       (if quiescent-global-eshell-compilation-mode
-          (add-hook 'eshell-after-prompt-hook #'quiescent-eshell-compilation-parse-errors)
-        (remove-hook 'eshell-after-prompt-hook #'quiescent-eshell-compilation-parse-errors)))
+       (add-hook 'eshell-after-prompt-hook #'quiescent-eshell-compilation-parse-errors)
+     (remove-hook 'eshell-after-prompt-hook #'quiescent-eshell-compilation-parse-errors)))
 
   (defun quiescent-eshell-compilation-find-last-region ()
     "Find the last compilation region from point."
     (save-excursion
       (goto-char (point-max))
       (cons (save-excursion
-              (eshell-previous-prompt 1)
-              (point))
-            (point))))
+           (eshell-previous-prompt 1)
+           (point))
+         (point))))
 
   ;; This is very close.  I've got it parsing the output, but it's not
   ;; producing links to the errors correctly :( It uses all sorts of
@@ -2404,7 +2307,7 @@ finds errors in the output of the last command.
     "Parse compilation errors in the last output of eshell."
     (pcase (quiescent-eshell-compilation-find-last-region)
       (`(,start . ,end) (let ((compilation-locs (make-hash-table :test #'equal)))
-                          (compilation-parse-errors start end)))))
+                 (compilation-parse-errors start end)))))
 #+END_SRC
 
 *** Company Eshell Auto-Suggest
@@ -2413,18 +2316,23 @@ completion I use everywhere]] for your eShell history.  Since the blog
 post it's become a package on Melpa(!)
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eshell-company-autosuggest :lexical t
+  (defun quiescent-setup-eshell-completion ()
+    "Setup completion for the Emacs shell."
+    (when (null quiescent-starting-up)
+      (company-mode 1)
+      (esh-autosuggest-mode 1)))
+
   (use-package esh-autosuggest
    :ensure t
    :config (progn
-             (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
-             (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
-             (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
-             (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
-             (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
-             (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-             (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
-   :hook ((eshell-mode . company-mode)
-          (eshell-mode . esh-autosuggest-mode)))
+          (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
+          (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
+          (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
+          (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
+          (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
+          (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
+          (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
+   :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 #+END_SRC
 
 The back end in eShell auto suggest doesn't consider all candidates,
@@ -2788,14 +2696,14 @@ configure Universal Ctags in order to get acceptable results.
   (defvar install-ggtags
     (lambda ()
       `(use-package ggtags
-         :ensure t
-         :config (progn
-                   (define-key ggtags-mode-map (kbd "M-.") nil)
-                   (define-key ggtags-mode-map (kbd "C-c M-.") #'ggtags-find-tag-dwim)
-                   (define-key ggtags-mode-map (kbd "C-c M-?") #'ggtags-find-reference))
-         ;; Note that the order here is important
-         :hook ((scala-mode . quiescent-remove-ggtags-xref-backend)
-                (scala-mode . quiescent-enable-ggtags-mode))))
+      :ensure t
+      :config (progn
+             (define-key ggtags-mode-map (kbd "M-.") nil)
+             (define-key ggtags-mode-map (kbd "C-c M-.") #'ggtags-find-tag-dwim)
+             (define-key ggtags-mode-map (kbd "C-c M-?") #'ggtags-find-reference))
+      ;; Note that the order here is important
+      :hook ((scala-mode . quiescent-remove-ggtags-xref-backend)
+          (scala-mode . quiescent-enable-ggtags-mode))))
     "The code to call to install ggtags when we start my Emacs rather than when we compile it.")
 
   (eval (funcall install-ggtags))
@@ -2813,18 +2721,20 @@ usages and searching logs among other things.
     :demand t
     :hook ((org-mode . quiescent-smartscan-enable))
     :config (progn
-	      (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
-	      (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
-	      (setq smartscan-symbol-selector "symbol")))
+           (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
+           (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
+           (setq smartscan-symbol-selector "symbol")))
 
   (defun quiescent-smartscan-enable ()
     "Enable smartscan."
-    (when (boundp 'smartscan-mode)
+    (when (and (null quiescent-starting-up)
+            (boundp 'smartscan-mode))
       (smartscan-mode 1)))
 
   (defun quiescent-disable-smartscan ()
     "Disable smartscan mode."
-    (when (boundp 'smartscan-mode)
+    (when (and (null quiescent-starting-up)
+            (boundp 'smartscan-mode))
       (smartscan-mode -1)))
 
   (add-hook 'eshell-mode-hook #'quiescent-disable-smartscan)
@@ -3126,66 +3036,72 @@ and I have a plan to make it work for large projects.
   (require 'semantic/ia)
 
   (setq semantic-default-submodes
-        '(global-semantic-highlight-func-mode
-          global-semantic-decoration-mode
-          global-semantic-stickyfunc-mode
-          global-semantic-idle-scheduler-mode
-          global-semanticdb-minor-mode
-          global-semantic-idle-local-symbol-highlight-mode
-          global-semantic-highlight-edits-mode
-          global-semantic-show-unmatched-syntax-mode))
+     '(global-semantic-highlight-func-mode
+       global-semantic-decoration-mode
+       global-semantic-stickyfunc-mode
+       global-semantic-idle-scheduler-mode
+       global-semanticdb-minor-mode
+       global-semantic-idle-local-symbol-highlight-mode
+       global-semantic-highlight-edits-mode
+       global-semantic-show-unmatched-syntax-mode))
 
-  (defun quiescent-fix-lisp-parser ()
+  (defvar quiescent-fix-elisp-parser
+    (lambda ()
+      `(when (and (fboundp 'eval-and-compile)
+	   (fboundp 'eval-when-compile)
+	   (fboundp 'cl-defmethod)
+	   (fboundp 'cl-defgeneric)
+	   (fboundp 'cl-deftype))
+     (progn
+       (semantic-elisp-setup-form-parser
+	(lambda (form start end)
+	  (semantic-tag-new-function
+	   (symbol-name (nth 2 form))
+	   nil
+	   '("form" "start" "end")
+	   :form-parser t))
+	eval-and-compile
+	eval-when-compile)
+       (semantic-elisp-setup-form-parser
+	(lambda (form start end)
+	  (let* ((a2 (nth 2 form))
+	      (a3 (nth 3 form))
+	      (args (if (listp a2) a2 a3))
+	      (doc (nth (if (listp a2) 3 4) form)))
+	    (semantic-tag-new-function
+	  (symbol-name (nth 1 form))
+	  nil
+	  (if (listp (car args))
+	      (cons (symbol-name (caar args))
+		 (semantic-elisp-desymbolify-args (cdr args)))
+	    (semantic-elisp-desymbolify-args (cdr args)))
+	  :parent (if (listp (car args)) (symbol-name (cadr (car args))) nil)
+	  :documentation (semantic-elisp-do-doc doc))))
+	cl-defmethod
+	cl-defgeneric)
+       (semantic-elisp-setup-form-parser
+	(lambda (form start end)
+	  (let ((doc (semantic-elisp-form-to-doc-string (nth 3 form))))
+	    (semantic-tag-new-variable
+	  (symbol-name (nth 1 form))
+	  nil
+	  (nth 2 form)
+	  :user-visible-flag (and doc
+			 (> (length doc) 0)
+			 (= (aref doc 0) ?*))
+	  :constant-flag (eq (car form) 'defconst)
+	  :documentation (semantic-elisp-do-doc doc))))
+	cl-deftype))))
     "Fix eLisp parser in eLisp modes.
 
-  I add stuff here as I find that it can't be parsed by semantic."
-    (when (and (fboundp 'eval-and-compile)
-               (fboundp 'eval-when-compile)
-               (fboundp 'cl-defmethod)
-               (fboundp 'cl-defgeneric)
-               (fboundp 'cl-deftype))
-      (progn
-        (semantic-elisp-setup-form-parser
-            (lambda (form start end)
-              (semantic-tag-new-function
-               (symbol-name (nth 2 form))
-               nil
-               '("form" "start" "end")
-               :form-parser t))
-          eval-and-compile
-          eval-when-compile)
-        (semantic-elisp-setup-form-parser
-            (lambda (form start end)
-              (let* ((a2 (nth 2 form))
-                     (a3 (nth 3 form))
-                     (args (if (listp a2) a2 a3))
-                     (doc (nth (if (listp a2) 3 4) form)))
-                (semantic-tag-new-function
-                 (symbol-name (nth 1 form))
-                 nil
-                 (if (listp (car args))
-                     (cons (symbol-name (caar args))
-                           (semantic-elisp-desymbolify-args (cdr args)))
-                   (semantic-elisp-desymbolify-args (cdr args)))
-                 :parent (if (listp (car args)) (symbol-name (cadr (car args))) nil)
-                 :documentation (semantic-elisp-do-doc doc))))
-          cl-defmethod
-          cl-defgeneric)
-        (semantic-elisp-setup-form-parser
-            (lambda (form start end)
-              (let ((doc (semantic-elisp-form-to-doc-string (nth 3 form))))
-                (semantic-tag-new-variable
-                 (symbol-name (nth 1 form))
-                 nil
-                 (nth 2 form)
-                 :user-visible-flag (and doc
-                                         (> (length doc) 0)
-                                         (= (aref doc 0) ?*))
-                 :constant-flag (eq (car form) 'defconst)
-                 :documentation (semantic-elisp-do-doc doc))))
-          cl-deftype))))
+  I add stuff here as I find that it can't be parsed by semantic.")
 
-  (add-hook 'emacs-lisp-mode-hook #'quiescent-fix-lisp-parser)
+  (defun quiescent-fix-elisp-parser ()
+    "Fix the elisp parser for semantic."
+    (when (null quiescent-starting-up)
+      (eval (funcall quiescent-fix-lisp-parser))))
+
+  (add-hook 'emacs-lisp-mode-hook #'quiescent-fix-elisp-parser)
 
   (require 'semantic/bovine/el)
   (require 'semantic/db-el)
@@ -3316,7 +3232,7 @@ extending to support more languages.
   (require 'cc-mode)
 
   (setq c-default-style "linux"
-        c-basic-offset  4)
+     c-basic-offset  4)
   (setq auto-mode-alist (cons '("\.ino$" . c-mode) auto-mode-alist))
 
   (defconst quiescent-clean-buffer-max-size 100000
@@ -3325,9 +3241,9 @@ extending to support more languages.
   (defmacro quiescent-when-small-enough (body)
     "Execute BODY when the buffer is small enough to."
     `(let ((min (point-min))
-           (max (point-max)))
+        (max (point-max)))
        (when (< (- max min) quiescent-clean-buffer-max-size)
-         ,body)))
+      ,body)))
 
   ;; Credit for the indent whole buffer part:
   ;; https://www.emacswiki.org/emacs/ReformatBuffer
@@ -3357,13 +3273,14 @@ extending to support more languages.
 
   (defun quiescent-prog-save-hook ()
     "Things to do when I save cc files."
-    (progn
-      (add-hook 'before-save-hook
-                #'quiescent-whitespace-cleanup nil 'local)
-      (add-hook 'before-save-hook
-                #'quiescent-indent-whole-buffer nil 'local)
-      (add-hook 'before-save-hook
-                #'quiescent-untabify-whole-buffer nil 'local)))
+    (when (null quiescent-starting-up)
+      (progn
+     (add-hook 'before-save-hook
+            #'quiescent-whitespace-cleanup nil 'local)
+     (add-hook 'before-save-hook
+            #'quiescent-indent-whole-buffer nil 'local)
+     (add-hook 'before-save-hook
+            #'quiescent-untabify-whole-buffer nil 'local))))
 
   (add-hook 'c++-mode-hook        #'quiescent-prog-save-hook)
   (add-hook 'c-mode-hook          #'quiescent-prog-save-hook)
@@ -3410,22 +3327,23 @@ and tag completion mechanisms than the built in mode.
   (use-package web-mode
       :ensure t
       :config (progn
-                (add-to-list 'auto-mode-alist '("\\.phtml\\'"     . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'"   . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"   . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.erb\\'"       . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.mustache\\'"  . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.djhtml\\'"    . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.html\\'"      . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.tag\\'"       . web-mode))
-                (add-to-list 'auto-mode-alist '("\\.ejs\\'"       . web-mode))
-                (define-key web-mode-map (kbd "C-c C-r") #'quiescent-vc-git-grep))
+          (add-to-list 'auto-mode-alist '("\\.phtml\\'"     . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'"   . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"   . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.erb\\'"       . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.mustache\\'"  . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.djhtml\\'"    . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.html\\'"      . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.tag\\'"       . web-mode))
+          (add-to-list 'auto-mode-alist '("\\.ejs\\'"       . web-mode))
+          (define-key web-mode-map (kbd "C-c C-r") #'quiescent-vc-git-grep))
       :hook (web-mode . quiescent-set-company-to-dabbrev-only))
 
   (defun quiescent-set-company-to-dabbrev-only ()
     "Set the company backends to dabbrev only."
-    (setq-local company-backends '(company-dabbrev)))
+    (when (null quiescent-starting-up)
+      (setq-local company-backends '(company-dabbrev))))
 #+END_SRC
 
 ** SASS
@@ -3505,25 +3423,28 @@ I've built up a few modifications to it to improve the experience.
       (nxml-mode)
       (goto-char begin)
       (while (search-forward-regexp "\>[ \\t]*\<" nil t)
-        (backward-char) (insert "\n"))
+     (backward-char) (insert "\n"))
       (indent-region begin end))
     (message "Ah, much better!"))
 
   (defun quiescent-disable-flyspell-mode ()
     "Disable flyspell mode."
-    (flyspell-mode -1))
+    (when (null quiescent-starting-up)
+      (flyspell-mode -1)))
 
   (defun quiescent-disable-flycheck-mode ()
     "Disable flycheck mode."
-    (flycheck-mode -1))
+    (when (null quiescent-starting-up)
+      (flycheck-mode -1)))
 
   (defun quiescent-indent-four-if-pom-or-context ()
     "Setup indentation to use four spaces in nxml if I'm looking at a pom or context file."
-    (let ((name (buffer-name)))
-      (when (or (string-match-p "context.*xml" name)
-                (string-match-p "pom.xml"      name))
-        (setq nxml-child-indent 4
-              nxml-attribute-indent 4))))
+    (when (null quiescent-starting-up)
+      (let ((name (buffer-name)))
+     (when (or (string-match-p "context.*xml" name)
+            (string-match-p "pom.xml"      name))
+       (setq nxml-child-indent 4
+          nxml-attribute-indent 4)))))
 
   (add-hook 'nxml-mode-hook #'quiescent-disable-flyspell-mode)
   (add-hook 'nxml-mode-hook #'quiescent-disable-flycheck-mode)
@@ -3608,14 +3529,14 @@ is dedicated to doing that sort of thing for Javascript.
     :group      'quiescent-eslint-fix
     :global     t
     (if quiescent-global-javascript-eslint-fix-mode
-        (mapc (lambda (mode)
-                  (add-hook (intern (concat (symbol-name mode) "-hook"))
-                            #'quiescent-fix-eslint-add-hook))
-                quiescent-javascript-eslint-fix-modes)
+     (mapc (lambda (mode)
+            (add-hook (intern (concat (symbol-name mode) "-hook"))
+                   #'quiescent-fix-eslint-add-hook))
+          quiescent-javascript-eslint-fix-modes)
       (mapc (lambda (mode)
-                (remove-hook (intern (concat (symbol-name mode) "-hook"))
-                             #'quiescent-fix-eslint-add-hook))
-              quiescent-javascript-eslint-fix-modes)))
+          (remove-hook (intern (concat (symbol-name mode) "-hook"))
+                    #'quiescent-fix-eslint-add-hook))
+           quiescent-javascript-eslint-fix-modes)))
 
   (defun quiescent-fix-eslint-add-hook ()
     "Add the after save hook to the current mode."
@@ -3633,10 +3554,10 @@ is dedicated to doing that sort of thing for Javascript.
     (when (member major-mode quiescent-javascript-eslint-fix-modes)
       (setq quiescent-buffer-to-revert (current-buffer))
       (async-start-process (format "eslint-%s" (buffer-file-name))
-                           "eslint"
-                           (lambda (process) (auto-revert-buffers))
-                           "--fix"
-                           (shell-quote-argument (buffer-file-name)))))
+                  "eslint"
+                  (lambda (process) (auto-revert-buffers))
+                  "--fix"
+                  (shell-quote-argument (buffer-file-name)))))
 #+END_SRC
 
 Note that the following packages might be required globally to make
@@ -3732,7 +3653,12 @@ using the js2-mode ast... want.
   (use-package js2-highlight-vars
    :ensure t)
 
-  (add-hook #'js2-mode-hook #'js2-highlight-vars-mode)
+  (defun quiescent-activate-js2-highlight-vars-mode ()
+    "Activate `js2-highlight-vars'."
+    (when (null quiescent-starting-up)
+      (js2-highlight-vars-mode 1)))
+
+  (add-hook #'js2-mode-hook #'quiescent-activate-js2-highlight-vars-mode)
 #+END_SRC
 
 Unfortunately one cannot configure the length of the timer.  I want it
@@ -3742,22 +3668,22 @@ to be instant.
   (defun js2-highlight-vars-post-command-hook ()
     (ignore-errors
       (let* ((overlays (overlays-at (point)))
-             (ovl (and overlays
-                       (catch 'found
-                         (dolist (ovl overlays)
-                           (when (overlay-get ovl 'js2-highlight-vars)
-                             (throw 'found ovl)))
-                         nil))))
-        (if (and ovl
-                 (string= js2--highlight-vars-current-token-name
-                          (buffer-substring (overlay-start ovl)
-                                            (overlay-end ovl))))
-            (setq js2--highlight-vars-current-token (overlay-start ovl))
-          (js2--unhighlight-vars)
-          (when js2--highlight-vars-post-command-timer
-            (cancel-timer js2--highlight-vars-post-command-timer))
-          (setq js2--highlight-vars-post-command-timer
-                (run-with-timer 0 nil 'js2--do-highlight-vars))))))
+          (ovl (and overlays
+                 (catch 'found
+                (dolist (ovl overlays)
+                  (when (overlay-get ovl 'js2-highlight-vars)
+                    (throw 'found ovl)))
+                nil))))
+     (if (and ovl
+           (string= js2--highlight-vars-current-token-name
+                 (buffer-substring (overlay-start ovl)
+                             (overlay-end ovl))))
+         (setq js2--highlight-vars-current-token (overlay-start ovl))
+       (js2--unhighlight-vars)
+       (when js2--highlight-vars-post-command-timer
+         (cancel-timer js2--highlight-vars-post-command-timer))
+       (setq js2--highlight-vars-post-command-timer
+          (run-with-timer 0 nil 'js2--do-highlight-vars))))))
 #+END_SRC
 
 I've recently discovered Nicolas Peton's blog: [[https://emacs.cafe/][Emacs Cafe]].  It has a
@@ -3770,7 +3696,12 @@ Imenu support for js2-mode symbols!  This doesn't really need any
 further introduction and it's easy to configure.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref js2-mode-extras :lexical t
-  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+  (defun quiescent-activate-js2-imenu-extras ()
+    "Activate `js2-imenu-extras-mode'."
+    (when (null quiescent-starting-up)
+      (js2-imenu-extras-mode 1)))
+
+  (add-hook 'js2-mode-hook #'quiescent-activate-js2-imenu-extras)
 #+END_SRC
 
 Out of the box JS2 imenu support doesn't add constants to the menu.
@@ -3799,18 +3730,19 @@ working typescript setup I thought that I'd go ahead and set it up.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tide :lexical t
   (use-package tide
    :ensure t
-   :hook ((js2-mode . tide-mode)
-          (js2-jsx-mode . tide-mode)
-          (typescript-mode . quiescent-setup-tide-mode)))
+   :hook ((js2-mode . quiescent-setup-tide-mode)
+       (js2-jsx-mode . quiescent-setup-tide-mode)
+       (typescript-mode . quiescent-setup-tide-mode)))
 
   (defun quiescent-setup-tide-mode ()
     "Setup TIDE mode."
-    (progn
-      (tide-setup)
-      (define-key tide-mode-map (kbd "M-?") 'tide-references)
-      (tide-hl-identifier-mode +1)
-      (setq company-backends '(company-tide company-files))
-      (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)))
+    (when (null quiescent-starting-up)
+      (progn
+     (tide-setup)
+     (define-key tide-mode-map (kbd "M-?") 'tide-references)
+     (tide-hl-identifier-mode +1)
+     (setq company-backends '(company-tide company-files))
+     (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack))))
 #+END_SRC
 
 ** Rust
@@ -3824,9 +3756,14 @@ still manages to be memory safe.
   (use-package rust-mode
       :ensure t)
 
+  (defun quiescent-setup-rust-flycheck ()
+    "Setup flycheck in Rust mode."
+    (when (null quiescent-starting-up)
+      (flycheck-rust-setup 1)))
+
   (use-package flycheck-rust
       :ensure t
-      :hook (rust-mode . flycheck-rust-setup))
+      :hook (rust-mode . quiescent-setup-rust-flycheck))
 #+END_SRC
 
 ** Common Lisp
@@ -3845,7 +3782,9 @@ inspiration for many modes after it.
 
   (defun quiescent-setup-slime-completion ()
     "Setup company for slime."
-    (setq-local company-backends '(company-slime)))
+    (when (null quiescent-starting-up)
+      (company-mode 1)
+      (setq-local company-backends '(company-slime))))
 
   (require 'cl-lib)
 
@@ -3854,10 +3793,10 @@ inspiration for many modes after it.
     (interactive)
     (let ((original-window (selected-window)))
       (cl-loop
-	 for window being the windows
-	 when (equal "*slime-description*" (buffer-name (window-buffer window)))
-	   do (select-window window)
-	      (call-interactively #'quit-window))
+      for window being the windows
+      when (equal "*slime-description*" (buffer-name (window-buffer window)))
+        do (select-window window)
+           (call-interactively #'quit-window))
       (select-window original-window)))
 
 
@@ -3865,14 +3804,13 @@ inspiration for many modes after it.
       :ensure t
       :config (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
       :init (progn (setq inferior-lisp-program "sbcl")
-		   (if (file-exists-p slime--sbcl-helper-path)
-		       (load slime--sbcl-helper-path)
-		       (warn "Slime helper file not found"))
-		   (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
-		   (slime-setup '(slime-fancy slime-company)))
+             (if (file-exists-p slime--sbcl-helper-path)
+                 (load slime--sbcl-helper-path)
+                 (warn "Slime helper file not found"))
+             (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
+             (slime-setup '(slime-fancy slime-company)))
       :hook ((slime-mode . quiescent-setup-slime-completion)
-	     (slime-repl-mode . quiescent-setup-slime-completion)
-	     (slime-repl-mode . company-mode)))
+          (slime-repl-mode . quiescent-setup-slime-completion)))
 #+END_SRC
 
 Instructions for setup:
@@ -3898,17 +3836,27 @@ Perhaps I'll add to this file as I start customising my Emacs to work
 well during the workshop.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref cider :lexical t
+  (defun quiescent-setup-clojure-hooks ()
+    "Setup hooks for clojure mode."
+    (when (null quiescent-starting-up)
+      (cider-mode 1)
+      (eldoce-mode 1)
+      (company-mode 1)))
+
+  (defun quiescent-setup-cider-repl-hooks ()
+    "Setup hooks for the clojure repl."
+    (when (null quiescent-starting-up)
+      (company-mode 1)))
+
   (use-package cider
       :ensure t
-      :hook ((clojure-mode . cider-mode)
-             (clojure-mode . eldoc-mode)
-             (cider-mode . company-mode)
-             (cider-repl-mode . company-mode))
+      :hook ((clojure-mode . quiescent-setup-clojure-hooks)
+          (cider-repl-mode . quiescent-setup-cider-repl-hooks))
       :config
       (progn
-        (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
-                                           (start-figwheel!)
-                                           (cljs-repl))")))
+     (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
+                            (start-figwheel!)
+                            (cljs-repl))")))
 #+END_SRC
 
 ** Emacs Lisp
@@ -4016,9 +3964,15 @@ completion and error hints) well.
 
   (defun quiescent-remove-flex ()
     "Remove the `flex' completion style from completion styles."
-    (setq-local completion-styles '(basic partial-completion emacs22)))
+    (when (null quiescent-starting-up)
+      (setq-local completion-styles '(basic partial-completion emacs22))))
 
   (add-hook 'scala-mode-hook #'quiescent-remove-flex)
+
+  (defun quiescent-ensure-eglot ()
+    "Enable eglot in the curernt buffer."
+    (when (null quiescent-starting-up)
+      (eglot-ensure)))
 
   (use-package eglot
       :ensure t
@@ -4030,9 +3984,10 @@ completion and error hints) well.
     "Produce the root of SBT project containing DIRECTORY.
 
   Assumes that you use SBT."
-    (let ((sbt-root (locate-dominating-file directory "build.sbt")))
-      (when sbt-root
-        (cons 'sbt sbt-root))))
+    (when (null quiescent-starting-up)
+      (let ((sbt-root (locate-dominating-file directory "build.sbt")))
+     (when sbt-root
+       (cons 'sbt sbt-root)))))
 
   (require 'project)
 
@@ -4196,8 +4151,13 @@ my adventure into this incredibly cool mode, as I go I'll keep this
 updated with what I find.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref gnus :lexical t
+  (defun quiescent-gnus-summary-toggle-header ()
+    "Run summary toggle header."
+    (when (null quiescent-starting-up)
+      (gnus-summary-toggle-header)))
+
   (add-hook 'gnus-article-mode-hook
-            #'gnus-summary-toggle-header)
+         #'quiescent-gnus-summary-toggle-header)
 #+END_SRC
 
 ** E Reader
@@ -4318,322 +4278,324 @@ makes the sub directory opening more like a tree view.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref dired-mode :lexical t
   (use-package dired-x
       :config (progn
-                (setq dired-omit-mode t)
-                (setq dired-omit-files "^\\.[^.]\\|\\.hi$\\|\\.o$\\|\\.exe$")))
+          (setq dired-omit-mode t)
+          (setq dired-omit-files "^\\.[^.]\\|\\.hi$\\|\\.o$\\|\\.exe$")))
 
   (setq dired-dwim-target t)
 
   (use-package dired-subtree
       :ensure t
       :config (define-key dired-mode-map (kbd ",") 'dired-subtree-toggle))
+
+  (defun quiescent-dired-filter-group-mode ()
+    "Enable `dired-filter-group-mode'."
+    (when (null quiescent-starting-up)
+      (dired-filter-group-mode 1)))
+
   (use-package dired-filter
       :ensure t
       :bind (("C-c C-'" . dired-filter-group-mode))
       :config (progn
-                (setq dired-filter-group-saved-groups
-                      '(("default"
-                         ("PDF"
-                          (extension . "pdf"))
-                         ("LaTeX"
-                          (extension "tex" "bib"))
-                         ("Org"
-                          (extension . "org"))
-                         ("Archives"
-                          (extension "zip" "rar" "gz" "bz2" "tar"))
-                         ("Folders"
-                          (directory))
-                         ("Source Code"
-                          (extension "el" "scala" "rs" "asm"
-                                     "cl" "lisp" "el" "c"
-                                     "h" "c++" "h++" "hpp"
-                                     "hxx" "m" "cc" "cs"
-                                     "cp" "cpp" "go" "f"
-                                     "for" "ftn" "f90" "f95"
-                                     "f03" "f08" "s" "rs"
-                                     "hi" "hs" "py" "java"))))))
-      :hook (dired-mode . dired-filter-group-mode))
-
-  (use-package all-the-icons-dired
-      :ensure t
-      :hook (dired-mode . all-the-icons-dired-mode))
+          (setq dired-filter-group-saved-groups
+                '(("default"
+                ("PDF"
+                 (extension . "pdf"))
+                ("LaTeX"
+                 (extension "tex" "bib"))
+                ("Org"
+                 (extension . "org"))
+                ("Archives"
+                 (extension "zip" "rar" "gz" "bz2" "tar"))
+                ("Folders"
+                 (directory))
+                ("Source Code"
+                 (extension "el" "scala" "rs" "asm"
+                         "cl" "lisp" "el" "c"
+                         "h" "c++" "h++" "hpp"
+                         "hxx" "m" "cc" "cs"
+                         "cp" "cpp" "go" "f"
+                         "for" "ftn" "f90" "f95"
+                         "f03" "f08" "s" "rs"
+                         "hi" "hs" "py" "java"))))))
+      :hook (dired-mode . quiescent-dired-filter-group-mode))
 
   (use-package diredfl
       :ensure t
       :config
       (progn
-        ;; My modifications to the font locking
-        (defface quiescent-diredfl-autofile-name
-            '((t (:foreground "#3f444a"))) ; Very dark blue
-          "*Face used in Dired for names of files that are autofile bookmarks."
-          :group 'diredfl)
-        (setq diredfl-autofile-name 'quiescent-diredfl-autofile-name)
+     ;; My modifications to the font locking
+     (defface quiescent-diredfl-autofile-name
+         '((t (:foreground "#3f444a"))) ; Very dark blue
+       "*Face used in Dired for names of files that are autofile bookmarks."
+       :group 'diredfl)
+     (setq diredfl-autofile-name 'quiescent-diredfl-autofile-name)
 
-        (defface quiescent-diredfl-compressed-file-name
-            '((t (:foreground "#ECBE7B")))
-          "*Face used for compressed file names."
-          :group 'diredfl)
-        (setq diredfl-compressed-file-name 'quiescent-diredfl-compressed-file-name)
+     (defface quiescent-diredfl-compressed-file-name
+         '((t (:foreground "#ECBE7B")))
+       "*Face used for compressed file names."
+       :group 'diredfl)
+     (setq diredfl-compressed-file-name 'quiescent-diredfl-compressed-file-name)
 
-        (defface quiescent-diredfl-compressed-file-suffix
-            '((t (:foreground "#905e3c")))
-          "*Face used for compressed file suffixes in Dired buffers.
+     (defface quiescent-diredfl-compressed-file-suffix
+         '((t (:foreground "#905e3c")))
+       "*Face used for compressed file suffixes in Dired buffers.
   This means the `.' plus the file extension.  Example: `.zip'."
-          :group 'diredfl)
-        (setq diredfl-compressed-file-suffix 'quiescent-diredfl-compressed-file-suffix)
+       :group 'diredfl)
+     (setq diredfl-compressed-file-suffix 'quiescent-diredfl-compressed-file-suffix)
 
-        (defface quiescent-diredfl-date-time
-            '((t (:foreground "#46D9FF")))
-          "*Face used for date and time in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-date-time 'quiescent-diredfl-date-time)
+     (defface quiescent-diredfl-date-time
+         '((t (:foreground "#46D9FF")))
+       "*Face used for date and time in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-date-time 'quiescent-diredfl-date-time)
 
-        (defface quiescent-diredfl-deletion
-            '((t (:foreground "#ff6c6b")))
-          "*Face used for deletion flags (D) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-deletion 'quiescent-diredfl-deletion)
+     (defface quiescent-diredfl-deletion
+         '((t (:foreground "#ff6c6b")))
+       "*Face used for deletion flags (D) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-deletion 'quiescent-diredfl-deletion)
 
-        (defface quiescent-diredfl-deletion-file-name
-            '((t (:foreground "#ff6c6b")))
-          "*Face used for names of deleted files in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-deletion-file-name 'quiescent-diredfl-deletion-file-name)
+     (defface quiescent-diredfl-deletion-file-name
+         '((t (:foreground "#ff6c6b")))
+       "*Face used for names of deleted files in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-deletion-file-name 'quiescent-diredfl-deletion-file-name)
 
-        (defface quiescent-diredfl-dir-heading
-            '((t (:foreground "#51afef")))
-          "*Face used for directory headings in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-dir-heading 'quiescent-diredfl-dir-heading)
+     (defface quiescent-diredfl-dir-heading
+         '((t (:foreground "#51afef")))
+       "*Face used for directory headings in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-dir-heading 'quiescent-diredfl-dir-heading)
 
-        (defface quiescent-diredfl-dir-name
-            '((t (:foreground "#51afef")))
-          "*Face used for directory names."
-          :group 'diredfl)
-        (setq diredfl-dir-name 'quiescent-diredfl-dir-name)
+     (defface quiescent-diredfl-dir-name
+         '((t (:foreground "#51afef")))
+       "*Face used for directory names."
+       :group 'diredfl)
+     (setq diredfl-dir-name 'quiescent-diredfl-dir-name)
 
-        (defface quiescent-diredfl-dir-priv
-            '((t (:foreground "#51afef")))
-          "*Face used for directory privilege indicator (d) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-dir-priv 'quiescent-diredfl-dir-priv)
+     (defface quiescent-diredfl-dir-priv
+         '((t (:foreground "#51afef")))
+       "*Face used for directory privilege indicator (d) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-dir-priv 'quiescent-diredfl-dir-priv)
 
-        (defface quiescent-diredfl-exec-priv
-            '((t (:foreground "#98be65")))
-          "*Face used for execute privilege indicator (x) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-exec-priv 'quiescent-diredfl-exec-priv)
+     (defface quiescent-diredfl-exec-priv
+         '((t (:foreground "#98be65")))
+       "*Face used for execute privilege indicator (x) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-exec-priv 'quiescent-diredfl-exec-priv)
 
-        ;; For this to show up, you need `F' among the options in `dired-listing-switches'.
-        ;; For example, I use "-alF" for `dired-listing-switches'.
-        (defface quiescent-diredfl-executable-tag
-            '((t (:foreground "#98be65")))
-          "*Face used for executable tag (*) on file names in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-executable-tag 'quiescent-diredfl-executable-tag)
+     ;; For this to show up, you need `F' among the options in `dired-listing-switches'.
+     ;; For example, I use "-alF" for `dired-listing-switches'.
+     (defface quiescent-diredfl-executable-tag
+         '((t (:foreground "#98be65")))
+       "*Face used for executable tag (*) on file names in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-executable-tag 'quiescent-diredfl-executable-tag)
 
-        (defface quiescent-diredfl-file-name
-            '((t (:foreground "#bbc2cf")))
-          "*Face used for file names (without suffixes) in Dired buffers.
+     (defface quiescent-diredfl-file-name
+         '((t (:foreground "#bbc2cf")))
+       "*Face used for file names (without suffixes) in Dired buffers.
   This means the base name.  It does not include the `.'."
-          :group 'diredfl)
-        (setq diredfl-file-name 'quiescent-diredfl-file-name)
+       :group 'diredfl)
+     (setq diredfl-file-name 'quiescent-diredfl-file-name)
 
-        (defface quiescent-diredfl-file-suffix
-            '((t (:foreground "#7d828d")))
-          "*Face used for file suffixes in Dired buffers.
+     (defface quiescent-diredfl-file-suffix
+         '((t (:foreground "#7d828d")))
+       "*Face used for file suffixes in Dired buffers.
   This means the `.' plus the file extension.  Example: `.elc'."
-          :group 'diredfl)
-        (setq diredfl-file-suffix 'quiescent-diredfl-file-suffix)
+       :group 'diredfl)
+     (setq diredfl-file-suffix 'quiescent-diredfl-file-suffix)
 
-        (defface quiescent-diredfl-flag-mark
-            '((t (:foreground "#ECBE7B")))
-          "*Face used for flags and marks (except D) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-flag-mark 'quiescent-diredfl-flag-mark)
+     (defface quiescent-diredfl-flag-mark
+         '((t (:foreground "#ECBE7B")))
+       "*Face used for flags and marks (except D) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-flag-mark 'quiescent-diredfl-flag-mark)
 
-        (defface quiescent-diredfl-flag-mark-line
-            '((t (:foreground "#787831311414")))
-          "*Face used for flagged and marked lines in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-flag-mark-line 'quiescent-diredfl-flag-mark-line)
+     (defface quiescent-diredfl-flag-mark-line
+         '((t (:foreground "#787831311414")))
+       "*Face used for flagged and marked lines in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-flag-mark-line 'quiescent-diredfl-flag-mark-line)
 
-        (defface quiescent-diredfl-ignored-file-name
-            '((t (:foreground "#5B6268")))
-          "*Face used for ignored file names  in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-ignored-file-name 'quiescent-diredfl-ignored-file-name)
+     (defface quiescent-diredfl-ignored-file-name
+         '((t (:foreground "#5B6268")))
+       "*Face used for ignored file names  in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-ignored-file-name 'quiescent-diredfl-ignored-file-name)
 
-        (defface quiescent-diredfl-link-priv
-            '((t (:foreground "#a9a1e1")))
-          "*Face used for link privilege indicator (l) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-link-priv 'quiescent-diredfl-link-priv)
+     (defface quiescent-diredfl-link-priv
+         '((t (:foreground "#a9a1e1")))
+       "*Face used for link privilege indicator (l) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-link-priv 'quiescent-diredfl-link-priv)
 
-        (defface quiescent-diredfl-no-priv
-            '((t (:foreground "#bbc2cf")))
-          "*Face used for no privilege indicator (-) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-no-priv 'quiescent-diredfl-no-priv)
+     (defface quiescent-diredfl-no-priv
+         '((t (:foreground "#bbc2cf")))
+       "*Face used for no privilege indicator (-) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-no-priv 'quiescent-diredfl-no-priv)
 
-        (defface quiescent-diredfl-number
-            '((t (:foreground "#da8548")))
-          "*Face used for numerical fields in Dired buffers.
+     (defface quiescent-diredfl-number
+         '((t (:foreground "#da8548")))
+       "*Face used for numerical fields in Dired buffers.
   In particular, inode number, number of hard links, and file size."
-          :group 'diredfl)
-        (setq diredfl-number 'quiescent-diredfl-number)
+       :group 'diredfl)
+     (setq diredfl-number 'quiescent-diredfl-number)
 
-        (defface quiescent-diredfl-other-priv
-            '((t (:foreground "#c678dd")))
-          "*Face used for l,s,S,t,T privilege indicators in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-other-priv 'quiescent-diredfl-other-priv)
+     (defface quiescent-diredfl-other-priv
+         '((t (:foreground "#c678dd")))
+       "*Face used for l,s,S,t,T privilege indicators in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-other-priv 'quiescent-diredfl-other-priv)
 
-        (defface quiescent-diredfl-rare-priv
-            '((t (:foreground "#bbc2cf")))
-          "*Face used for rare privilege indicators (b,c,s,m,p,S) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-rare-priv 'quiescent-diredfl-rare-priv)
+     (defface quiescent-diredfl-rare-priv
+         '((t (:foreground "#bbc2cf")))
+       "*Face used for rare privilege indicators (b,c,s,m,p,S) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-rare-priv 'quiescent-diredfl-rare-priv)
 
-        (defface quiescent-diredfl-read-priv
-            '((t (:foreground "#ECBE7B")))
-          "*Face used for read privilege indicator (w) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-read-priv 'quiescent-diredfl-read-priv)
+     (defface quiescent-diredfl-read-priv
+         '((t (:foreground "#ECBE7B")))
+       "*Face used for read privilege indicator (w) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-read-priv 'quiescent-diredfl-read-priv)
 
-        (defface quiescent-diredfl-symlink
-            '((t (:foreground "#a9a1e1")))
-          "*Face used for symbolic links in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-symlink 'quiescent-diredfl-symlink)
+     (defface quiescent-diredfl-symlink
+         '((t (:foreground "#a9a1e1")))
+       "*Face used for symbolic links in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-symlink 'quiescent-diredfl-symlink)
 
-        (defface quiescent-diredfl-tagged-autofile-name
-            '((t (:foreground "#5B6268"))) ; Very pale green
-          "*Face used in Dired for names of files that are autofile bookmarks."
-          :group 'diredfl)
-        (setq diredfl-tagged-autofile-name 'quiescent-diredfl-tagged-autofile-name)
+     (defface quiescent-diredfl-tagged-autofile-name
+         '((t (:foreground "#5B6268"))) ; Very pale green
+       "*Face used in Dired for names of files that are autofile bookmarks."
+       :group 'diredfl)
+     (setq diredfl-tagged-autofile-name 'quiescent-diredfl-tagged-autofile-name)
 
-        (defface quiescent-diredfl-write-priv
-            '((t (:foreground "#ff6c6b")))
-          "*Face used for write privilege indicator (w) in Dired buffers."
-          :group 'diredfl)
-        (setq diredfl-write-priv 'quiescent-diredfl-write-priv)
+     (defface quiescent-diredfl-write-priv
+         '((t (:foreground "#ff6c6b")))
+       "*Face used for write privilege indicator (w) in Dired buffers."
+       :group 'diredfl)
+     (setq diredfl-write-priv 'quiescent-diredfl-write-priv)
 
-        (defconst quiescent-diredfl-font-lock-keywords-1
-          (list
-           '("^  \\(.+:\\)$" 1 diredfl-dir-heading) ; Directory headers
-           '("^  wildcard.*$" 0 'default)       ; Override others, e.g. `l' for `diredfl-other-priv'.
-           '("^  (No match).*$" 0 'default)     ; Override others, e.g. `t' for `diredfl-other-priv'.
-           '("[^ .]\\(\\.[^. /]+\\)$" 1 diredfl-file-suffix) ; Suffix, including `.'.
-           '("\\([^ ]+\\) -> .+$" 1 diredfl-symlink) ; Symbolic links
+     (defconst quiescent-diredfl-font-lock-keywords-1
+       (list
+        '("^  \\(.+:\\)$" 1 diredfl-dir-heading) ; Directory headers
+        '("^  wildcard.*$" 0 'default)       ; Override others, e.g. `l' for `diredfl-other-priv'.
+        '("^  (No match).*$" 0 'default)     ; Override others, e.g. `t' for `diredfl-other-priv'.
+        '("[^ .]\\(\\.[^. /]+\\)$" 1 diredfl-file-suffix) ; Suffix, including `.'.
+        '("\\([^ ]+\\) -> .+$" 1 diredfl-symlink) ; Symbolic links
 
-           ;; 1) Date/time and 2) filename w/o suffix.
-           ;;    This is a bear, and it is fragile - Emacs can change `dired-move-to-filename-regexp'.
-           `(,dired-move-to-filename-regexp
-             (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
-             (2 diredfl-date-time t t)         ; Date/time, ISO
-             (,(concat "\\(.+\\)\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions)
-                                             "\\)[*]?$"))
-               nil nil (0 diredfl-compressed-file-name keep t))) ; Compressed-file suffix
-           `(,dired-move-to-filename-regexp
-             (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
-             (2 diredfl-date-time t t)         ; Date/time, ISO
-             ("\\(.+\\)$" nil nil (0 diredfl-file-name keep t))) ; Filename (not a compressed file)
+        ;; 1) Date/time and 2) filename w/o suffix.
+        ;;    This is a bear, and it is fragile - Emacs can change `dired-move-to-filename-regexp'.
+        `(,dired-move-to-filename-regexp
+          (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
+          (2 diredfl-date-time t t)         ; Date/time, ISO
+          (,(concat "\\(.+\\)\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions)
+                              "\\)[*]?$"))
+            nil nil (0 diredfl-compressed-file-name keep t))) ; Compressed-file suffix
+        `(,dired-move-to-filename-regexp
+          (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
+          (2 diredfl-date-time t t)         ; Date/time, ISO
+          ("\\(.+\\)$" nil nil (0 diredfl-file-name keep t))) ; Filename (not a compressed file)
 
-           ;; Files to ignore
-           (list (concat "^  \\(.*\\("
-                         (mapconcat #'regexp-quote (or (and (boundp 'dired-omit-extensions)  dired-omit-extensions)
-                                                       completion-ignored-extensions)
-                                    "[*]?\\|")
-                         (and diredfl-ignore-compressed-flag
-                              (concat "\\|" (mapconcat #'regexp-quote diredfl-compressed-extensions "[*]?\\|")))
-                         "[*]?\\)\\)$") ; Allow for executable flag (*).
-                 1 diredfl-ignored-file-name t)
+        ;; Files to ignore
+        (list (concat "^  \\(.*\\("
+                (mapconcat #'regexp-quote (or (and (boundp 'dired-omit-extensions)  dired-omit-extensions)
+                                     completion-ignored-extensions)
+                        "[*]?\\|")
+                (and diredfl-ignore-compressed-flag
+                     (concat "\\|" (mapconcat #'regexp-quote diredfl-compressed-extensions "[*]?\\|")))
+                "[*]?\\)\\)$") ; Allow for executable flag (*).
+           1 diredfl-ignored-file-name t)
 
-           ;; Compressed-file (suffix)
-           (list (concat "\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions) "\\)[*]?$"))
-                 1 diredfl-compressed-file-suffix t)
-           '("\\([*]\\)$" 1 diredfl-executable-tag t) ; Executable (*)
+        ;; Compressed-file (suffix)
+        (list (concat "\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions) "\\)[*]?$"))
+           1 diredfl-compressed-file-suffix t)
+        '("\\([*]\\)$" 1 diredfl-executable-tag t) ; Executable (*)
 
-           ;; Inode, hard-links, & file size (. and , are for the decimal point, depending on locale)
-           ;; See comment for `directory-listing-before-filename-regexp' in `files.el' or `files+.el'.
-           '("\\_<\\(\\([0-9]+\\([.,][0-9]+\\)?\\)[BkKMGTPEZY]?[ /]?\\)" 1 'quiescent-diredfl-number)
+        ;; Inode, hard-links, & file size (. and , are for the decimal point, depending on locale)
+        ;; See comment for `directory-listing-before-filename-regexp' in `files.el' or `files+.el'.
+        '("\\_<\\(\\([0-9]+\\([.,][0-9]+\\)?\\)[BkKMGTPEZY]?[ /]?\\)" 1 'quiescent-diredfl-number)
 
-           ;; Directory names - exclude d:/..., Windows drive letter in a dir heading.
-           (list (concat dired-re-maybe-mark dired-re-inode-size "\\(d\\)[^:]")
-                 '(1 diredfl-dir-priv t) '(".+" (dired-move-to-filename) nil (0 diredfl-dir-name t)))
+        ;; Directory names - exclude d:/..., Windows drive letter in a dir heading.
+        (list (concat dired-re-maybe-mark dired-re-inode-size "\\(d\\)[^:]")
+           '(1 diredfl-dir-priv t) '(".+" (dired-move-to-filename) nil (0 diredfl-dir-name t)))
 
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\(x\\)") ; o x
-                 '(1 diredfl-exec-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([lsStT]\\)") ; o misc
-                 '(1 diredfl-other-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\(w\\).") ; o w
-                 '(1 diredfl-write-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\(r\\)..") ; o r
-                 '(1 diredfl-read-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\(x\\)...") ; g x
-                 '(1 diredfl-exec-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([lsStT]\\)...") ; g misc
-                 '(1 diredfl-other-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\(w\\)....") ; g w
-                 '(1 diredfl-write-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\(r\\).....") ; g r
-                 '(1 diredfl-read-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\(x\\)...") ; u x
-                 '(1 diredfl-exec-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([lsStT]\\)...") ; u misc
-                 '(1 diredfl-other-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\(w\\)....") ; u w
-                 '(1 diredfl-write-priv))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\(r\\).....") ; u r
-                 '(1 diredfl-read-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\(x\\)") ; o x
+           '(1 diredfl-exec-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([lsStT]\\)") ; o misc
+           '(1 diredfl-other-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\(w\\).") ; o w
+           '(1 diredfl-write-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\(r\\)..") ; o r
+           '(1 diredfl-read-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\(x\\)...") ; g x
+           '(1 diredfl-exec-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([lsStT]\\)...") ; g misc
+           '(1 diredfl-other-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\(w\\)....") ; g w
+           '(1 diredfl-write-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\(r\\).....") ; g r
+           '(1 diredfl-read-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\(x\\)...") ; u x
+           '(1 diredfl-exec-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([lsStT]\\)...") ; u misc
+           '(1 diredfl-other-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\(w\\)....") ; u w
+           '(1 diredfl-write-priv))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\(r\\).....") ; u r
+           '(1 diredfl-read-priv))
 
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([-rwxlsStT]\\)") ; o -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\([-rwxlsStT]\\).") ; g -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\([-rwxlsStT]\\)..") ; u -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([-rwxlsStT]\\)...") ; o -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\([-rwxlsStT]\\)....") ; g -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\([-rwxlsStT]\\).....") ; u -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([-rwxlsStT]\\)......") ; o -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\([-rwxlsStT]\\).......") ; g -
-                 '(1 diredfl-no-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\([-rwxlsStT]\\)........") ; u -
-                 '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([-rwxlsStT]\\)") ; o -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\([-rwxlsStT]\\).") ; g -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\([-rwxlsStT]\\)..") ; u -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([-rwxlsStT]\\)...") ; o -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\([-rwxlsStT]\\)....") ; g -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\([-rwxlsStT]\\).....") ; u -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([-rwxlsStT]\\)......") ; o -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\([-rwxlsStT]\\).......") ; g -
+           '(1 diredfl-no-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\([-rwxlsStT]\\)........") ; u -
+           '(1 diredfl-no-priv keep))
 
-           (list (concat dired-re-maybe-mark dired-re-inode-size "\\([bcsmpS]\\)") ; (rare)
-                 '(1 diredfl-rare-priv keep))
-           (list (concat dired-re-maybe-mark dired-re-inode-size "\\(l\\)[-rwxlsStT]") ; l
-                 '(1 diredfl-rare-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "\\([bcsmpS]\\)") ; (rare)
+           '(1 diredfl-rare-priv keep))
+        (list (concat dired-re-maybe-mark dired-re-inode-size "\\(l\\)[-rwxlsStT]") ; l
+           '(1 diredfl-rare-priv keep))
 
-           (list (concat "^\\([^\n " (char-to-string dired-del-marker) "].*$\\)")
-                 '(1 diredfl-flag-mark-line prepend))                          ; Flag/mark lines
-           (list (concat "^\\([^\n " (char-to-string dired-del-marker) "]\\)") ; Flags, marks (except D)
-                 '(1 diredfl-flag-mark prepend))
+        (list (concat "^\\([^\n " (char-to-string dired-del-marker) "].*$\\)")
+           '(1 diredfl-flag-mark-line prepend))                          ; Flag/mark lines
+        (list (concat "^\\([^\n " (char-to-string dired-del-marker) "]\\)") ; Flags, marks (except D)
+           '(1 diredfl-flag-mark prepend))
 
-           (list (concat "^\\([" (char-to-string dired-del-marker) "].*$\\)") ; Deletion-flagged lines
-                 '(1 diredfl-deletion-file-name prepend))
-           (list (concat "^\\([" (char-to-string dired-del-marker) "]\\)") ; Deletion flags (D)
-                 '(1 diredfl-deletion prepend))))
+        (list (concat "^\\([" (char-to-string dired-del-marker) "].*$\\)") ; Deletion-flagged lines
+           '(1 diredfl-deletion-file-name prepend))
+        (list (concat "^\\([" (char-to-string dired-del-marker) "]\\)") ; Deletion flags (D)
+           '(1 diredfl-deletion prepend))))
 
-        (add-hook 'diredfl-mode-hook #'quiescent-add-third-level-font-lock)
+     (add-hook 'diredfl-mode-hook #'quiescent-add-third-level-font-lock)
 
-        (diredfl-global-mode 1)))
+     (diredfl-global-mode 1)))
 
   (defun quiescent-add-third-level-font-lock ()
     "Add my own font locking afterwards to fix the background."
-    (progn
+    (when (null quiescent-starting-up)
       (setq font-lock-defaults
-           '((dired-font-lock-keywords
-              dired-font-lock-keywords
-              diredfl-font-lock-keywords-1
-              quiescent-diredfl-font-lock-keywords-1)
-             t nil nil beginning-of-line))
+         '((dired-font-lock-keywords
+            dired-font-lock-keywords
+            diredfl-font-lock-keywords-1
+            quiescent-diredfl-font-lock-keywords-1)
+           t nil nil beginning-of-line))
       (font-lock-refresh-defaults)))
 #+END_SRC
 
@@ -4803,7 +4765,8 @@ to help write activation hook functions in Emacs Lisp.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-bullets :lexical t
   (defun quiescent-activate-org-bullets-mode ()
-    (org-bullets-mode 1))
+    (when (null quiescent-starting-up)
+      (org-bullets-mode 1)))
 
   (use-package org-bullets
     :ensure t
@@ -4941,12 +4904,17 @@ I've decided to use it for a lightning talk I'm giving on Emacs.
     "I think that epresent also expects this face to be there."
     :group  'epresent)
 
+  (defun quiescent-epresent-toggle-hide-src-blocks ()
+    "Run `epresent-toggle-hide-src-blocks'."
+    (when (null quiescent-starting-up)
+      (epresent-toggle-hide-src-blocks)))
+
   (add-hook 'epresent-mode-hook
-            #'epresent-toggle-hide-src-blocks)
+         #'quiescent-epresent-toggle-hide-src-blocks)
 
   (when quiescent-macbook
     (advice-add 'epresent-quit :around
-                #'quiescent-inhibit-frame-deletion))
+          #'quiescent-inhibit-frame-deletion))
 #+END_SRC
 
 ** Demo IT
@@ -5487,12 +5455,17 @@ the actual spell checks and use the standard British dictionary.
 **** TODO Migrate Settings out of customise and to here for flyspell
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref ispell :lexical t
+  (defun quiescent-turn-on-flyspell ()
+    "Turn on `flyspell'."
+    (when (null quiescent-starting-up)
+      (turn-on-flyspell)))
+
   (use-package flyspell
     :init (progn
-            (setq ispell-dictionary "british")
-            (setq ispell-program-name "aspell"))
+         (setq ispell-dictionary "british")
+         (setq ispell-program-name "aspell"))
     :config (define-key flyspell-mode-map (kbd "C-.") nil)
-    :hook ((text-mode bibtex-mode LaTeX-mode TeX-mode) . turn-on-flyspell))
+    :hook ((text-mode bibtex-mode LaTeX-mode TeX-mode) . quiescent-turn-on-flyspell))
 #+END_SRC
 
 ** Langtool
@@ -5527,15 +5500,17 @@ supports richer features.  Such as searching, occur and more.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref pdf-tools :lexical t
   ;; (use-package pdf-tools
   ;;     :ensure t
-  ;;     :init (pdf-tools-install)
   ;;     :hook (pdf-view-mode . quiescent-disable-composable-mode)
-  ;;     :config (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save))
+  ;;     :config (progn
+  ;;               (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
+  ;;               (pdf-tools-install)))
 
   (defun quiescent-disable-composable-mode ()
     "Disable composable mode."
-    (progn
-      (composable-mode -1)
-      (composable-mark-mode -1)))
+    (when (null quiescent-starting-up)
+      (progn
+     (composable-mode -1)
+     (composable-mark-mode -1))))
 #+END_SRC
 
 * Controlling Emacs
@@ -5655,7 +5630,8 @@ rainbow delimiters package.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rainbow-delims :lexical t
   (defun quiescent-activate-rainbow-delimiters-mode ()
     "Activate `rainbow-delimiters-mode'."
-    (rainbow-delimiters-mode 1))
+    (when (null quiescent-starting-up)
+      (rainbow-delimiters-mode 1)))
 
   (use-package rainbow-delimiters
    :ensure t
@@ -5686,31 +5662,34 @@ of the defaults which the mode has built in.)
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prettify :lexical t
   (defun quiescent-activate-pretify-symbols-mode ()
     "Activate `pretify-symbols-mode'."
-    (prettify-symbols-mode 1))
+    (when (null quiescent-starting-up)
+      (prettify-symbols-mode 1)))
 
   (use-package prog-mode
    :init (progn
-           (setq prettify-symbols-unprettify-at-point 'right-edge))
+        (setq prettify-symbols-unprettify-at-point 'right-edge))
    :hook (((prog-mode text-mode prog-mode)
-           . quiescent-activate-pretify-symbols-mode)
-          (emacs-lisp-mode . quiescent-pretify-elisp)
-          (prog-mode . quiescent-prettify-prog-mode)))
+        . quiescent-activate-pretify-symbols-mode)
+       (emacs-lisp-mode . quiescent-pretify-elisp)
+       (prog-mode . quiescent-prettify-prog-mode)))
 
   (defconst quiescent-prog-mode-symbols '()
     "An alist of substitutions to pretify in prog mode.")
 
   (defun quiescent-prettify-prog-mode ()
     "Pretify general set of symbols in prog mode."
-    (dolist (symbol-mapping quiescent-prog-mode-symbols)
-      (push symbol-mapping prettify-symbols-alist)))
+    (when (null quiescent-starting-up)
+      (dolist (symbol-mapping quiescent-prog-mode-symbols)
+     (push symbol-mapping prettify-symbols-alist))))
 
   (defun quiescent-pretify-elisp ()
     "Pretify symbols in Emacs Lisp mode."
-    (progn
-      (push '("pcase-lambda" . 955) prettify-symbols-alist)
-      (push '("defun"        . 402) prettify-symbols-alist)
-      (push '("defvar"       . 957) prettify-symbols-alist)
-      (push '("defconst"     . 986) prettify-symbols-alist)))
+    (when (null quiescent-starting-up)
+      (progn
+     (push '("pcase-lambda" . 955) prettify-symbols-alist)
+     (push '("defun"        . 402) prettify-symbols-alist)
+     (push '("defvar"       . 957) prettify-symbols-alist)
+     (push '("defconst"     . 986) prettify-symbols-alist))))
 
   (defun quiescent-indent-region-w/o-prettify-before (&rest _)
     "Indent regions without prettify turned on so that it's not improperly offset."

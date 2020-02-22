@@ -17,19 +17,30 @@
 
 (require 'use-package)
 
+(defun quiescent-turn-on-haskell-doc-mode ()
+  "Activate `haskell-doc-mode'."
+  (when (null quiescent-starting-up)
+    (turn-on-haskell-doc-mode)))
+
 (use-package haskell-mode
     :ensure t
-    :config (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode))
+    :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
+
+(defun quiescent-activate-intero ()
+  "Activate `intero-mode'."
+  (when (null quiescent-starting-up)
+    (intero-mode 1)))
 
 (use-package intero
     :ensure t
-    :config (add-hook 'haskell-mode-hook 'intero-mode))
+    :config (add-hook 'haskell-mode-hook #'quiescent-activate-intero))
 
 (custom-set-variables '(haskell-tags-on-save t))
 
 (defun quiescent-disable-flycheck-mode ()
   "Disable flycheck mode."
-  (flycheck-mode -1))
+  (when (null quiescent-starting-up)
+    (flycheck-mode -1)))
 
 (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flycheck-mode)
 (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flyspell-mode)

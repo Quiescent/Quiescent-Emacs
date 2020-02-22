@@ -19,7 +19,8 @@
 
 (defun quiescent-add-insert-branch-binding-eshell ()
   "Add the insert branch binding in eshell mode."
-  (define-key eshell-mode-map (kbd "C-c b") #'quiescent-insert-current-branch-name))
+  (when (null quiescent-starting-up)
+    (define-key eshell-mode-map (kbd "C-c b") #'quiescent-insert-current-branch-name)))
 
 (add-hook 'eshell-mode-hook #'quiescent-add-insert-branch-binding-eshell)
 

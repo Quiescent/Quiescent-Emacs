@@ -55,3 +55,5 @@
 
 (put 'narrow-to-region 'disabled nil)
 (put 'scroll-left 'disabled nil)
+
+(setq quiescent-starting-up nil)

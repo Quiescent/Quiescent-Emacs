@@ -28,13 +28,18 @@
       (delete-window)
       (quiescent-eshell-switch-to-and-change-dir)))
 
+(defun quiescent-eshell-smart-initialise ()
+  "Initialise `eshell-smart'."
+  (when (null quiescent-starting-up)
+    (eshell-smart-initialize)))
+
 (use-package em-smart
     :chords ((",s" . quiescent-eshell))
     :config (progn
               (setq eshell-where-to-jump 'begin)
               (setq eshell-review-quick-commands nil)
               (setq eshell-smart-space-goes-to-end t)
-              (add-hook 'eshell-mode-hook 'eshell-smart-initialize)))
+              (add-hook 'eshell-mode-hook 'quiescent-eshell-smart-initialize)))
 
 ;; This is originally borrowed from Ben's journal, but has since been
 ;; heavily modified

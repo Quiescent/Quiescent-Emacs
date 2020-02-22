@@ -59,9 +59,10 @@ connecting to a given database."
 
 (defun quiescent-register-sql-completion ()
   "Register the sql completion function as a completion method in this buffer."
-  (progn
-    (setq completion-at-point-functions (list #'quiescent-sql-completion))
-    (setq completion-ignore-case        t)))
+  (when (null quiescent-starting-up)
+    (progn
+      (setq completion-at-point-functions (list #'quiescent-sql-completion))
+      (setq completion-ignore-case        t))))
 
 (add-hook 'sql-mode-hook #'quiescent-register-sql-completion)
 
