@@ -3099,7 +3099,7 @@ and I have a plan to make it work for large projects.
   (defun quiescent-fix-elisp-parser ()
     "Fix the elisp parser for semantic."
     (when (null quiescent-starting-up)
-      (eval (funcall quiescent-fix-lisp-parser))))
+      (eval (funcall quiescent-fix-elisp-parser))))
 
   (add-hook 'emacs-lisp-mode-hook #'quiescent-fix-elisp-parser)
 
