@@ -31,29 +31,32 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(let ((file-name-handler-alist nil))
+(add-to-list 'load-path "~/.emacs.d/conf")
+(require 'system-vars)
 
-  (add-to-list 'load-path (concat user-emacs-directory "lisp"))
-  (require 'org)
-  (org-reload) ;; This forces the overriden org to be loaded
+(unwind-protect
+    (progn
+      (let ((file-name-handler-alist nil))
 
-  (let* ((org-babel-use-quick-and-dirty-noweb-expansion t)
-         (org-babel-noweb-error-all-langs t)
-         (default-directory "~/.emacs.d")
-         (config-source (expand-file-name "startup.org"
-                                          user-emacs-directory))
-         (config-tangled (expand-file-name "startup.el"
-                                           user-emacs-directory))
-         (config-compiled (expand-file-name "startup.elc"
-                                            user-emacs-directory)))
-    (when (or (not (file-exists-p config-tangled))
-              (file-newer-than-file-p config-source config-tangled))
-      (org-babel-tangle-file config-source config-tangled 'emacs-lisp))
-    (when (null (byte-recompile-file config-tangled nil 0))
-      (error "Compilation errors"))
-    (load-file config-compiled)))
+        (add-to-list 'load-path (concat user-emacs-directory "lisp"))
+        (require 'org)
+        (org-reload) ;; This forces the overriden org to be loaded
 
-(put 'narrow-to-region 'disabled nil)
-(put 'scroll-left 'disabled nil)
-
-(setq quiescent-starting-up nil)
+        (let* ((org-babel-use-quick-and-dirty-noweb-expansion t)
+               (org-babel-noweb-error-all-langs t)
+               (default-directory "~/.emacs.d")
+               (config-source (expand-file-name "startup.org"
+                                                user-emacs-directory))
+               (config-tangled (expand-file-name "startup.el"
+                                                 user-emacs-directory))
+               (config-compiled (expand-file-name "startup.elc"
+                                                  user-emacs-directory)))
+          (when (or (not (file-exists-p config-tangled))
+                    (file-newer-than-file-p config-source config-tangled))
+            (org-babel-tangle-file config-source config-tangled 'emacs-lisp))
+          (when (null (byte-recompile-file config-tangled nil 0))
+            (error "Compilation errors"))
+          (load-file config-compiled)))
+      (put 'narrow-to-region 'disabled nil)
+      (put 'scroll-left 'disabled nil))
+  (setq quiescent-starting-up nil))

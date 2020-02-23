@@ -6,11 +6,6 @@
 
 (require 'package)
 
-(defvar quiescent-starting-up nil
-  "Whether We're busy starting emacs.")
-
-(setq quiescent-starting-up t)
-
 ;; ===Package===
 ;; Loaded here because of overrides.
 (setq package-archive-priorities '((org   . 3)
@@ -26,6 +21,8 @@
 
 (add-to-list 'load-path "~/.emacs.d/conf")
 (require 'system-vars)
+(setq quiescent-starting-up t)
+
 (when (file-exists-p "~/.emacs.d/conf/system-conf.el")
   (require 'system-conf))
 

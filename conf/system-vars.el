@@ -14,6 +14,9 @@
 
 ;;; Code:
 
+(defvar quiescent-starting-up nil
+  "Whether We're busy starting emacs.")
+
 (defvar quiescent-work-machine nil
   "Whether I'm on my work machine..")
 
