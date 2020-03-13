@@ -1,3 +1,3 @@
 #!/bin/bash
 
-make EMACS=/usr/local/Cellar/emacs-plus/HEAD-4ac6c9b/bin/emacs all
+make EMACS=/Users/steere/homebrew/Cellar/emacs-plus/HEAD-46fefb0/bin/emacs all

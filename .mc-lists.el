@@ -61,10 +61,12 @@
         mark-defun
         mark-sexp
         markdown-outdent-or-delete
+        next-error
         org-beginning-of-line
         org-cycle
         org-delete-char
         org-end-of-line
+        org-fill-paragraph
         org-force-self-insert
         org-forward-sentence
         org-kill-line
@@ -97,10 +99,12 @@
         quiescent-correct-linting-errors-at-point
         quiescent-hydra-iy-go-to-char/nil
         rjsx-delete-creates-full-tag
+        ruby-end-of-block
         save-some-buffers
         sh-assignment
         slime-autodoc-space
         smartscan-symbol-go-backward
+        smie-down-list
         sp-backward-delete-char
         sp-backward-kill-word
         sp-delete-char
@@ -118,6 +122,7 @@
         wdired-finish-edit
         wdired-next-line
         wdired-previous-line
+        wgrep-exit
         wgrep-finish-edit
         yaml-electric-backspace
         yaml-electric-dash-and-dot
