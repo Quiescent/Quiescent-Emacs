@@ -5581,6 +5581,7 @@ speed up my interaction with large projects.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref the-appearance-of-emacs :exports none :lexical t
   <<themes>>
   <<rainbow-delims>>
+  <<prism>>>
   <<page-break-lines>>
   <<prettify>>
   <<splash-screen>>
@@ -5646,6 +5647,33 @@ rainbow delimiters package.
   (use-package rainbow-delimiters
    :ensure t
    :hook (prog-mode . quiescent-activate-rainbow-delimiters-mode))
+#+END_SRC
+
+There's another thing that you can do about nested blocks: you can
+modify nested blocks font lock so that you can tell what block some
+code belongs to.  Prism does exactly that.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prism :lexical t
+  (use-package prism
+    :ensure t
+    :hook (((clojure-mode
+             emacs-lisp-mode
+             common-lisp-mode
+             c++-mode
+             c-mode
+             js-mode
+             js2-mode
+             rjsx-mode
+             typescript-mode
+             sh-mode
+             css-mode
+             scala-mode
+             java-mode
+             ruby-mode
+             rust-mode)
+            . prism-mode)
+           ((python-mode makefile-mode haskell-mode yaml-mode)
+            . prism-whitespace-mode)))
 #+END_SRC
 
 Line feed is a common feature of lisp code and EMACS outputs from
