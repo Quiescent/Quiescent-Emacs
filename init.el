@@ -27,6 +27,8 @@
 ;; For debugging what gets compiled at startup
 ;;(debug-on-entry #'byte-compile)
 
+(setq epa-pinentry-mode 'loopback)
+
 ;; Custom variables etc.
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
