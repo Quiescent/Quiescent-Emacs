@@ -5656,6 +5656,13 @@ code belongs to.  Prism does exactly that.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prism :lexical t
   (use-package prism
     :ensure t
+    ;; Based on the readme for prism, adjusted to look closer to the
+    ;; original doom theme
+    :config (prism-set-colors :num 24
+              :desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
+              :colors (list 'font-lock-string-face 'font-lock-keyword-face
+                            'font-lock-function-name-face 'font-lock-constant-face
+                            'font-lock-type-face))
     :hook (((clojure-mode
              emacs-lisp-mode
              common-lisp-mode
