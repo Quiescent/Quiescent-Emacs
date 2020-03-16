@@ -61,4 +61,6 @@
           (load-file config-compiled)))
       (put 'narrow-to-region 'disabled nil)
       (put 'scroll-left 'disabled nil))
-  (setq quiescent-starting-up nil))
+  (setq quiescent-starting-up nil)
+  (when (eq system-type 'darwin)
+    (set-face-attribute 'default nil :height 115)))
