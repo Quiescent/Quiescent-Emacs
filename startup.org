@@ -5581,7 +5581,7 @@ speed up my interaction with large projects.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref the-appearance-of-emacs :exports none :lexical t
   <<themes>>
   <<rainbow-delims>>
-  <<prism>>>
+  <<prism>>
   <<page-break-lines>>
   <<prettify>>
   <<splash-screen>>
