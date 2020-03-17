@@ -4752,6 +4752,8 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   (use-package ob-gnuplot)
   (use-package ob-shell)
   (use-package ob-python)
+  (use-package ob-mermaid
+      :ensure t)
   (use-package cider
       :ensure t
       :demand t)
