@@ -4131,6 +4131,7 @@ would be nice.
   <<gnus>>
   <<csv>>
   <<ibuffer>>
+  <<bufler>>
   <<isearchb>>
   <<markdown>>
   <<dired-mode>>
@@ -4224,6 +4225,24 @@ buffers by projectile project.
           (mark " "
            (name 16 -1)
            " " filename)))
+#+END_SRC
+
+** Bufler
+I recently came across a command for switching between and organising
+buffers which automatically groups buffers together.  It's written by
+the same guy who wrote ~prism~.  I'm going to use it for switching
+buffers, because I think that it could be helpful when working with
+multiple projects.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref bufler :lexical t
+  (use-package bufler
+    :ensure t
+    :config (progn
+              (bufler-mode 1)
+              (require 'helm-bufler)
+              (helm :sources '(helm-bufler-source))
+              (setq bufler-face-prefix "prism-level-"))
+    :bind ("C-x b" . bufler-switch-buffer))
 #+END_SRC
 
 ** iSearchb
