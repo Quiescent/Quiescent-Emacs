@@ -2109,6 +2109,7 @@ Before we can configure helm we need to load the package.
       (helm-ff-file-name-history-use-recentf t)
       (helm-grep-input-idle-delay            0.02)
       (helm-input-idle-delay                 0)
+      (helm-adaptive-mode                    t)
       :bind (("M-y"       . helm-show-kill-ring)
              ("M-i"       . helm-semantic-or-imenu)
              ("C-x C-f"   . helm-find-files)
