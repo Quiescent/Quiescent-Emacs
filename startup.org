@@ -423,8 +423,16 @@ list so that I can get back to where I was.
       (push-mark nil t)
       (push-mark nil t)))
 
-  (advice-add #'backward-up-list :before
-              #'quiescent-push-mark-to-ring)
+  (defun quiescent-backward-up-list ()
+    "Go `backward-up-list' leaving behind the marker."
+    (interactive)
+    (progn
+      (quiescent-push-mark-to-ring)
+      (call-interactively #'backward-up-list)))
+
+  (global-set-key (kbd "C-M-u") #'quiescent-backward-up-list)
+
+  (define-key paredit-mode-map (kbd "C-M-u") #'quiescent-backward-up-list)
 
   (advice-add #'nxml-backward-up-element :before
               #'quiescent-push-mark-to-ring)
