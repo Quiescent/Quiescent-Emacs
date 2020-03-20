@@ -2121,7 +2121,7 @@ Before we can configure helm we need to load the package.
       :bind (("M-y"       . helm-show-kill-ring)
              ("M-i"       . helm-semantic-or-imenu)
              ("C-x C-f"   . helm-find-files)
-             ("C-x C-b"   . helm-mini)
+             ("C-x b"     . helm-buffers-list)
              ("M-x"       . helm-M-x)
              ("C-S-f"     . quiescent-helm-grep-do-git-grep)
              ("C-c p s g" . quiescent-helm-grep-do-git-grep))
@@ -4250,8 +4250,7 @@ multiple projects.
               (bufler-mode 1)
               (require 'helm-bufler)
               (helm :sources '(helm-bufler-source))
-              (setq bufler-face-prefix "prism-level-"))
-    :bind ("C-x b" . bufler-switch-buffer))
+              (setq bufler-face-prefix "prism-level-")))
 #+END_SRC
 
 ** iSearchb
