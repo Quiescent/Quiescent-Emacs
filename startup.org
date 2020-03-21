@@ -5678,7 +5678,7 @@ code belongs to.  Prism does exactly that.
                             'font-lock-type-face))
     :hook (((clojure-mode
              emacs-lisp-mode
-             common-lisp-mode
+             lisp-mode
              c++-mode
              c-mode
              js-mode
