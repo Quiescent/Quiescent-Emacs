@@ -4153,7 +4153,7 @@ would be nice.
   <<org-tree-slide>>
   <<magit-setup>>
   <<magit-insert-files>>
-  ;<<magit-forges>>
+  <<magit-forges>>
   <<git-commands>>
   <<chess>>
   <<typing-game>>
@@ -5035,7 +5035,8 @@ nonsense.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref magit-forges :lexical t
   (use-package forge
-      :ensure t)
+    :ensure t
+    :after magit)
 #+END_SRC
 
 ** Git Commands
