@@ -4249,8 +4249,6 @@ multiple projects.
     :ensure t
     :config (progn
               (bufler-mode 1)
-              (require 'helm-bufler)
-              (helm :sources '(helm-bufler-source))
               (setq bufler-face-prefix "prism-level-")))
 #+END_SRC
 
