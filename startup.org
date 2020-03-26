@@ -975,10 +975,10 @@ so far.
           . quiescent-enable-flycheck)
           (prog-mode . quiescent-enable-flycheck-prog)))
 
-  (with-eval-after-load "flycheck-mode"
+  (with-eval-after-load "flycheck"
     (progn
       (define-key flycheck-mode-map (kbd "M-n") #'flycheck-next-error)
-      (define-key flycheck-mode-map (kbd "M-n") #'flycheck-previous-error)))
+      (define-key flycheck-mode-map (kbd "M-p") #'flycheck-previous-error)))
 
   (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode)
     "Modes in which flycheck should not be activated.
