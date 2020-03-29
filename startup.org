@@ -5537,12 +5537,13 @@ It's great because it renders the pages of a PDF on demand and
 supports richer features.  Such as searching, occur and more.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref pdf-tools :lexical t
-  ;; (use-package pdf-tools
-  ;;     :ensure t
-  ;;     :hook (pdf-view-mode . quiescent-disable-composable-mode)
-  ;;     :config (progn
-  ;;               (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
-  ;;               (pdf-tools-install)))
+  (use-package pdf-tools
+      :ensure t
+      :hook (pdf-view-mode . quiescent-disable-composable-mode)
+      :demand t
+      :config (progn
+                (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
+                (pdf-tools-install)))
 
   (defun quiescent-disable-composable-mode ()
     "Disable composable mode."
