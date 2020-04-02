@@ -4248,7 +4248,6 @@ multiple projects.
   (use-package bufler
     :ensure t
     :config (progn
-              (bufler-mode 1)
               (setq bufler-face-prefix "prism-level-")))
 #+END_SRC
 
