@@ -3864,7 +3864,7 @@ well during the workshop.
     "Setup hooks for clojure mode."
     (when (null quiescent-starting-up)
       (cider-mode 1)
-      (eldoce-mode 1)
+      (eldoc-mode 1)
       (company-mode 1)))
 
   (defun quiescent-setup-cider-repl-hooks ()
