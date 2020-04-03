@@ -3772,7 +3772,7 @@ still manages to be memory safe.
   (defun quiescent-setup-rust-flycheck ()
     "Setup flycheck in Rust mode."
     (when (null quiescent-starting-up)
-      (flycheck-rust-setup 1)))
+      (flycheck-rust-setup)))
 
   (use-package flycheck-rust
       :ensure t
