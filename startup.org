@@ -3873,12 +3873,14 @@ well during the workshop.
       (company-mode 1)))
 
   (use-package cider
-      :ensure t
-      :hook ((clojure-mode . quiescent-setup-clojure-hooks)
-          (cider-repl-mode . quiescent-setup-cider-repl-hooks))
-      :config
-      (progn
-     (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
+    :ensure t
+    :hook ((clojure-mode . quiescent-setup-clojure-hooks)
+           (cider-repl-mode . quiescent-setup-cider-repl-hooks))
+    :config
+    (progn
+      (define-key cider-mode-map (kbd "M-n") #'cider-jump-to-compilation-error)
+      (define-key cider-mode-map (kbd "M-p") #'cider-jump-to-compilation-error)
+      (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
                             (start-figwheel!)
                             (cljs-repl))")))
 #+END_SRC
