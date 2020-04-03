@@ -1625,7 +1625,8 @@ with.
        ruby-mode-hook
        intero-repl-mode-hook
        makefile-mode-hook
-       rust-mode-hook))
+       rust-mode-hook
+       conf-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
