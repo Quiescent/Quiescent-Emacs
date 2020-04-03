@@ -3769,15 +3769,6 @@ still manages to be memory safe.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rust :lexical t
   (use-package rust-mode
       :ensure t)
-
-  (defun quiescent-setup-rust-flycheck ()
-    "Setup flycheck in Rust mode."
-    (when (null quiescent-starting-up)
-      (flycheck-rust-setup)))
-
-  (use-package flycheck-rust
-      :ensure t
-      :hook (rust-mode . quiescent-setup-rust-flycheck))
 #+END_SRC
 
 ** Common Lisp
@@ -4005,7 +3996,8 @@ completion and error hints) well.
       :ensure t
       :config
       (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
-      :hook (scala-mode . eglot-ensure))
+      :hook ((scala-mode . eglot-ensure)
+             (rust-mode  . eglot-ensure)))
 
   (defun scala-mode--find-project-root (directory)
     "Produce the root of SBT project containing DIRECTORY.
