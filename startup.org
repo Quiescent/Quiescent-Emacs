@@ -270,6 +270,7 @@ where emacs should start.
   <<string-replacement>>
   <<aligned-navigation>>
   <<semantic>>
+  <<separedit>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -3122,6 +3123,22 @@ and I have a plan to make it work for large projects.
   (setq-default semanticdb-find-default-throttle '(file))
 
   (semantic-mode t)
+#+END_SRC
+
+** Separedit
+I discovered a mode which enables one to edit commends and strings in
+a mode which is more appropriate for editing text.  The idea being
+that you can benefit from all of the facilities of editing text while
+being in some programming language buffer, by temporarily editing the
+content elsewhere.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref separedit :lexical t
+  (use-package separedit
+    :ensure t
+    :config
+    (progn
+      (define-key prog-mode-map (kbd "C-c '") #'separedit)
+      (setq separedit-default-mode 'org-mode)))
 #+END_SRC
 
 * Modifications to Specific Programming Language Modes
