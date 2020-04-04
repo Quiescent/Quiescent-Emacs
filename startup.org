@@ -981,7 +981,7 @@ so far.
       (define-key flycheck-mode-map (kbd "M-n") #'flycheck-next-error)
       (define-key flycheck-mode-map (kbd "M-p") #'flycheck-previous-error)))
 
-  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode)
+  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode)
     "Modes in which flycheck should not be activated.
 
   Usually because of too much overhead in checking.")
@@ -1627,6 +1627,7 @@ with.
        intero-repl-mode-hook
        makefile-mode-hook
        rust-mode-hook
+       rustic-mode-hook
        conf-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
@@ -3162,6 +3163,7 @@ content elsewhere.
   <<javascript>>
   <<typescript>>
   <<rust>>
+  <<rustic>>
   <<slime>>
   <<cl-font-lock>>
   <<cider>>
@@ -3788,6 +3790,21 @@ still manages to be memory safe.
       :ensure t)
 #+END_SRC
 
+There's an entire setup for a development environment which integrates
+Rust more tightly with the tools in Emacs.  It's called Rustic and I'm
+going to give it a bash.
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rustic :lexical t
+  (use-package rustic
+    :ensure t
+    :config
+    (progn
+      (setq rustic-lsp-server 'rust-analyzer)
+      (setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
+      (setq rustic-lsp-client 'eglot)
+      (remove-hook 'rustic-mode-hook #'flycheck-mode)))
+#+END_SRC
+
 ** Common Lisp
 SLIME is a mode for Emacs written in Common Lisp, Scheme and Emacs
 Lisp which provides an interactive server to enhance the development
@@ -4012,7 +4029,11 @@ completion and error hints) well.
   (use-package eglot
       :ensure t
       :config
-      (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
+      (progn
+        (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
+        (setq eglot-server-programs
+              (map-delete eglot-server-programs 'rustic-mode))
+        (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer"))))
       :hook ((scala-mode . eglot-ensure)
              (rust-mode  . eglot-ensure)))
 
