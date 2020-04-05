@@ -3056,7 +3056,6 @@ and I have a plan to make it work for large projects.
        global-semantic-decoration-mode
        global-semantic-stickyfunc-mode
        global-semantic-idle-scheduler-mode
-       global-semanticdb-minor-mode
        global-semantic-idle-local-symbol-highlight-mode
        global-semantic-highlight-edits-mode
        global-semantic-show-unmatched-syntax-mode))
@@ -3120,9 +3119,6 @@ and I have a plan to make it work for large projects.
   (add-hook 'emacs-lisp-mode-hook #'quiescent-fix-elisp-parser)
 
   (require 'semantic/bovine/el)
-  (require 'semantic/db-el)
-
-  (setq-default semanticdb-find-default-throttle '(file))
 
   (semantic-mode t)
 #+END_SRC
