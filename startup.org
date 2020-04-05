@@ -4794,12 +4794,14 @@ options ensure that listings is used when exporting to PDF via LaTeX.
         (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
 
   (setq org-capture-templates
-        (quote (("t" "Task" entry (file "~/work.org")
-                 "* TODO %? \n%U\n%a\n")
+        (quote (("w" "Work" entry (file "~/Dropbox/org/work.org")
+                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t))\n%U\n%a\n")
+                ("t" "Task" entry (file "~/work.org")
+                 "* TODO %?\n%U\n%a\n")
                 ("p" "Programming Notes" entry (file "~/notes/programming.gpg")
-                     "* %? \n%U\n%a\n")
+                     "* %?\n%U\n%a\n")
                 ("s" "Social" entry (file "~/notes/social.gpg")
-                     "* %? \n%U\n%a\n")
+                     "* %?\n%U\n%a\n")
                 ("j" "Journal" entry (file+olp+datetree "~/wip/journal/journal.org")
                      "** %<%H:%M> %?\n"))))
 
