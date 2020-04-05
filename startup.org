@@ -2121,7 +2121,6 @@ Before we can configure helm we need to load the package.
       (helm-ff-file-name-history-use-recentf t)
       (helm-grep-input-idle-delay            0.02)
       (helm-input-idle-delay                 0)
-      (helm-adaptive-mode                    t)
       :bind (("M-y"       . helm-show-kill-ring)
              ("M-i"       . helm-semantic-or-imenu)
              ("C-x C-f"   . helm-find-files)
@@ -2133,7 +2132,9 @@ Before we can configure helm we need to load the package.
       :config (progn
                 (require 'helm-config)
                 (helm-mode 1)
-                (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode))
+                (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
+                (require 'helm-adaptive)
+                (helm-adaptive-mode t))
       :init (with-eval-after-load "helm"
               (helm-mode 1)))
 #+END_SRC
