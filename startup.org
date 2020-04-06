@@ -4911,14 +4911,19 @@ You can export org documents to RevealJS presentations.  It's a very
 simple way of doing things but it lets you be productive.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-reveal :lexical t
-  (use-package org-re-reveal
-      :ensure t)
-
-  (setq org-re-reveal-root "reveal.js")
-
   (use-package ox-reveal
       :ensure t
       :demand t)
+
+  (require 'url)
+
+  (defun quiescent-download-reveal-js-here ()
+    "Download the reveal source file here."
+    (interactive)
+    (progn
+      (url-copy-file "https://github.com/hakimel/reveal.js/archive/3.9.2.tar.gz" "reveal.js-3.9.2.tar.gz")
+      (shell-command "tar -xzvf reveal.js-3.9.2.tar.gz")
+      (shell-command "mv reveal.js-3.9.2/ reveal.js")))
 #+END_SRC
 
 ** Htmlize
