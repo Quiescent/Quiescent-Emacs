@@ -5382,6 +5382,7 @@ find anything at all.
   <<ispell>>
   <<langtool>>
   <<pdf-tools>>
+  <<fill-unfill-paragraph>>
 #+END_SRC
 
 Emacs can be used for much more than just writing code and interacting
@@ -5575,6 +5576,38 @@ supports richer features.  Such as searching, occur and more.
       (progn
      (composable-mode -1)
      (composable-mark-mode -1))))
+#+END_SRC
+
+** Editing Writing
+I often switch between writing a story and then editing it with
+Grammarly.  When I write stories in Emacs then I like to keep the
+paragraphs formatted to the built in width rules with
+~fill-paragraph~, and when I switch across to Grammarly it likes the
+paragraphs to be written in the more modern style: where line breaks
+are only used in between paragraphs.
+
+I've written to functions which enable you to go to and from those
+formats as follows:
+
+#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref fill-unfill-paragraph :lexical t
+  (defmacro quiescent-for-all-paragraphs (&rest body)
+    "Execute BODY with the point in each paragraph in the current buffer."
+    `(save-excursion
+       (goto-char (point-min))
+       (while (not (eq (point) (point-max)))
+         (ignore-errors
+           ,@body
+           (forward-paragraph)))))
+
+  (defun quiescent-fill-all-paragraphs ()
+    "Run `fill-paragraph' on all paragraphs in the current document."
+    (interactive)
+    (quiescent-for-all-paragraphs (fill-paragraph)))
+
+  (defun quiescent-unfill-all-paragraphs ()
+    "Run `unfill-paragraph' on all paragraphs in the current document."
+    (interactive)
+    (quiescent-for-all-paragraphs (unfill-paragraph)))
 #+END_SRC
 
 * Controlling Emacs
