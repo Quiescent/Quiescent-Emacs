@@ -4910,13 +4910,33 @@ options ensure that listings is used when exporting to PDF via LaTeX.
                        (null (overlay-get overlay 'showing-html)))
               (save-excursion (quiescent-render-html-insert-original overlay))))))))
 
+  (defun quiescent-render-html-unrender-all ()
+    "Display source html for all render-able result blocks in this file."
+    (interactive)
+    (dolist (overlay (quiescent-render-html--overlays (point-min) (point-max)))
+      (quiescent-render-html-insert-original overlay)))
+
   (make-variable-buffer-local 'post-command-hook)
+  (make-variable-buffer-local 'before-save-hook)
 
   (defun quiescent-render-html-register-hook ()
     "Register the post command hook for rendering html."
-    (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook))
+    (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook)
+    (add-hook 'before-save-hook  #'quiescent-render-html-unrender-all))
 
   (add-hook 'org-mode-hook #'quiescent-render-html-register-hook)
+
+  (defun quiescent-clear-org-results ()
+    "Clear all org results in this buffer."
+    (interactive)
+    (save-excursion
+      (remove-hook 'post-command-hook #'quiescent-render-html-post-command-hook)
+      (quiescent-render-html-unrender-all)
+      (goto-char (point-min))
+      (while (re-search-forward "^#\\+RESULTS:" nil t)
+        (beginning-of-line)
+        (delete-region (point) (org-babel-result-end)))
+      (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook)))
 #+END_SRC
 
 Howard Abrams posted a how to on using org mode for literate dev ops.
