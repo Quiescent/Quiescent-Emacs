@@ -4914,7 +4914,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
     "Display source html for all render-able result blocks in this file."
     (interactive)
     (dolist (overlay (quiescent-render-html--overlays (point-min) (point-max)))
-      (quiescent-render-html-insert-original overlay)))
+      (save-excursion
+        (ignore-errors
+          (quiescent-render-html-insert-original overlay)))))
 
   (make-variable-buffer-local 'post-command-hook)
   (make-variable-buffer-local 'before-save-hook)
