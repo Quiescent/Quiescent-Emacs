@@ -3168,6 +3168,7 @@ content elsewhere.
   <<dockerfile>>
   <<kotlin>>
   <<terraform>>
+  <<emacs-jupyter>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4154,6 +4155,18 @@ would be nice.
       :ensure t)
 #+END_SRC
 
+** Emacs Jupyter
+So I'm starting a data science and ML course to get up to speed with
+the field quickly.  The medium for instruction is Jupyter notebooks.
+I'd really rather that the medium be Emacs so I'm going to setup
+`emacs-jupyter' so that I can edit blocks from org mode and make my
+own notes as we go.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref emacs-jupyter :lexical t
+  (use-package jupyter
+    :ensure t)
+#+end_src
+
 * Non-Programming Usages
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref non-programming-usages :exports none :lexical t
   <<gnus>>
@@ -4715,68 +4728,69 @@ options ensure that listings is used when exporting to PDF via LaTeX.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref load-org :lexical t
   (use-package epa-file
-      :config (epa-file-enable))
+    :config (epa-file-enable))
 
   (use-package org
-      :ensure t
-      :chords (("xc" . org-capture))
-      :config
-      (progn
-        (setq org-todo-keywords '((sequence "TODO(t)" "IN_PROGRESS(p!)" "REVIEW(r!)" "TESTING(g!)" "SUSPENDED(q!)" "TO_DEPLOY(e!)" "DONE(d!@)")))
-        (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
-          (when (file-exists-p agenda-files-file)
-            (load-file agenda-files-file)))
-        (setq org-refile-targets
-              '((nil :maxlevel . 3)
-                (org-agenda-files :maxlevel . 2)))
-        (setq org-plantuml-jar-path "~/.jars/plantuml.jar")
-        (setq org-ditaa-jar-path "~/.jars/ditaa.jar")
-        (setq org-image-actual-width nil)
-        (setq org-src-fontify-natively t)
-        (setq org-latex-listings t)
-        (require 'ox-latex)
-        (add-to-list 'org-latex-packages-alist '("" "listings"))
-        (add-to-list 'org-latex-packages-alist '("" "color"))
-        (setq org-clock-persist 'history)
-        (org-clock-persistence-insinuate)
-        (setq org-clock-persist t)
-        (setq org-priority-faces '((?A . (:foreground "light gray" :weight bold))
-                                   (?B . (:foreground "dodger blue"))
-                                   (?C . (:foreground "OliveDrab"))))
-        (setq org-agenda-deadline-faces '((1.0 . (:foreground "white"))
-                                          (0.5 . (:foreground "orange red"))
-                                          (0.0 . (:foreground "dark olive green"))))
-        (set-face-foreground 'org-scheduled-today "dodger blue")
-        (define-key org-mode-map (kbd "C-M-g") 'org-plot/gnuplot)
-        (setq org-columns-default-format
-              "%25ITEM %TODO %3PRIORITY %TAGS %17Effort(Estimated Effort){:} %CLOCKSUM")
-        (setq org-global-properties
-              (quote
-               (("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))))
-        (setq org-log-done (quote note))
-        (setq org-agenda-custom-commands
-              (quote
-               (("c" "Unscheduled" tags "-SCHEDULED={.+}" nil)
-                ("n" "Agenda and all TODOs"
-                     ((agenda "" nil)
-                      (alltodo "" nil))
-                     nil))))
-        (setq org-babel-load-languages
-              (quote
-               ((emacs-lisp . t)
-                (plantuml . t)
-                (dot . t)
-                (ditaa . t)
-                (gnuplot . t)
-                (shell . t)
-                (python t)
-                (calc . t)
-                (lisp . t))))
-        (setq org-log-into-drawer 'LOGBOOK)
-        (org-babel-do-load-languages
-         'org-babel-load-languages org-babel-load-languages)
-        (global-set-key (kbd "C-c C-M-f") #'org-next-block)
-        (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
+    :ensure t
+    :chords (("xc" . org-capture))
+    :config
+    (progn
+      (setq org-todo-keywords '((sequence "TODO(t)" "IN_PROGRESS(p!)" "REVIEW(r!)" "TESTING(g!)" "SUSPENDED(q!)" "TO_DEPLOY(e!)" "DONE(d!@)")))
+      (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
+        (when (file-exists-p agenda-files-file)
+          (load-file agenda-files-file)))
+      (setq org-refile-targets
+            '((nil :maxlevel . 3)
+              (org-agenda-files :maxlevel . 2)))
+      (setq org-plantuml-jar-path "~/.jars/plantuml.jar")
+      (setq org-ditaa-jar-path "~/.jars/ditaa.jar")
+      (setq org-image-actual-width nil)
+      (setq org-src-fontify-natively t)
+      (setq org-latex-listings t)
+      (require 'ox-latex)
+      (add-to-list 'org-latex-packages-alist '("" "listings"))
+      (add-to-list 'org-latex-packages-alist '("" "color"))
+      (setq org-clock-persist 'history)
+      (org-clock-persistence-insinuate)
+      (setq org-clock-persist t)
+      (setq org-priority-faces '((?A . (:foreground "light gray" :weight bold))
+                                 (?B . (:foreground "dodger blue"))
+                                 (?C . (:foreground "OliveDrab"))))
+      (setq org-agenda-deadline-faces '((1.0 . (:foreground "white"))
+                                        (0.5 . (:foreground "orange red"))
+                                        (0.0 . (:foreground "dark olive green"))))
+      (set-face-foreground 'org-scheduled-today "dodger blue")
+      (define-key org-mode-map (kbd "C-M-g") 'org-plot/gnuplot)
+      (setq org-columns-default-format
+            "%25ITEM %TODO %3PRIORITY %TAGS %17Effort(Estimated Effort){:} %CLOCKSUM")
+      (setq org-global-properties
+            (quote
+             (("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))))
+      (setq org-log-done (quote note))
+      (setq org-agenda-custom-commands
+            (quote
+             (("c" "Unscheduled" tags "-SCHEDULED={.+}" nil)
+              ("n" "Agenda and all TODOs"
+               ((agenda "" nil)
+                (alltodo "" nil))
+               nil))))
+      (setq org-babel-load-languages
+            (quote
+             ((emacs-lisp . t)
+              (plantuml . t)
+              (dot . t)
+              (ditaa . t)
+              (gnuplot . t)
+              (shell . t)
+              (python t)
+              (calc . t)
+              (lisp . t)
+              (jupyter . t))))
+      (setq org-log-into-drawer 'LOGBOOK)
+      (org-babel-do-load-languages
+       'org-babel-load-languages org-babel-load-languages)
+      (global-set-key (kbd "C-c C-M-f") #'org-next-block)
+      (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
 
   (setq org-capture-templates
         (quote (("w" "Work" entry (file "~/Dropbox/org/work.org")
@@ -4784,11 +4798,11 @@ options ensure that listings is used when exporting to PDF via LaTeX.
                 ("t" "Task" entry (file "~/work.org")
                  "* TODO %?\n%U\n%a\n")
                 ("p" "Programming Notes" entry (file "~/notes/programming.gpg")
-                     "* %?\n%U\n%a\n")
+                 "* %?\n%U\n%a\n")
                 ("s" "Social" entry (file "~/notes/social.gpg")
-                     "* %?\n%U\n%a\n")
+                 "* %?\n%U\n%a\n")
                 ("j" "Journal" entry (file+olp+datetree "~/wip/journal/journal.org")
-                     "** %<%H:%M> %?\n"))))
+                 "** %<%H:%M> %?\n"))))
 
   (define-key org-mode-map (kbd "M-i") #'org-goto)
   (advice-add #'org-goto :before #'push-mark)
@@ -4798,12 +4812,111 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   (use-package ob-shell)
   (use-package ob-python)
   (use-package ob-mermaid
-      :ensure t)
+    :ensure t)
   (use-package cider
-      :ensure t
-      :demand t)
+    :ensure t
+    :demand t)
   (use-package ob-clojure
-      :init (setq org-babel-clojure-backend 'cider))
+    :init (setq org-babel-clojure-backend 'cider))
+
+  (require 'cl-lib)
+
+  (defun quiescent-render-html--overlays (beg end)
+    "Get the overlays in region [BEG, END) which are used by `quiescent-render-html'."
+    (cl-remove-if-not (lambda (overlay) (overlay-get overlay 'render-html))
+                      (overlays-in beg end)))
+
+  (defun quiescent-render-html-ob-export ()
+    "Renders all html output blocks in the current buffer.
+
+  Uses `shr-render-buffer' to render the block.  When the point
+  enters the region then it reveals the original contents.
+
+  The original text is stored in an overlay property and revealed
+  when the point enters the region using the post command hook:
+  `quiescent--org-pretty-render-post-command-hook'."
+    (interactive)
+    (save-window-excursion
+      (goto-char (point-min))
+      (while (search-forward "#+begin_export html" nil t)
+        (let* ((start         (progn (beginning-of-line) (point)))
+               (start-content (progn (end-of-line) (forward-char 1) (point)))
+               (end           (progn (goto-char (org-babel-result-end)) (point)))
+               (end-content   (progn (forward-line -1) (point)))
+               (overlays      (quiescent-render-html--overlays (point-min) (point-max))))
+          (mapc #'delete-overlay overlays)
+          (let* ((original-content (buffer-substring start-content end-content))
+                 (rendered-content (with-temp-buffer
+                                     (insert original-content)
+                                     (shr-render-buffer (current-buffer))
+                                     (buffer-substring (point-min) (point-max)))))
+            (quiescent-render-html-insert-rendered (make-overlay start end)
+                                                   (buffer-substring start end)
+                                                   rendered-content))))))
+
+  (defun quiescent-render-html-insert-rendered (overlay &optional original-content rendered-content)
+    "Insert the rendered content for OVERLAY.
+
+  Optionally supply the original and rendered content, used when
+  first created to remember those values."
+    (let ((start    (overlay-start overlay))
+          (end      (overlay-end   overlay))
+          (original (or original-content (overlay-get overlay 'original)))
+          (rendered (or rendered-content (overlay-get overlay 'rendered))))
+      (delete-overlay overlay)
+      (delete-region start end)
+      (goto-char start)
+      (insert rendered)
+      (let ((new-overlay (make-overlay start (+ start (length rendered)))))
+        (overlay-put new-overlay 'face      'variable-pitch)
+        (overlay-put new-overlay 'evaporate t)
+        (overlay-put new-overlay 'original original)
+        (overlay-put new-overlay 'rendered rendered)
+        (overlay-put new-overlay 'render-html  t)
+        (overlay-put new-overlay 'showing-html nil))))
+
+  (defun quiescent-render-html-insert-original (overlay)
+    "Insert the original content for OVERLAY."
+    (let ((start    (overlay-start overlay))
+          (end      (overlay-end   overlay))
+          (original (overlay-get   overlay 'original))
+          (rendered (overlay-get   overlay 'rendered)))
+      (delete-overlay overlay)
+      (delete-region start end)
+      (goto-char start)
+      (insert original)
+      (let ((new-overlay (make-overlay start (+ start (length original)))))
+        (overlay-put new-overlay 'evaporate t)
+        (overlay-put new-overlay 'original original)
+        (overlay-put new-overlay 'rendered rendered)
+        (overlay-put new-overlay 'render-html  t)
+        (overlay-put new-overlay 'showing-html t))))
+
+  (defun quiescent-render-html-post-command-hook ()
+    "Reveal the original contents when a point enters rendered blocks."
+    (when (and (not (member last-command '(kill-region end-of-buffer)))
+               (not (region-active-p)))
+      (let ((current-point (point)))
+        (progn
+          (let ((overlays (quiescent-render-html--overlays (point-min) (point-max))))
+            (dolist (overlay overlays)
+              (when (and (overlay-get overlay 'showing-html)
+                         (or (>= current-point (overlay-end overlay))
+                             (<  current-point (overlay-start overlay))))
+                (save-excursion (quiescent-render-html-insert-rendered overlay)))))
+          (let* ((overlays-here (quiescent-render-html--overlays (point) (point)))
+                 (overlay       (car overlays-here)))
+            (when (and (not (null overlay))
+                       (null (overlay-get overlay 'showing-html)))
+              (save-excursion (quiescent-render-html-insert-original overlay))))))))
+
+  (make-variable-buffer-local 'post-command-hook)
+
+  (defun quiescent-render-html-register-hook ()
+    "Register the post command hook for rendering html."
+    (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook))
+
+  (add-hook 'org-mode-hook #'quiescent-render-html-register-hook)
 #+END_SRC
 
 Howard Abrams posted a how to on using org mode for literate dev ops.
