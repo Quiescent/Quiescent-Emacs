@@ -817,6 +817,12 @@ supported completion framework.
      (setq company-require-match nil)
      (setq company-frontends '(company-preview-frontend))))
 
+  (defun quiescent-remove-semantic-backend ()
+    "Remove the company backend for semantic."
+    (remove-function 'company-backends #'company-semantic))
+
+  (add-hook 'python-mode-hook #'quiescent-remove-semantic-backend)
+
   (defun quiescent-activate-company-mode ()
     "Activate company mode."
     (when (null quiescent-starting-up)
