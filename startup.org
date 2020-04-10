@@ -4844,6 +4844,7 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   `quiescent--org-pretty-render-post-command-hook'."
     (interactive)
     (save-window-excursion
+      (quiescent-render-html-register-hook)
       (goto-char (point-min))
       (while (search-forward "#+begin_export html" nil t)
         (let* ((start         (progn (beginning-of-line) (point)))
@@ -4932,8 +4933,6 @@ options ensure that listings is used when exporting to PDF via LaTeX.
     "Register the post command hook for rendering html."
     (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook)
     (add-hook 'before-save-hook  #'quiescent-render-html-unrender-all))
-
-  (add-hook 'org-mode-hook #'quiescent-render-html-register-hook)
 
   (defun quiescent-clear-org-results ()
     "Clear all org results in this buffer."
