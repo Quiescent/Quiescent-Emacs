@@ -4392,7 +4392,8 @@ makes the sub directory opening more like a tree view.
                          "cp" "cpp" "go" "f"
                          "for" "ftn" "f90" "f95"
                          "f03" "f08" "s" "rs"
-                         "hi" "hs" "py" "java"))))))
+                         "hi" "hs" "py" "java"
+                         "sh" "asd"))))))
       :hook (dired-mode . quiescent-dired-filter-group-mode))
 
   (use-package diredfl
