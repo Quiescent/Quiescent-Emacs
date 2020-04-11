@@ -5785,6 +5785,7 @@ frames, fullscreen etc.
 * Library Additions to Emacs
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref library-additions-to-emacs :exports none :lexical t
   <<async>>
+  <<gcmh>>
 #+END_SRC
 
 Because Emacs is extensible it's possible to extend the features of
@@ -5804,6 +5805,20 @@ speed up my interaction with large projects.
   (use-package async
       :ensure t)
 #+END_SRC
+
+** GCMH
+The Garbage Collector Magic Hack is to try to only do garbage
+collection while the system is idle.  If you can manage this then
+longer running tasks will run with far less garbage collection.  Since
+user interaction is the main axis of computation in Emacs it seems
+reasonable that this will just be a good improvement overall.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref gcmh :lexical t
+  (use-package gcmh
+    :ensure t
+    :demand t
+    :config (gcmh-mode 1))
+#+end_src
 
 * The Appearance of Emacs
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref the-appearance-of-emacs :exports none :lexical t
