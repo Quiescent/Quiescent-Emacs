@@ -3827,7 +3827,7 @@ inspiration for many modes after it.
     (when (null quiescent-starting-up)
       (company-mode 1)
       (setq-local company-backends '(company-capf company-slime))
-      (setq-local completion-at-point-functions '(quiescent-slime-completion-at-point t))))
+      (setq-local completion-at-point-functions '(quiescent-slime-completion-at-point))))
 
   (defun quiescent-slime-completion-at-point ()
     "A completion at point function for slime.
