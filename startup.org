@@ -3853,6 +3853,18 @@ inspiration for many modes after it.
            (call-interactively #'quit-window))
       (select-window original-window)))
 
+  (defun quiescent-slime-company-doc-mode (&rest _)
+    "Fontify the current buffer as a Slime documentation buffer."
+    (run-at-time 0.1 nil
+                 (lambda () (let ((original-window (selected-window)))
+                              (cl-loop
+                               for window being the windows
+                               when (equal "*slime-description*" (buffer-name (window-buffer window)))
+                               do (select-window window)
+                               (slime-company-doc-mode))
+                              (select-window original-window)))))
+
+  (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
 
   (use-package slime
       :ensure t
