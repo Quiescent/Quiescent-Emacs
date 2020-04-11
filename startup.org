@@ -3867,6 +3867,10 @@ inspiration for many modes after it.
   (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
   (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
 
+  (define-key slime-repl-mode-map (kbd "C-x C-s") #'slime-repl-save-history)
+  (define-key slime-repl-mode-map (kbd "C-x C-f") #'slime-repl-load-history)
+  (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
+
   (use-package slime
       :ensure t
       :config (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
