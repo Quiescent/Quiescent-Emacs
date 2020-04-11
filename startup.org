@@ -3865,6 +3865,7 @@ inspiration for many modes after it.
                               (select-window original-window)))))
 
   (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
+  (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
 
   (use-package slime
       :ensure t
