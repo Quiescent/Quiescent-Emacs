@@ -4876,6 +4876,7 @@ options ensure that listings is used when exporting to PDF via LaTeX.
     (save-window-excursion
       (quiescent-render-html-register-hook)
       (goto-char (point-min))
+      (quiescent-render-html-unrender-all)
       (while (search-forward "#+begin_export html" nil t)
         (let* ((start         (progn (beginning-of-line) (point)))
                (start-content (progn (end-of-line) (forward-char 1) (point)))
