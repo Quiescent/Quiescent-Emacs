@@ -4708,7 +4708,10 @@ options ensure that listings is used when exporting to PDF via LaTeX.
       (org-babel-do-load-languages
        'org-babel-load-languages org-babel-load-languages)
       (global-set-key (kbd "C-c C-M-f") #'org-next-block)
-      (global-set-key (kbd "C-c C-M-b") #'org-previous-block)))
+      (global-set-key (kbd "C-c C-M-b") #'org-previous-block)
+      ;; Override the menu agenda files function because I don't use it
+      ;; and I think it's buggy.
+      (defun org-install-agenda-files-menu () nil)))
 
   (setq org-capture-templates
         (quote (("w" "Work" entry (file "~/Dropbox/org/work.org")
