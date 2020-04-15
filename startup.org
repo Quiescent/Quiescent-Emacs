@@ -814,7 +814,9 @@ supported completion framework.
      (setq company-tooltip-idle-delay 5)
      (setq company-tooltip-limit 0)
      (setq company-require-match nil)
-     (setq company-frontends '(company-preview-frontend))))
+     (setq company-frontends '(company-preview-frontend)))
+   :bind (("C-." . company-complete)
+          ("C-," . company-complete)))
 
   (defun quiescent-remove-semantic-backend ()
     "Remove the company backend for semantic."
