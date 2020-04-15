@@ -4102,7 +4102,6 @@ own notes as we go.
   <<org-tree-slide>>
   <<magit-setup>>
   <<magit-insert-files>>
-  <<magit-forges>>
   <<git-commands>>
   <<chess>>
   <<typing-game>>
@@ -5101,18 +5100,6 @@ problem for me because there's no hook either and it runs text mode
             (setq found-it t))))
       (yank)
       found-it))
-#+END_SRC
-
-The Magit maintainer recently released a new package which allows for
-interaction with what he calls "Git Forges" which are websites like
-Github and Gitlab.  Hopefully this includes BitBucket so that I can
-use that site without unblocking a million scripts and advertising
-nonsense.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref magit-forges :lexical t
-  (use-package forge
-    :ensure t
-    :after magit)
 #+END_SRC
 
 ** Git Commands
