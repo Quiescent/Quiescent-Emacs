@@ -248,7 +248,6 @@ where emacs should start.
   <<eshell-compilation-minor-mode>>
   <<eshell-company-autosuggest>>
   <<eshell-company-autosuggest-fix-candidates>>
-  ;;<<project-find-file-two-step>>
   <<project-find-file>>
   <<project-find-file-other-window>>
   <<project-settings>>
@@ -2399,121 +2398,6 @@ in the Emacs project, but which aren't packages or modules.)  I'm
 going to port the work I did for projectile two step search to project
 find file.  I think that it'll be useful and I'd like to give it to a
 colleague to help him improve his work flow.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref project-find-file-two-step :lexical t
-  ;; TODO dynamically bind these four when the command is invoked and
-  ;; then clean up the usage of it.
-
-  (defvar quiescent-project-files nil
-    "The files in the current project.")
-
-  (defvar quiescent-project-folders nil
-    "The folders in the current project.")
-
-  (defvar quiescent-project-file-dir-cache nil
-    "A hashmap of directories in the project to the files which they contain.")
-
-  (defvar quiescent-project-dir-file-cache nil
-    "A hashmap of files in the project to the directories which contain them.")
-
-  (defun quiescent-project-two-stage-search (&optional arg)
-    "Find files in the current project using a two stage process.
-
-  If invoked without the universal argument then match first
-  against file names.  If there are multiple options matching the
-  name then subsequently match against the directories in which the
-  file could reside.  If supplied with the universal ARG then first
-  try to match against the directories and then the file names."
-    (interactive "P")
-    (if (equal arg '(4))
-        (project-find-project-file-by-dir nil)
-      (project-find-project-file-by-file nil)))
-
-  (defun quiescent-project-find-file-by-dir (file)
-    "Find a file in the current project against paths which contain FILE.
-
-  When FILE is nil complete the action by narrowing the search by
-  file, otherwise complete the command with `find-file'.  Assume:
-  FILE is a file in the project.  Otherwise the search candidate
-  list will be empty."
-    (let* ((root            (vc-root-dir))
-           (project-folders
-            (if file
-                (gethash file quiescent-project-file-dir-cache)
-              (car (gethash root quiescent-project-dir-file-cache))))
-           (folder          (or (project-shortcut-for-only-one project-folders)
-                                (completing-read "Folder: "
-                                                 project-folders
-                                                 nil t nil nil nil nil))))
-      (if file
-          (find-file (concat root folder file))
-        (project-find-project-file-by-file folder))))
-
-  (defun quiescent-project-shortcut-for-only-one (xs)
-    "Produce the one x in XS if it's a list of one, otherwise nil."
-    (when (= (length xs) 1)
-      (car xs)))
-
-  (defun quiescent-project-find-file-by-folder (folder)
-    "Find a file in the current project against files in FOLDER.
-
-  When DIR is nil then complete the action by narrowing the search
-  by directory, otherwise find the file with `find-file'.  Assume:
-  FOLDER is a file in the project.  Otherwise the search candidate
-  list will be empty."
-    (let* ((root            (vc-root-dir))
-           (project-files
-            (if folder
-                (gethash folder quiescent-project-dir-file-cache)
-              (car (gethash root quiescent-project-file-dir-cache))))
-           (file            (or (project-shortcut-for-only-one project-files)
-                                (completing-read "File: "
-                                                 project-files
-                                                 nil t nil nil nil nil))))
-      (if folder
-          (find-file (concat root folder file))
-        (project-find-project-file-by-dir file))))
-
-  (defun quiescent-project-cache-files-and-directories (&rest args)
-    "Cache the files and directories in the current project.
-
-  Caches are stored to a file on the hard disk.  This methed is
-  intended to be used as advice for the ordinary cache process.
-
-  Ignore ARGS, they're needed for the advice to work."
-    (ignore args)
-    (progn
-      (message "Indexing files and folders for two step search...")
-      (let ((files-per-folder (make-hash-table :test #'equal))
-            (folders-per-file (make-hash-table :test #'equal))
-            (root             (vc-root-dir)))
-        (dolist (file-and-folder (project-files-and-folders))
-          (let ((file   (or (car  file-and-folder) ""))
-                (folder (or (cadr file-and-folder) "")))
-            (puthash file   (protected-add-to-list
-                             (gethash file   folders-per-file) folder)
-                     folders-per-file)
-            (puthash folder (protected-add-to-list
-                             (gethash folder files-per-folder) file)
-                     files-per-folder)))
-        `(,files   ,folders-per-file ,folders ,files-per-folder))))
-
-  (defun quiescent-protected-add-to-list (xs x)
-    "Add to XS, and make singleton list of X if XS is nil."
-    (if xs
-        (push x xs)
-      (list x)))
-
-  (defun project-files-and-folders ()
-    "Produce a list of folders cons'd with the files in them in the current project."
-    (mapcar (lambda (x)
-              (list (file-name-nondirectory x)
-                    (file-name-directory    x)))
-            (project-current-project-files)))
-
-
-  (define-key project-command-map (kbd " '") #'project-two-stage-search)
-#+END_SRC
 
 *** Bindings for Project
 In the interim it would seem that projectile is broken with the latest
