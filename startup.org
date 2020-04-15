@@ -4653,7 +4653,6 @@ options ensure that listings is used when exporting to PDF via LaTeX.
     :chords (("xc" . org-capture))
     :config
     (progn
-      (setq org-todo-keywords '((sequence "TODO(t)" "IN_PROGRESS(p!)" "REVIEW(r!)" "TESTING(g!)" "SUSPENDED(q!)" "TO_DEPLOY(e!)" "DONE(d!@)")))
       (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
         (when (file-exists-p agenda-files-file)
           (load-file agenda-files-file)))
