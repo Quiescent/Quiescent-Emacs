@@ -80,8 +80,10 @@
         paredit-backslash
         paredit-backward
         paredit-backward-up
+        paredit-close-round
         paredit-doublequote
         paredit-forward
+        paredit-forward-barf-sexp
         paredit-forward-delete
         paredit-forward-down
         paredit-forward-kill-word
@@ -90,12 +92,14 @@
         paredit-open-round
         paredit-raise-sexp
         paredit-semicolon
+        paredit-split-sexp
         picture-clear-column
         picture-clear-line
         picture-end-of-line
         picture-self-insert
         proced-mark
         python-nav-backward-up-list
+        quiescent-backward-up-list
         quiescent-correct-linting-errors-at-point
         quiescent-hydra-iy-go-to-char/nil
         rjsx-delete-creates-full-tag
