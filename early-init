@@ -99,6 +99,7 @@
   (exwm-config-default)
   (fringe-mode 15)
   (exwm-input-set-key (kbd "C-c C-j") #'exwm-input-grab-keyboard)
+  (exwm-input-set-key (kbd "s-b")     #'quiescent-toggle-buffer)
   (exwm-input-set-key (kbd "s-z")     #'isearchb-activate)
   (exwm-input-set-key (kbd "s-n")     #'switch-to-next-buffer)
   (exwm-input-set-key (kbd "s-p")     #'switch-to-prev-buffer))
