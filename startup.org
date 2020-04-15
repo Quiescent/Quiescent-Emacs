@@ -215,7 +215,7 @@ where emacs should start.
   <<hiscroll>>
   <<general-recursive-session>>
   <<composable>>
-  ;;<<eacl>>
+  <<eacl>>
   <<completion>>
   <<matt-is-watching>>
   <<realgud>>
@@ -873,12 +873,10 @@ It turns out though that it's not a package so I'm going to have to do
 a manual install of it.  I'll take a look a bit later.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eacl :lexical t
-  (eval-and-compile
-    (when (package-installed-p 'ivy)
-      (package-activate 'ivy))
-    (use-package ivy
-      :ensure t)
-    (load-file "~/.emacs.d/lisp/eacl/eacl.el"))
+  (use-package eacl
+    :ensure t
+    :bind (("S-tab" . eacl-complete-multiline)
+           ("M-s-i" . eacl-complete-line)))
 #+END_SRC
 
 ** Pair Programming
