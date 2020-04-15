@@ -49,6 +49,8 @@ get_external_dependencies:
 	cd ~/.emacs.d/ && git submodule update --init lisp/calctex/
 	@echo "> Fetching composable"
 	cd ~/.emacs.d/ && git submodule update --init lisp/composable.el
+	@echo "> Fetching project-command-at-interval"
+	cd ~/.emacs.d/ && git submodule update --init lisp/project-command-at-interval
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
@@ -57,6 +59,8 @@ build_external_dependencies:
 	cd ~/.emacs.d/lisp/calctex/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"calctex.el\")"
 	@echo "> Building composable"
 	cd ~/.emacs.d/lisp/composable.el/ && cask install && (make || echo 0) && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable.el\")" && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable-mark.el\")"
+	@echo "> Building project-command-at-interval"
+	cd ~/.emacs.d/lisp/project-command-at-interval && make
 
 
 build_wiki:

@@ -7,3 +7,6 @@
 [submodule "composable"]
 	path = lisp/composable.el
 	url = git@github.com:Quiescent/composable.el.git
+[submodule "project-command-at-interval"]
+	path = lisp/project-command-at-interval
+	url = git@github.com:Quiescent/project-command-at-interval.git

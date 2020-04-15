@@ -252,7 +252,7 @@ where emacs should start.
   <<project-find-file-other-window>>
   <<project-settings>>
   <<etags-tag-search>>
-  ;;<<project-command-at-interval>>
+  <<project-command-at-interval>>
   <<goto-chg>>
   <<vc-git-grep>>
   <<idutils>>
@@ -2482,7 +2482,7 @@ I should take a look at using that feature in the
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref project-command-at-interval :lexical t
   (eval-and-compile
-    (add-to-list 'load-path "~/.emacs.d/project-command-at-interval/"))
+    (add-to-list 'load-path "~/.emacs.d/lisp/project-command-at-interval/"))
 
   (require 'project-command-at-interval)
 #+END_SRC
