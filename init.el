@@ -33,48 +33,6 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(when quiescent-exwm-machine
-  (use-package xelb
-    :ensure t)
-  (use-package exwm
-    :ensure t
-    :init (when quiescent-exwm-multiple-monitors
-            ;; From https://github.com/ch11ng/exwm/wiki
-            (require 'exwm-randr)
-            (when quiescent-home-pc-linux
-              (setq exwm-randr-workspace-output-plist
-                    '(0 "DisplayPort-1" 1 "DisplayPort-1"
-                        2 "HDMI-A-0" 3 "HDMI-A-0"
-                        4 "HDMI-A-0" 5 "HDMI-A-0"
-                        6 "HDMI-A-0" 7 "HDMI-A-0"))
-              (add-hook 'exwm-randr-screen-change-hook
-                        (lambda ()
-                          (start-process-shell-command
-                           "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
-              (start-process-shell-command
-               "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
-            (when quiescent-work-machine
-              (setq exwm-randr-workspace-output-plist
-                    '(0 "DP-2" 1 "DP-2"
-                        2 "DP-1" 3 "DP-1"
-                        4 "DP-1" 5 "DP-1"
-                        6 "DP-1" 7 "DP-1"))
-              (add-hook 'exwm-randr-screen-change-hook
-                        (lambda ()
-                          (start-process-shell-command
-                           "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
-              (start-process-shell-command
-               "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
-            (exwm-randr-enable))
-    (require 'exwm-config)
-    (defun exwm-config-ido ()
-      "Override the config function for ido to do nothing since I don't use it."
-      nil)
-    (exwm-config-default)
-    (fringe-mode 15)
-    (exwm-input-set-key (kbd "C-c C-j") #'exwm-input-grab-keyboard)
-    (exwm-input-set-key (kbd "s-z")     #'isearchb-activate)))
-
 (add-to-list 'load-path "~/.emacs.d/conf")
 (require 'system-vars)
 
