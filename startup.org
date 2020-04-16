@@ -3068,6 +3068,7 @@ content elsewhere.
   <<terraform>>
   <<emacs-jupyter>>
   <<pyvenv>>
+  <<python-completion>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4118,6 +4119,19 @@ quite simple to do.
     "Use spark to start python shells."
     (interactive)
     (setq python-shell-interpreter "pyspark"))
+#+end_src
+
+** Python Completion
+Python's completion setup includes semantic and a couple of other slow
+things by default.  I've decided to limit it to a select few instead.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref python-completion :lexical t
+  (defun quiescent-setup-python-company-completion ()
+    "Setup completion for use with Python."
+    (setq-local company-backends
+                '(company-keywords company-dabbrev-code company-capf company-files)))
+
+  (add-hook 'python-mode-hook #'quiescent-setup-python-company-completion)
 #+end_src
 
 * Non-Programming Usages
