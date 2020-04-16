@@ -4113,6 +4113,11 @@ quite simple to do.
     (progn
       (setenv "WORKON_HOME" "~/anaconda3/envs")
       (pyvenv-mode 1)))
+
+  (defun quiescent-python-use-spark ()
+    "Use spark to start python shells."
+    (interactive)
+    (setq python-shell-interpreter "pyspark"))
 #+end_src
 
 * Non-Programming Usages
