@@ -10,3 +10,6 @@
 [submodule "project-command-at-interval"]
 	path = lisp/project-command-at-interval
 	url = git@github.com:Quiescent/project-command-at-interval.git
+[submodule "lisp/pyvenv"]
+	path = lisp/pyvenv
+	url = git@github.com:jorgenschaefer/pyvenv.git

@@ -51,6 +51,8 @@ get_external_dependencies:
 	cd ~/.emacs.d/ && git submodule update --init lisp/composable.el
 	@echo "> Fetching project-command-at-interval"
 	cd ~/.emacs.d/ && git submodule update --init lisp/project-command-at-interval
+	@echo "> Fetching pyenv"
+	cd ~/.emacs.d/ && git submodule update --init lisp/pyvenv
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
@@ -61,7 +63,8 @@ build_external_dependencies:
 	cd ~/.emacs.d/lisp/composable.el/ && cask install && (make || echo 0) && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable.el\")" && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable-mark.el\")"
 	@echo "> Building project-command-at-interval"
 	cd ~/.emacs.d/lisp/project-command-at-interval && make
-
+	@echo "> Building pyenv"
+	cd ~/.emacs.d/lisp/pyvenv/ && make compile
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="
