@@ -3758,6 +3758,22 @@ inspiration for many modes after it.
                                (slime-company-doc-mode))
                               (select-window original-window)))))
 
+  (defun quiescent-slime-load-history (&optional path)
+    "Read the Slime history file interactively or from PATH."
+    (interactive (list (let ((slime-repl-history-file (concatenate 'string
+                                                                   default-directory
+                                                                   ".slime-history.eld")))
+                         (slime-repl-read-history-filename))))
+    (slime-repl-load-history path))
+
+  (defun quiescent-slime-save-history (&optional path)
+    "Read the Slime history file interactively or from PATH."
+    (interactive (list (let ((slime-repl-history-file (concatenate 'string
+                                                                   default-directory
+                                                                   ".slime-history.eld")))
+                         (slime-repl-save-history-filename))))
+    (slime-repl-save-history path))
+
   (use-package slime
     :ensure t
     :config
@@ -3766,8 +3782,8 @@ inspiration for many modes after it.
       (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
 
-      (define-key slime-repl-mode-map (kbd "C-x C-s") #'slime-repl-save-history)
-      (define-key slime-repl-mode-map (kbd "C-x C-f") #'slime-repl-load-history)
+      (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
+      (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
       (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input))
     :init (progn (setq inferior-lisp-program "sbcl")
                  (if (file-exists-p slime--sbcl-helper-path)
