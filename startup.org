@@ -4145,7 +4145,9 @@ things by default.  I've decided to limit it to a select few instead.
   (defun quiescent-setup-python-company-completion ()
     "Setup completion for use with Python."
     (setq-local company-backends
-                '(company-capf company-dabbrev-code company-files company-keywords)))
+                '(company-capf company-dabbrev-code company-files company-keywords))
+    (setq-local completion-at-point-functions
+                '(python-completion-at-point)))
 
   (add-hook 'python-mode-hook #'quiescent-setup-python-company-completion)
 #+end_src
