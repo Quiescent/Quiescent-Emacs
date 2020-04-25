@@ -3771,7 +3771,7 @@ inspiration for many modes after it.
     (interactive (list (let ((slime-repl-history-file (concatenate 'string
                                                                    default-directory
                                                                    ".slime-history.eld")))
-                         (slime-repl-save-history-filename))))
+                         (slime-repl-read-history-filename))))
     (slime-repl-save-history path))
 
   (use-package slime
