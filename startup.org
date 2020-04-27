@@ -3750,21 +3750,23 @@ inspiration for many modes after it.
                                (slime-company-doc-mode))
                               (select-window original-window)))))
 
-  (defun quiescent-slime-load-history (&optional path)
-    "Read the Slime history file interactively or from PATH."
-    (interactive (list (let ((slime-repl-history-file (concatenate 'string
-                                                                   default-directory
-                                                                   ".slime-history.eld")))
-                         (slime-repl-read-history-filename))))
-    (slime-repl-load-history path))
+  ;; These forms need to be protected from compilation so that they use
+  ;; dynamic scoping for the repl history file.
+  (eval `(defun quiescent-slime-load-history (&optional path)
+           "Read the Slime history file interactively or from PATH."
+           (interactive (list (let ((slime-repl-history-file (concatenate 'string
+                                                                          default-directory
+                                                                          ".slime-history.eld")))
+                                (slime-repl-read-history-filename))))
+           (slime-repl-load-history path)))
 
-  (defun quiescent-slime-save-history (&optional path)
-    "Read the Slime history file interactively or from PATH."
-    (interactive (list (let ((slime-repl-history-file (concatenate 'string
-                                                                   default-directory
-                                                                   ".slime-history.eld")))
-                         (slime-repl-read-history-filename))))
-    (slime-repl-save-history path))
+  (eval `(defun quiescent-slime-save-history (&optional path)
+           "Read the Slime history file interactively or from PATH."
+           (interactive (list (let ((slime-repl-history-file (concatenate 'string
+                                                                          default-directory
+                                                                          ".slime-history.eld")))
+                                (slime-repl-read-history-filename))))
+           (slime-repl-save-history path)))
 
   (use-package slime
     :ensure t
