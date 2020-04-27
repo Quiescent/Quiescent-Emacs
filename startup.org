@@ -3254,26 +3254,18 @@ Web mode is an editing mode for html which comes with better font lock
 and tag completion mechanisms than the built in mode.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref web-mode :lexical t
-  (use-package web-mode
-      :ensure t
-      :config (progn
-          (add-to-list 'auto-mode-alist '("\\.phtml\\'"     . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'"   . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'"   . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.erb\\'"       . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.mustache\\'"  . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.djhtml\\'"    . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.html\\'"      . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.tag\\'"       . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.ejs\\'"       . web-mode))
-          (define-key web-mode-map (kbd "C-c C-r") #'quiescent-vc-git-grep))
-      :hook (web-mode . quiescent-set-company-to-dabbrev-only))
+  (require 'sgml-mode)
 
-  (defun quiescent-set-company-to-dabbrev-only ()
-    "Set the company backends to dabbrev only."
+  (setq sgml-quick-keys 'close)
+
+  (use-package company-web
+    :ensure t
+    :hook (html-mode . quiescent-setup-company-web-completion))
+
+  (defun quiescent-setup-company-web-completion ()
+    "Set the company backends for web completion."
     (when (null quiescent-starting-up)
-      (setq-local company-backends '(company-dabbrev))))
+      (setq-local company-backends '(company-web-html company-dabbrev))))
 #+END_SRC
 
 ** SASS
