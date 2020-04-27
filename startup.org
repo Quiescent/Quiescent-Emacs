@@ -4773,7 +4773,9 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   (setq org-capture-templates
         (quote (("w" "Work" entry (file "~/Dropbox/org/work.org")
                  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t))\n%U\n%a\n")
-                ("g" "Work" entry (file "~/Dropbox/org/games.org")
+                ("g" "Games" entry (file "~/Dropbox/org/games.org")
+                 "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t))\n%U\n%a\n")
+                ("m" "Maintenance" entry (file "~/Dropbox/org/maintenance.org")
                  "* TODO %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t))\n%U\n%a\n")
                 ("t" "Task" entry (file "~/work.org")
                  "* TODO %?\n%U\n%a\n")
