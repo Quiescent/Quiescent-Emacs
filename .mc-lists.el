@@ -105,8 +105,10 @@
         rjsx-delete-creates-full-tag
         ruby-end-of-block
         save-some-buffers
+        sgml-slash
         sh-assignment
         slime-autodoc-space
+        slime-eval-defun
         smartscan-symbol-go-backward
         smie-down-list
         sp-backward-delete-char
