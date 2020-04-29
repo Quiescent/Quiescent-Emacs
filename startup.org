@@ -4163,6 +4163,18 @@ here for CodeWars training and I'll iterate on it as needed.
   (add-hook 'c++-mode-hook #'quiescent-setup-c++-completion)
 #+end_src
 
+If you want to use ~ccls~ then you have to build it and install it
+from source.  This is how I did it.
+
+#+begin_src bash :tangle no
+  git … submodule update --init -- third_party/rapidjson;
+  wget -c http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz;
+  tar xf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz;
+  cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PWD/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04;
+  cmake --build Release;
+  cmake --build Release --target install
+#+end_src
+
 * Non-Programming Usages
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref non-programming-usages :exports none :lexical t
   <<gnus>>
