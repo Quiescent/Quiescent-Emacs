@@ -3069,6 +3069,7 @@ content elsewhere.
   <<emacs-jupyter>>
   <<pyvenv>>
   <<python-completion>>
+  <<c++>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4144,6 +4145,22 @@ things by default.  I've decided to limit it to a select few instead.
                 '(python-completion-at-point)))
 
   (add-hook 'python-mode-hook #'quiescent-setup-python-company-completion)
+#+end_src
+
+** C++
+I haven't written c++ in a while.  I figure, though, that it's an
+important skill to keep sharp.  So I'm creating a basic configuration
+here for CodeWars training and I'll iterate on it as needed.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref c++ :lexical t
+  (defun quiescent-setup-c++-completion ()
+      "Setup completion for c++ mode."
+      (when (null quiescent-starting-up)
+        (company-mode 1)
+        (setq-local company-backends '(company-capf company-dabbrev))
+        (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
+
+  (add-hook 'c++-mode-hook #'quiescent-setup-c++-completion)
 #+end_src
 
 * Non-Programming Usages
