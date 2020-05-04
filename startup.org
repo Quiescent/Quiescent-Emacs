@@ -3939,6 +3939,9 @@ completion and error hints) well.
        'self-insert-command
        minibuffer-local-completion-map))
 
+  (add-hook 'sbt-mode-hook (lambda ()
+                             (add-hook 'before-save-hook 'sbt-hydra:check-modified-buffers)))
+
   (advice-add #'ensime-mode :around #'ignore)
 
   (defun quiescent-remove-flex ()
