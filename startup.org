@@ -3070,6 +3070,7 @@ content elsewhere.
   <<pyvenv>>
   <<python-completion>>
   <<c++>>
+  <<racket>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4176,6 +4177,17 @@ from source.  This is how I did it.
   cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$PWD/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04;
   cmake --build Release;
   cmake --build Release --target install
+#+end_src
+
+** Racket
+I'm brushing up on my Racket as part of Code Wars training.  It should
+be fun!  The last time that I used Racket was a course a few years
+ago.  During the course I used Dr. Racket.  I think that I'd like to
+try again with Emacs this time.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref racket :lexical t
+  (use-package racket-mode
+    :ensure t)
 #+end_src
 
 * Non-Programming Usages
