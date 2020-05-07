@@ -1602,7 +1602,8 @@ parenthesis in paredit mode.
          ielm-mode lisp-mode
          lisp-interaction-mode scheme-mode
          cider-mode cider-repl-mode
-         slime-repl-mode)
+         slime-repl-mode
+         racket-mode)
         . quiescent-activate-paredit-mode))
 #+END_SRC
 ** Electric Pair Mode
