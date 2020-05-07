@@ -5924,7 +5924,8 @@ code belongs to.  Prism does exactly that.
              scala-mode
              java-mode
              ruby-mode
-             rust-mode)
+             rust-mode
+             racket-mode)
             . quiescent-prism-mode)
            ((python-mode makefile-mode haskell-mode yaml-mode)
             . prism-whitespace-mode)))
