@@ -1643,7 +1643,8 @@ with.
        makefile-mode-hook
        rust-mode-hook
        rustic-mode-hook
-       conf-mode-hook))
+       conf-mode-hook
+       inferior-python-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
