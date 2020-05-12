@@ -4710,6 +4710,7 @@ switching or being distracted by adds and animation.
   <<org-bullets>>
   <<org-dependencies>>
   <<org-reveal>>
+  <<secretaria>>
 #+END_SRC
 Note: this section was heavily modified and the flow might not make a
 whole lot of sense anymore.  I've aggregated all of the code blocks
@@ -5090,6 +5091,18 @@ simple way of doing things but it lets you be productive.
       (shell-command "tar -xzvf reveal.js-3.9.2.tar.gz")
       (shell-command "mv reveal.js-3.9.2/ reveal.js")))
 #+END_SRC
+
+*** Secretaria
+There's a package on Melpa which aims to help you keep track of what
+you're doing.  It does so by reminding you of your clocked in task and
+saving your clocked in task so that it can let you know about it when
+you restart Emacs.  I think that it'll help me to keep track of
+things.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref secretaria :lexical t
+  (use-package secretaria
+    :ensure t)
+#+end_src
 
 ** Htmlize
 Org mode can export to HTML with source code highlighting.  You need
