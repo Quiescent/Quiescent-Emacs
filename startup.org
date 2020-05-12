@@ -3074,6 +3074,7 @@ content elsewhere.
   <<python-completion>>
   <<c++>>
   <<racket>>
+  <<ado-mode>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4197,6 +4198,15 @@ try again with Emacs this time.
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref racket :lexical t
   (use-package racket-mode
     :ensure t)
+#+end_src
+
+** Ado Mode
+Stata is a proprietary statistical analysis program.  It's being used
+by the OpenSafely team at Oxford.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref ado-mode :lexical t
+  (use-package ado-mode
+    :load-path "~/.emacs.d/lisp/ado-mode/lisp")
 #+end_src
 
 * Non-Programming Usages

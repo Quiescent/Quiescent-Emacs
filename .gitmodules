@@ -13,3 +13,6 @@
 [submodule "lisp/pyvenv"]
 	path = lisp/pyvenv
 	url = git@github.com:jorgenschaefer/pyvenv.git
+[submodule "lisp/ado-mode"]
+	path = lisp/ado-mode
+	url = git@github.com:louabill/ado-mode.git
