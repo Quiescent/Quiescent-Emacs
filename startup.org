@@ -4114,7 +4114,13 @@ own notes as we go.
     :ensure t)
 #+end_src
 
-** Pyenv
+** Python
+I've been making various customisations to my Python setup as I do
+more data work.  I've decided to group the modifications into a
+section so that it's easier to manage all of the Python related
+changes which I'm implementing.
+
+*** Pyenv
 Sometimes what you want to be able to use a different python
 environment when you're doing stuff in Emacs.  ~pyenv~ makes this
 quite simple to do.
@@ -4138,7 +4144,7 @@ quite simple to do.
     (setq python-shell-interpreter "pyspark"))
 #+end_src
 
-** Python Completion
+*** Python Completion
 Python's completion setup includes semantic and a couple of other slow
 things by default.  I've decided to limit it to a select few instead.
 
