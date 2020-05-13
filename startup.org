@@ -3075,6 +3075,7 @@ content elsewhere.
   <<c++>>
   <<racket>>
   <<ado-mode>>
+  <<enh-ruby>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4207,6 +4208,23 @@ by the OpenSafely team at Oxford.
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref ado-mode :lexical t
   (use-package ado-mode
     :load-path "~/.emacs.d/lisp/ado-mode/lisp")
+#+end_src
+
+** Ruby
+I occasionally edit ruby files.  More recently I've done this in the
+context of modifying Chef scripts.  I'd like to make sure that my Ruby
+setup is adequate and that my skills are sharp so I'll do problems in
+Ruby occasionally.  This setup was added as part of solving problems
+on CodeWars.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref enh-ruby :lexical t
+  (use-package enh-ruby-mode
+    :ensure t
+    :config
+    (progn
+      (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
+      (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+      (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))))
 #+end_src
 
 * Non-Programming Usages
