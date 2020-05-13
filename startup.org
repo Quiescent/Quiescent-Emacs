@@ -4225,6 +4225,19 @@ on CodeWars.
       (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
       (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
       (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))))
+
+  (defun quiescent-setup-ruby-completion ()
+    "Setup completion for `enh-ruby-mode'."
+    (when (null quiescent-starting-up)
+      (setq-local company-backends '(company-robe company-capf company-dabbrev))
+      (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
+
+  (use-package robe
+    :ensure t
+    :config
+    (progn
+      (add-hook 'enh-ruby-mode-hook #'robe-mode)
+      (add-hook 'enh-ruby-mode-hook #'quiescent-setup-ruby-completion)))
 #+end_src
 
 * Non-Programming Usages
