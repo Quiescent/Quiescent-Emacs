@@ -3300,7 +3300,12 @@ on the mailing list.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rjsx :lexical t
   (use-package rjsx-mode
    :ensure t
-   :init (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode)))
+   :init (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+   :hook (rjsx-mode . quiescent-disable-semantic-mode))
+
+  (defun quiescent-disable-semantic-mode ()
+    "Disable semantic mode locally."
+    (semantic-mode -1))
 #+END_SRC
 
 ** Powershell Mode
