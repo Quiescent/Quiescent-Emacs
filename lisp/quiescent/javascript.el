@@ -68,7 +68,8 @@ See URL `https://www.npmjs.com/package/jscs'."
 (defun quiescent-select-jshint ()
   "Select JSHint as the linter in this buffer."
   (interactive)
-  (when (null quiescent-starting-up)
+  (when (and (null quiescent-starting-up)
+             (not (eq flycheck-checker 'javascript-eslint)))
     (flycheck-select-checker 'javascript-jshint)))
 
 (defconst quiescent-node-url-extracting-regexp "://.*127.0.0.1:\\([0-9]+\\)/\\(.*\\)"
