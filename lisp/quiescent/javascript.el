@@ -26,13 +26,13 @@
 (require 'use-package)
 
 (use-package js2-mode
-    :ensure t
-    :config (progn
-              (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-              (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-              (define-key js2-mode-map (kbd "<f5>") #'quiescent-start-node-with-this-file)
-              (define-key js2-mode-map (kbd "<f6>") #'quiescent-start-mocha-with-this-file)
-              (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)))
+  :ensure t
+  :config (progn
+            (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+            (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+            (define-key js2-mode-map (kbd "<f5>") #'quiescent-start-node-with-this-file)
+            (define-key js2-mode-map (kbd "<f6>") #'quiescent-start-mocha-with-this-file)
+            (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)))
 
 (require 'flycheck)
 
@@ -42,8 +42,8 @@
 
 See URL `https://www.npmjs.com/package/jscs'."
   :command ("jscs" "--reporter=checkstyle"
-                   (config-file "--config" flycheck-jscsrc)
-                   source)
+            (config-file "--config" flycheck-jscsrc)
+            source)
   :error-parser flycheck-parse-checkstyle
   :modes (js-mode js2-mode js3-mode js-jsx-mode))
 
@@ -57,7 +57,7 @@ See URL `https://www.npmjs.com/package/jscs'."
 (flycheck-add-mode 'javascript-jshint #'js-jsx-mode)
 
 (add-hook 'js2-mode-hook #'quiescent-select-jshint)
-(add-hook 'js-jsx-mode-hook #'quiescent-select-eslint)
+(add-hook 'rjsx-mode-hook #'quiescent-select-eslint)
 
 (defun quiescent-select-eslint ()
   "Select EsLint as the linter in this buffer."
@@ -199,7 +199,7 @@ Supply the (optional) list of ARGS to that process."
 ;;     chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:9229/a8ef938b-045a-4098-b50e-e1a18cf415c7
 
 (use-package indium
-    :ensure t)
+  :ensure t)
 
 (defun quiescent-is-js2-mode ()
   "Produce t if this buffer is in `js2-mode'."
@@ -213,7 +213,7 @@ Supply the (optional) list of ARGS to that process."
 (add-hook 'js2-mode-hook #'quiescent-indium-interaction-mode)
 
 (use-package js2-refactor
-    :ensure t)
+  :ensure t)
 
 (defun quiescent-pluse-ignoring-args (&rest args)
   "Run `xref-pulse-momentarily' ignoring ARGS."
