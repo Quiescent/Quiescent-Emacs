@@ -3792,13 +3792,13 @@ inspiration for many modes after it.
 
       (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
       (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
-      (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input))
+      (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
+      (slime-setup '(slime-fancy slime-company slime-c-p-c slime-highlight-edits)))
     :init (progn (setq inferior-lisp-program "sbcl")
                  (if (file-exists-p slime--sbcl-helper-path)
                      (load slime--sbcl-helper-path)
                    (warn "Slime helper file not found"))
-                 (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))
-                 (slime-setup '(slime-fancy slime-c-p-c slime-highlight-edits)))
+                 (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist)))
     :hook ((slime-mode . quiescent-setup-slime-completion)
            (slime-repl-mode . quiescent-setup-slime-completion)))
 #+END_SRC
