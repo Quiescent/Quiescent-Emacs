@@ -3078,6 +3078,7 @@ content elsewhere.
   <<racket>>
   <<ado-mode>>
   <<enh-ruby>>
+  <<ess>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -4245,6 +4246,18 @@ on CodeWars.
     (progn
       (add-hook 'enh-ruby-mode-hook #'robe-mode)
       (add-hook 'enh-ruby-mode-hook #'quiescent-setup-ruby-completion)))
+#+end_src
+
+** R
+R is a programming language which targets the audience of Scientists
+and Engineers who are interested in statistics and data modelling.
+
+The most popular way to view and edit R is to use the Emacs Speaks
+Statistics (ESS) package.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref ess :lexical t
+  (use-package ess
+    :ensure t)
 #+end_src
 
 * Non-Programming Usages
