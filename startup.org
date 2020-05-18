@@ -1646,7 +1646,9 @@ with.
        conf-mode-hook
        inferior-python-mode-hook
        inf-ruby-mode-hook
-       enh-ruby-mode-hook))
+       enh-ruby-mode-hook
+       ess-r-mode-hook
+       inferior-ess-r-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
