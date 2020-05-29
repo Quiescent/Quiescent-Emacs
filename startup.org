@@ -1648,7 +1648,8 @@ with.
        inf-ruby-mode-hook
        enh-ruby-mode-hook
        ess-r-mode-hook
-       inferior-ess-r-mode-hook))
+       inferior-ess-r-mode-hook
+       terraform-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
