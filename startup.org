@@ -4895,6 +4895,12 @@ options ensure that listings is used when exporting to PDF via LaTeX.
       (org-babel-do-load-languages
        'org-babel-load-languages org-babel-load-languages)))
 
+  (setq org-babel-js-function-wrapper
+    "console.log(`${require('util').inspect(function(){\n%s\n}())}`);")
+
+  (use-package ob-async
+    :ensure t)
+
   (add-hook 'after-init-hook #'quiescent-setup-org-babel-languages)
 
   (setq org-capture-templates
