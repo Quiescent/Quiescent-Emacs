@@ -23,17 +23,19 @@
     (turn-on-haskell-doc-mode)))
 
 (use-package haskell-mode
-    :ensure t
-    :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
+  :ensure t
+  :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
 
-(defun quiescent-activate-intero ()
-  "Activate `intero-mode'."
+(defun quiescent-activate-dante ()
+  "Activate `dante-mode'."
   (when (null quiescent-starting-up)
-    (intero-mode 1)))
+    (dante-mode 1)))
 
-(use-package intero
-    :ensure t
-    :config (add-hook 'haskell-mode-hook #'quiescent-activate-intero))
+(use-package dante
+  :ensure t
+  :after haskell-mode
+  :commands 'dante-mode
+  :init (add-hook 'haskell-mode-hook #'quiescent-activate-dante))
 
 (custom-set-variables '(haskell-tags-on-save t))
 
@@ -45,7 +47,6 @@
 (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flycheck-mode)
 (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flyspell-mode)
 
-;; Use xref as backup when interro can't find the definition
 (defun quiescent-xref-backup-advice (f)
   "Use `xref-find-definitions' as a backup to `interro-goto-definition'.
 
@@ -53,11 +54,11 @@ Used as Advice around the `interro-goto-definition' function F."
   (when (string-equal "Couldn't resolve to any modules." (funcall-interactively f))
     (funcall-interactively #'xref-find-definitions (xref--read-identifier "Find definitions of: "))))
 
-(advice-add #'intero-goto-definition :around #'quiescent-xref-backup-advice)
+(advice-add #'dante-goto-definition :around #'quiescent-xref-backup-advice)
 
 ;; Haskell mode
 (use-package async
-    :ensure t)
+  :ensure t)
 (defun haskell-mode-generate-tags (&optional and-then-find-this-tag)
   "Generate tags using Hasktags.  This is synchronous function.
 
@@ -69,7 +70,7 @@ generated."
          (command (haskell-cabal--compose-hasktags-command dir)))
     (if (not command)
         (error "Unable to compose hasktags command")
-        (async-start-process "hasktags" "*hask-tags-buffer*" (split-string command)))))
+      (async-start-process "hasktags" "*hask-tags-buffer*" (split-string command)))))
 
 (provide 'quiescent/haskell)
 ;;; haskell ends here
