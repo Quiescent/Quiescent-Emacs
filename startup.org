@@ -5783,6 +5783,13 @@ not installed.
           (output-html "xdg-open")))
 
   (setq TeX-view-program-list '(("EmacsClient" "emacsclient %o")))
+
+  (defun quiescent-export-org-to-pdf-via-latex-asynch ()
+    "Export the current document to a PDF via LaTeX asynchronously."
+    (interactive)
+    (org-latex-export-to-pdf t))
+
+  (define-key org-mode-map (kbd "s-e") #'quiescent-export-org-to-pdf-via-latex-asynch)
 #+END_SRC
 
 ** Editing Text
