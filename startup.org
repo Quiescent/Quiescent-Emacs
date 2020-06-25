@@ -5772,6 +5772,17 @@ not installed.
   (defun quiescent-disable-yas-minor-mode ()
     "Disable YAS minor mode."
     (yas-minor-mode -1))
+
+  (setq TeX-view-program-selection
+        '(((output-dvi has-no-display-manager)
+           "dvi2tty")
+          ((output-dvi style-pstricks)
+           "dvips and gv")
+          (output-dvi "xdvi")
+          (output-pdf "EmacsClient")
+          (output-html "xdg-open")))
+
+  (setq TeX-view-program-list '(("EmacsClient" "emacsclient %o")))
 #+END_SRC
 
 ** Editing Text
