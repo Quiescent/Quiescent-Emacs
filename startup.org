@@ -5675,8 +5675,6 @@ going to build up on it.
   (use-package writeroom-mode
     :ensure t)
 
-  (require 'writeroom-mode)
-
   (defvar ia-writer-highlight-current-sentance-delay 0.1
     "The number of seconds to wait before highlighting the current sentance.")
 
