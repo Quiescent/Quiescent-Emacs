@@ -2361,16 +2361,17 @@ post it's become a package on Melpa(!)
       (esh-autosuggest-mode 1)))
 
   (use-package esh-autosuggest
-   :ensure t
-   :config (progn
-          (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
-          (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
-          (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
-          (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
-          (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
-          (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-          (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
-   :hook ((eshell-mode . quiescent-setup-eshell-completion)))
+    :ensure t
+    :demand t
+    :config (progn
+              (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
+              (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
+              (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
+              (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
+              (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
+              (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
+              (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
+    :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 #+END_SRC
 
 The back end in eShell auto suggest doesn't consider all candidates,
