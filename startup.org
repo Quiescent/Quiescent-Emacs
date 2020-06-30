@@ -884,7 +884,7 @@ a manual install of it.  I'll take a look a bit later.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eacl :lexical t
   (use-package eacl
     :ensure t
-    :bind (("s-TAB" . eacl-complete-multiline)
+    :bind (("s-<tab>" . eacl-complete-multiline)
            ("M-s-i" . eacl-complete-line)))
 #+END_SRC
 
