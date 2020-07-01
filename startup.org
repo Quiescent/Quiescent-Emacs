@@ -4850,9 +4850,25 @@ options ensure that listings is used when exporting to PDF via LaTeX.
   (use-package epa-file
     :config (epa-file-enable))
 
+  (defun quiescent-org-capture (&optional goto keys)
+    "Capture a note to org capture.
+
+  Places some context into registers for using while capturing the
+  note.  I have plans to pick up dates and set the scheduled date
+  accordingly, but that hasen't been done yet.
+
+  Optional arguments GOTO and KEYS are supplied to `org-capture'
+  itself."
+    (interactive)
+    (progn
+      (copy-to-register ?l
+                        (save-excursion (beginning-of-line) (point))
+                        (save-excursion (end-of-line)       (point))))
+    (org-capture goto keys))
+
   (use-package org
     :ensure t
-    :chords (("xc" . org-capture))
+    :chords (("xc" . quiescent-org-capture))
     :config
     (progn
       (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
