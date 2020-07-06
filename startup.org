@@ -5258,7 +5258,8 @@ tool.
   (use-package polymode
     :ensure t
     :config
-    (add-hook 'org-brain-visualize-mode-hook #'org-brain-polymode))
+    ;(add-hook 'org-brain-visualize-mode-hook #'org-brain-polymode)
+    )
 #+end_src
 
 
