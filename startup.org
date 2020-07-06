@@ -4805,6 +4805,7 @@ switching or being distracted by adds and animation.
   <<org-dependencies>>
   <<org-reveal>>
   <<secretaria>>
+  <<org-brain>>
 #+END_SRC
 Note: this section was heavily modified and the flow might not make a
 whole lot of sense anymore.  I've aggregated all of the code blocks
@@ -5226,6 +5227,40 @@ things.
   (use-package secretaria
     :ensure t)
 #+end_src
+
+*** Org Brain
+There's an interesting approach to note taking and exploration which
+uses implicit edges between nodes in a hierarchy to create an
+explore-able web of information.  "The Brain" was the first piece of
+software to implement the idea.  Org Brain is Emacs' equivalent of
+that software.  I'm going to give it a go as a story mind-mapping
+tool.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-brain :lexical t
+  (use-package org-brain
+    :ensure t
+    :init
+    (setq org-brain-path "~/org/brain")
+    :config
+    (bind-key "C-c b" 'org-brain-prefix-map org-mode-map)
+    (setq org-id-track-globally t)
+    (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+    (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer)
+    (push '("b" "Brain" plain (function org-brain-goto-end)
+            "* %i%?" :empty-lines 1)
+          org-capture-templates)
+    (setq org-brain-visualize-default-choices 'all)
+    (setq org-brain-title-max-length 12)
+    (setq org-brain-include-file-entries nil
+          org-brain-file-entries-use-title nil))
+
+  ;; Allows you to edit entries directly from org-brain-visualize
+  (use-package polymode
+    :ensure t
+    :config
+    (add-hook 'org-brain-visualize-mode-hook #'org-brain-polymode))
+#+end_src
+
 
 ** Htmlize
 Org mode can export to HTML with source code highlighting.  You need
