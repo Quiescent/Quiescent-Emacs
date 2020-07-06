@@ -55,14 +55,14 @@ get_external_dependencies:
 	cd ~/.emacs.d/ && git submodule update --init lisp/pyvenv
 	@echo "> Fetching ado-mode"
 	cd ~/.emacs.d/ && git submodule update --init lisp/ado-mode
+	@echo "> Fetching org-brain-export"
+	cd ~/.emacs.d/ && git submodule update --init lisp/org-brain-export
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
 	cd ~/.emacs.d/lisp/too-long-lines-mode/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"too-long-lines-mode.el\")"
 	@echo "> Building calctex"
 	cd ~/.emacs.d/lisp/calctex/ && $(EMACS_CLIENT) --eval "(byte-compile-file \"calctex.el\")"
-	@echo "> Building composable"
-# cd ~/.emacs.d/lisp/composable.el/ && cask install && (make || echo 0) && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable.el\")" && $(EMACS_CLIENT) --eval "(byte-compile-file \"composable-mark.el\")"
 	@echo "> Building project-command-at-interval"
 	cd ~/.emacs.d/lisp/project-command-at-interval && make
 	@echo "> Building pyenv"
@@ -76,6 +76,9 @@ build_external_dependencies:
 	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/ado-mode/lisp/ado-mode.el\")"
 	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/ado-mode/lisp/ado-stata-info.el\")"
 	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/ado-mode/lisp/ado-to-stata.el\")"
+	@echo "> Building org-brain-export"
+	cd ~/.emacs.d/lisp/org-brain-export && rm -rf *.elc
+	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/org-brain-export/org-brain-export.el\")"
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="
