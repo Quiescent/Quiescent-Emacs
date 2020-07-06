@@ -16,3 +16,6 @@
 [submodule "lisp/ado-mode"]
 	path = lisp/ado-mode
 	url = git@github.com:louabill/ado-mode.git
+[submodule "lisp/org-brain-export"]
+	path = lisp/org-brain-export
+	url = git@github.com:Kungsgeten/org-brain-export.git
