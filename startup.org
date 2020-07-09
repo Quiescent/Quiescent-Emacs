@@ -4847,6 +4847,10 @@ lock to the code both for editing and for exporting.  Org fontify
 natively does this in org file that you're editing and the LaTeX
 options ensure that listings is used when exporting to PDF via LaTeX.
 
+The "o" template for agenda views comes from
+https://github.com/psamim/dotfiles.  psamim designed a very minimal
+and clean UI using icons and I adapted it to my workflow.
+
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref load-org :lexical t
   (use-package epa-file
     :config (epa-file-enable))
