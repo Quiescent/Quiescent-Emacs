@@ -4929,9 +4929,10 @@ and clean UI using icons and I adapted it to my workflow.
                                                            (0900 1200 1500 1800 2100)
                                                            "      " "┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈")))))))))
             org-agenda-category-icon-alist
-            '(("Work" "~/.emacs.d/icons/checklist.svg" nil nil :ascent center)
+            `(("Work" "~/.emacs.d/icons/checklist.svg" nil nil :ascent center)
               ("Repetative" "~/.emacs.d/icons/loop.svg" nil nil :ascent center)
-              ("Games" "~/.emacs.d/icons/walk.svg" nil nil :ascent center)))
+              ("Games" "~/.emacs.d/icons/walk.svg" nil nil :ascent center)
+              ("Writing" ,(list (all-the-icons-faicon "book")) nil nil :ascent center)))
       (add-to-list 'org-latex-packages-alist '("" "listings"))
       (add-to-list 'org-latex-packages-alist '("" "color"))
       (org-clock-persistence-insinuate)
