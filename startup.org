@@ -4871,9 +4871,13 @@ and clean UI using icons and I adapted it to my workflow.
                         (save-excursion (end-of-line)       (point))))
     (org-capture goto keys))
 
+  (use-package all-the-icons
+    :ensure t)
+
   (use-package org
     :ensure t
     :chords (("xc" . quiescent-org-capture))
+    :after all-the-icons
     :config
     (progn
       (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
@@ -4932,7 +4936,8 @@ and clean UI using icons and I adapted it to my workflow.
             `(("Work" "~/.emacs.d/icons/checklist.svg" nil nil :ascent center)
               ("Repetative" "~/.emacs.d/icons/loop.svg" nil nil :ascent center)
               ("Games" "~/.emacs.d/icons/walk.svg" nil nil :ascent center)
-              ("Writing" ,(list (all-the-icons-faicon "book")) nil nil :ascent center)))
+              ("Writing" ,(list (all-the-icons-faicon "book")) nil nil :ascent center)
+              ("Chores" "~/.emacs.d/icons/chore.svg" nil nil :ascent center)))
       (add-to-list 'org-latex-packages-alist '("" "listings"))
       (add-to-list 'org-latex-packages-alist '("" "color"))
       (org-clock-persistence-insinuate)
