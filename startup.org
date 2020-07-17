@@ -4951,6 +4951,12 @@ and clean UI using icons and I adapted it to my workflow.
       ;; and I think it's buggy.
       (defun org-install-agenda-files-menu () nil)))
 
+  (defun quiescent-setup-agenda-line-spacing ()
+    "Setup line spacing for my agenda in org mode."
+    (setq-local line-spacing 5))
+
+  (add-hook 'org-agenda-mode-hook #'quiescent-setup-agenda-line-spacing)
+
   (defun quiescent-setup-org-babel-languages()
     "Setup and load the org-babel languages."
     (progn
