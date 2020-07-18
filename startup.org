@@ -6066,7 +6066,7 @@ reasonable that this will just be a good improvement overall.
   <<prettify>>
   <<splash-screen>>
   <<mb-depth>>
-  <<perfect-margins>>
+  <<agenda-margins>>
 #+END_SRC
 
 Emacs has support for themes.  One may design a theme and have it
@@ -6238,17 +6238,32 @@ the rabbit hole you've gone.
       :ensure t)
 #+END_SRC
 
-** Perfect Margins
+** Agenda Margins
 I'm paying a bit more attention to the presentation of my agenda
 because I want it to feel less cluttered.
 
-#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref perfect-margins :lexical t
-  (use-package perfect-margin
-    :ensure t
-    :custom ((perfect-margin-visible-width 128)
-             (perfect-margin-ignore-regexps '(".*minibuffer.*")))
-    :config
-    (perfect-margin-mode 1))
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref agenda-margins :lexical t
+  (defvar quiescent-org-agenda-visible-width 128
+    "The width of the visible portion of the org agenda buffer.")
+
+  (defun quiescent-setup-agenda-margins ()
+    "Compute the margins for the agenda buffer and make it so."
+    (dolist (window (window-list))
+      (when (string-equal "*Org Agenda*" (buffer-name (window-buffer window)))
+       (let ((margin-width (round (max 0 (/ (- (window-width) quiescent-org-agenda-visible-width) 2)))))
+         (set-window-margins window margin-width margin-width)))))
+
+  (defun quiescent-reset-margins (&rest _)
+    "Reset the margins on all windows to nil."
+    (dolist (window (window-list))
+      (unless (string-equal "*Org Agenda*" (buffer-name (window-buffer window)))
+        (set-window-margins window 0 0))))
+
+  (advice-add #'split-window :before #'quiescent-reset-margins)
+
+  (add-hook 'window-configuration-change-hook #'quiescent-setup-agenda-margins)
+  (add-hook 'window-size-change-hook #'quiescent-setup-agenda-margins)
+  (add-hook 'org-agenda-mode-hook #'quiescent-setup-agenda-margins)
 #+end_src
 
 * Conclusion
