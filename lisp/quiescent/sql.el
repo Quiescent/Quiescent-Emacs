@@ -13,12 +13,10 @@
 (require 'thingatpt)
 (require 'sql)
 
-(require 'use-package)
-
 (use-package flx
-    :ensure t)
+  :ensure t)
 (use-package flx-ido
-    :ensure t)
+  :ensure t)
 
 (defun quiescent-fuzzy-completion (prefix completions)
   "Complete the given PREFIX using a fixed list of COMPLETIONS.
@@ -38,7 +36,7 @@ ido matching and sorting.  See `flx-ido-match-internal'."
                         (sort matches
                               (lambda (x y) (> (cadr x) (cadr y))))
                         t)))
-        (mapcar 'car  flex-result))))
+      (mapcar 'car  flex-result))))
 
 (defun quiescent-sql-completion ()
   "Complete PREFIX fuzzily using a fixed list of completions.
@@ -51,11 +49,11 @@ connecting to a given database."
          (candidates
           (if (looking-at "^")
               (quiescent-fuzzy-completion prefix quiescent-sql-original-completion-candidates)
-              (quiescent-fuzzy-completion prefix quiescent-sql-completion-candidates))))
+            (quiescent-fuzzy-completion prefix quiescent-sql-completion-candidates))))
     (if (null candidates)
         (progn (message "No candidates for completion found")
                nil)
-        (list (car prefix-bounds) (cdr prefix-bounds) candidates))))
+      (list (car prefix-bounds) (cdr prefix-bounds) candidates))))
 
 (defun quiescent-register-sql-completion ()
   "Register the sql completion function as a completion method in this buffer."

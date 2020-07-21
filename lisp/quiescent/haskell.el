@@ -15,8 +15,6 @@
 
 ;;; Code:
 
-(require 'use-package)
-
 (defun quiescent-turn-on-haskell-doc-mode ()
   "Activate `haskell-doc-mode'."
   (when (null quiescent-starting-up)

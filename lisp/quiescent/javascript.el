@@ -23,8 +23,6 @@
 
 (require 'quiescent/haskell)
 
-(require 'use-package)
-
 (use-package js2-mode
   :ensure t
   :config (progn

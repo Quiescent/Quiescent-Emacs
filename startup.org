@@ -542,14 +542,14 @@ left/right/up/down in my windows.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref window-jump :lexical t
   (use-package window-jump
-      :ensure t
-      :init (when (and (boundp 'key-chord-mode)
-                       (not key-chord-mode))
-              (key-chord-mode 1))
-      :chords ((",u" . window-jump-up)
-               (",d" . window-jump-down)
-               (",l" . window-jump-left)
-               (",r" . window-jump-right)))
+    :ensure t
+    :init (when (and (boundp 'key-chord-mode)
+                     (not key-chord-mode))
+            (key-chord-mode 1)
+            (bind-chord ",u" #'window-jump-up)
+            (bind-chord ",d" #'window-jump-down)
+            (bind-chord ",l" #'window-jump-left)
+            (bind-chord ",r" #'window-jump-right)))
 #+END_SRC
 
 ** iSearch
@@ -681,12 +681,14 @@ macros.  This is what made me decide to try it out.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref multiple-cursors :lexical t
   (use-package multiple-cursors
     :ensure t
-    :bind (("s-SPC"   . mc/edit-lines)
-           ("C->"     . mc/mark-next-like-this)
-           ("C-<"     . mc/mark-previous-like-this)
-           ("C-c C-<" . mc/mark-all-like-this)
-           ("s->"     . mc/skip-to-next-like-this)
-           ("s-<"     . mc/skip-to-previous-like-this)))
+    :config
+    (progn
+      (global-set-key (kbd "s-SPC")   #'mc/edit-lines)
+      (global-set-key (kbd "C->")     #'mc/mark-next-like-this)
+      (global-set-key (kbd "C-<")     #'mc/mark-previous-like-this)
+      (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+      (global-set-key (kbd "s->")     #'mc/skip-to-next-like-this)
+      (global-set-key (kbd "s-<")     #'mc/skip-to-previous-like-this)))
 #+END_SRC
 
 ** IEdit Mode
@@ -701,7 +703,7 @@ than mc.  However IEdit isn't as generic as mc.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref iedit :lexical t
   (use-package iedit
       :ensure t
-      :bind ("M-s ," . iedit-mode))
+      :config (global-set-key (kbd "M-s ,") #'iedit-mode))
 #+END_SRC
 
 ** "Scroll" Through History
@@ -817,14 +819,14 @@ supported completion framework.
      (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
      (define-key company-active-map (kbd "C-m")   nil)
      (global-set-key (kbd "C-'") #'company-complete-selection)
+     (global-set-key (kbd "C-.") #'company-complete)
+     (global-set-key (kbd "C-,") #'company-complete)
      (advice-add #'company-ispell :around #'quiescent-supress-message-around)
      (setq company-idle-delay 0)
      (setq company-tooltip-idle-delay 5)
      (setq company-tooltip-limit 0)
      (setq company-require-match nil)
-     (setq company-frontends '(company-preview-frontend)))
-   :bind (("C-." . company-complete)
-          ("C-," . company-complete)))
+     (setq company-frontends '(company-preview-frontend))))
 
   (defun quiescent-remove-semantic-backend ()
     "Remove the company backend for semantic."
@@ -870,7 +872,7 @@ good expericence.  Company has a mode for that called
 
   (use-package company-statistics
    :ensure t
-   :hook (company-mode . quiescent-activate-company-statistics))
+   :init (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
 #+END_SRC
 
 ** Emacs Complete Lines
@@ -884,8 +886,10 @@ a manual install of it.  I'll take a look a bit later.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eacl :lexical t
   (use-package eacl
     :ensure t
-    :bind (("s-<tab>" . eacl-complete-multiline)
-           ("M-s-i" . eacl-complete-line)))
+    :config
+    (progn
+      (global-set-key (kbd "s-<tab>") #'eacl-complete-multiline)
+      (global-set-key (kbd "M-s-i")   #'eacl-complete-line)))
 #+END_SRC
 
 ** Pair Programming
@@ -982,12 +986,12 @@ so far.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref flycheck :lexical t
   ;; TODO more carefully consider which modes need flycheck
   (use-package flycheck
-      :ensure t
-      :hook (((latex-mode message-mode
-            org-mode text-mode
-            gfm-mode markdown-mode LaTeX-mode)
-          . quiescent-enable-flycheck)
-          (prog-mode . quiescent-enable-flycheck-prog)))
+    :ensure t
+    :init (add-hook 'prog-mode-hook #'quiescent-enable-flycheck-prog)
+    :hook (((latex-mode message-mode
+                        org-mode text-mode
+                        gfm-mode markdown-mode LaTeX-mode)
+            . quiescent-enable-flycheck)))
 
   (with-eval-after-load "flycheck"
     (progn
@@ -1134,14 +1138,19 @@ I've chosen a few language modes to load show hide in.
       (hs-minor-mode 1)))
 
   (use-package hideshow
-      :bind ("C-=" . toggle-hiding)
-      :hook ((c-mode-common emacs-lisp-mode
-           java-mode lisp-mode
-           perl-mode sh-mode
-           python-mode nxml-mode
-           sgml-mode html-mode) 
-         . quiescent-activate-hs-minor-mode))
-
+    :config
+    (progn
+      (global-set-key (kbd "C-=") #'toggle-hiding)
+      (add-hook 'c-mode-common-hook   #'quiescent-activate-hs-minor-mode)
+      (add-hook 'emacs-lisp-mode-hook #'quiescent-activate-hs-minor-mode)
+      (add-hook 'java-mode-hook       #'quiescent-activate-hs-minor-mode)
+      (add-hook 'lisp-mode-hook       #'quiescent-activate-hs-minor-mode)
+      (add-hook 'perl-mode-hook       #'quiescent-activate-hs-minor-mode)
+      (add-hook 'sh-mode-hook         #'quiescent-activate-hs-minor-mode)
+      (add-hook 'python-mode-hook     #'quiescent-activate-hs-minor-mode)
+      (add-hook 'nxml-mode-hook       #'quiescent-activate-hs-minor-mode)
+      (add-hook 'sgml-mode-hook       #'quiescent-activate-hs-minor-mode)
+      (add-hook 'html-mode-hook       #'quiescent-activate-hs-minor-mode)))
 #+END_SRC
 
 ** Paren Mode
@@ -1175,7 +1184,6 @@ snippets would be overridden every time that I upgrade the package.
             (rest-str   (substring string 1)))
         (concat (capitalize first-char) rest-str))))
 
-  (require 'use-package)
 
   (use-package yasnippet
       :ensure t
@@ -1482,8 +1490,6 @@ I've also decided to use skeletons to make general SQL statements.
     "        this." name " = " name ";\n"
     "    }\n")
 
-  (require 'use-package)
-
   (use-package s
       :ensure t)
 
@@ -1596,16 +1602,19 @@ parenthesis in paredit mode.
   (use-package paredit
     :ensure t
     :config (progn
-           (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
-           (define-key paredit-mode-map (kbd "C-M-p") #'backward-list))
-    :hook ((emacs-lisp-mode eval-expression-minibuffer-setup
-         ielm-mode lisp-mode
-         lisp-interaction-mode scheme-mode
-         cider-mode cider-repl-mode
-         slime-repl-mode
-         racket-mode
-         racket-repl-mode)
-        . quiescent-activate-paredit-mode))
+              (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
+              (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
+              (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
+              (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
+              (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
+              (add-hook 'lisp-mode-hook                        #'quiescent-activate-paredit-mode)
+              (add-hook 'lisp-interaction-mode-hook            #'quiescent-activate-paredit-mode)
+              (add-hook 'scheme-mode-hook                      #'quiescent-activate-paredit-mode)
+              (add-hook 'cider-mode-hook                       #'quiescent-activate-paredit-mode)
+              (add-hook 'cider-repl-mode-hook                  #'quiescent-activate-paredit-mode)
+              (add-hook 'slime-repl-mode-hook                  #'quiescent-activate-paredit-mode)
+              (add-hook 'racket-mode-hook                      #'quiescent-activate-paredit-mode)
+              (add-hook 'racket-repl-mode-hook                 #'quiescent-activate-paredit-mode)))
 #+END_SRC
 ** Electric Pair Mode
 So Emacs has a built in mode for pairing brackets.  It looks a lot
@@ -1718,8 +1727,9 @@ up with this.
   (use-package emr
    :ensure t
    :config
-   (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-   :hook (prog-mode . quiescent-emr-initialize))
+   (progn
+     (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+     (add-hook 'prog-mode #'quiescent-emr-initialize)))
 #+END_SRC
 
 ** Temp Buffers
@@ -2143,20 +2153,20 @@ Before we can configure helm we need to load the package.
       (helm-ff-file-name-history-use-recentf t)
       (helm-grep-input-idle-delay            0.02)
       (helm-input-idle-delay                 0)
-      :bind (("M-y"       . helm-show-kill-ring)
-             ("M-i"       . helm-semantic-or-imenu)
-             ("C-x C-f"   . helm-find-files)
-             ("C-x b"     . helm-buffers-list)
-             ("M-x"       . helm-M-x)
-             ("C-S-f"     . quiescent-helm-grep-do-git-grep)
-             ("C-c p s g" . quiescent-helm-grep-do-git-grep)
-             ("C-h C-f"   . helm-recentf))
       :config (progn
                 (require 'helm-config)
                 (helm-mode 1)
                 (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
                 (require 'helm-adaptive)
-                (helm-adaptive-mode t))
+                (helm-adaptive-mode t)
+                (global-set-key (kbd "M-y")       #'helm-show-kill-ring)
+                (global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
+                (global-set-key (kbd "C-x C-f")   #'helm-find-files)
+                (global-set-key (kbd "C-x b")     #'helm-buffers-list)
+                (global-set-key (kbd "M-x")       #'helm-M-x)
+                (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep)
+                (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep)
+                (global-set-key (kbd "C-h C-f")   #'helm-recentf))
       :init (with-eval-after-load "helm"
               (helm-mode 1)))
 #+END_SRC
@@ -2523,8 +2533,9 @@ package called goto-chg, which provides a change history.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref goto-chg :lexical t
   (use-package goto-chg
     :ensure t
-    :chords (("'," . goto-last-change)
-             (",." . goto-last-change-reverse)))
+    :config (progn
+              (bind-chord "'," 'goto-last-change)
+              (bind-chord ",." 'goto-last-change-reverse)))
 #+END_SRC
 
 ** GREP
@@ -2590,6 +2601,8 @@ to put them into a different directory where all of your work is safe
 and backed up.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref backup-files :lexical t
+  (make-variable-buffer-local 'create-lockfiles)
+
   (setq backup-directory-alist `(("." . "~/.saves")))
 
   (setq backup-by-copying t)
@@ -3276,7 +3289,7 @@ and tag completion mechanisms than the built in mode.
 
   (use-package company-web
     :ensure t
-    :hook (html-mode . quiescent-setup-company-web-completion))
+    :config (add-hook 'html-mode-hook #'quiescent-setup-company-web-completion))
 
   (defun quiescent-setup-company-web-completion ()
     "Set the company backends for web completion."
@@ -3308,7 +3321,7 @@ on the mailing list.
   (use-package rjsx-mode
    :ensure t
    :init (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
-   :hook (rjsx-mode . quiescent-disable-semantic-mode))
+   :config (add-hook 'rjsx-mode-hook #'quiescent-disable-semantic-mode))
 
   (defun quiescent-disable-semantic-mode ()
     "Disable semantic mode locally."
@@ -3673,9 +3686,11 @@ working typescript setup I thought that I'd go ahead and set it up.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tide :lexical t
   (use-package tide
    :ensure t
-   :hook ((js2-mode . quiescent-setup-tide-mode)
-       (js2-jsx-mode . quiescent-setup-tide-mode)
-       (typescript-mode . quiescent-setup-tide-mode)))
+   :init
+   (progn
+     (add-hook 'js2-mode-hook        #'quiescent-setup-tide-mode)
+     (add-hook 'js2-jsx-mode-hook    #'quiescent-setup-tide-mode)
+     (add-hook 'typescript-mode-hook #'quiescent-setup-tide-mode)))
 
   (defun quiescent-setup-tide-mode ()
     "Setup TIDE mode."
@@ -3799,14 +3814,14 @@ inspiration for many modes after it.
 
       (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
       (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
-      (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input))
+      (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
+      (add-hook 'slime-mode-hook      #'quiescent-setup-slime-completion)
+      (add-hook 'slime-repl-mode-hook #'quiescent-setup-slime-completion))
     :init (progn (setq inferior-lisp-program "sbcl")
                  (if (file-exists-p slime--sbcl-helper-path)
                      (load slime--sbcl-helper-path)
                    (warn "Slime helper file not found"))
-                 (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist)))
-    :hook ((slime-mode . quiescent-setup-slime-completion)
-           (slime-repl-mode . quiescent-setup-slime-completion)))
+                 (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))))
 
   (defun quiescent-setup-slime ()
     "Setup slime."
@@ -3852,10 +3867,10 @@ well during the workshop.
 
   (use-package cider
     :ensure t
-    :hook ((clojure-mode . quiescent-setup-clojure-hooks)
-           (cider-repl-mode . quiescent-setup-cider-repl-hooks))
     :config
     (progn
+      (add-hook 'clojure-mode-hook    #'quiescent-setup-clojure-hooks)
+      (add-hook 'cider-repl-mode-hook #'quiescent-setup-cider-repl-hooks)
       (define-key cider-mode-map (kbd "M-n") #'cider-jump-to-compilation-error)
       (define-key cider-mode-map (kbd "M-p") #'cider-jump-to-compilation-error)
       (setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api)
@@ -3988,9 +4003,9 @@ completion and error hints) well.
         (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
         (setq eglot-server-programs
               (map-delete eglot-server-programs 'rustic-mode))
-        (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer"))))
-      :hook ((scala-mode . eglot-ensure)
-             (rust-mode  . eglot-ensure)))
+        (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer")))
+        (add-hook 'scala-mode-hook #'eglot-ensure)
+        (add-hook 'rust-mode-hook  #'eglot-ensure)))
 
   (defun scala-mode--find-project-root (directory)
     "Produce the root of SBT project containing DIRECTORY.
@@ -4481,32 +4496,33 @@ makes the sub directory opening more like a tree view.
       (dired-filter-group-mode 1)))
 
   (use-package dired-filter
-      :ensure t
-      :bind (("C-c C-'" . dired-filter-group-mode))
-      :config (progn
-          (setq dired-filter-group-saved-groups
-                '(("default"
-                ("PDF"
-                 (extension . "pdf"))
-                ("LaTeX"
-                 (extension "tex" "bib"))
-                ("Org"
-                 (extension . "org"))
-                ("Archives"
-                 (extension "zip" "rar" "gz" "bz2" "tar"))
-                ("Folders"
-                 (directory))
-                ("Source Code"
-                 (extension "el" "scala" "rs" "asm"
-                         "cl" "lisp" "el" "c"
-                         "h" "c++" "h++" "hpp"
-                         "hxx" "m" "cc" "cs"
-                         "cp" "cpp" "go" "f"
-                         "for" "ftn" "f90" "f95"
-                         "f03" "f08" "s" "rs"
-                         "hi" "hs" "py" "java"
-                         "sh" "asd"))))))
-      :hook (dired-mode . quiescent-dired-filter-group-mode))
+    :ensure t
+    :config
+    (progn
+      (define-key dired-mode-map (kbd "C-c C-'") #'dired-filter-group-mode)
+      (add-hook 'dired-mode-hook #'quiescent-dired-filter-group-mode)
+      (setq dired-filter-group-saved-groups
+            '(("default"
+               ("PDF"
+                (extension . "pdf"))
+               ("LaTeX"
+                (extension "tex" "bib"))
+               ("Org"
+                (extension . "org"))
+               ("Archives"
+                (extension "zip" "rar" "gz" "bz2" "tar"))
+               ("Folders"
+                (directory))
+               ("Source Code"
+                (extension "el" "scala" "rs" "asm"
+                           "cl" "lisp" "el" "c"
+                           "h" "c++" "h++" "hpp"
+                           "hxx" "m" "cc" "cs"
+                           "cp" "cpp" "go" "f"
+                           "for" "ftn" "f90" "f95"
+                           "f03" "f08" "s" "rs"
+                           "hi" "hs" "py" "java"
+                           "sh" "asd")))))))
 
   (use-package diredfl
       :ensure t
@@ -5161,7 +5177,7 @@ to help write activation hook functions in Emacs Lisp.
 
   (use-package org-bullets
     :ensure t
-    :hook (org-mode . quiescent-activate-org-bullets-mode))
+    :config (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode))
 #+END_SRC
 
 =org-beautify-theme= makes all of the headings larger.  It's a theme
@@ -5388,8 +5404,10 @@ variable so that I could connect to repositories over HTTPS.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref magit-setup :lexical t
   (use-package magit
       :ensure t
-      :bind ("C-c m" . magit-status)
-      :config (setenv "GIT_ASKPASS" "git-gui--askpass"))
+      :config
+      (progn
+        (setenv "GIT_ASKPASS" "git-gui--askpass")
+        (global-set-key (kbd "C-c m") #'magit-status)))
 #+END_SRC
 
 I often create commit messages which note the change per file.
@@ -5906,8 +5924,13 @@ the actual spell checks and use the standard British dictionary.
     :init (progn
          (setq ispell-dictionary "british")
          (setq ispell-program-name "aspell"))
-    :config (define-key flyspell-mode-map (kbd "C-.") nil)
-    :hook ((text-mode bibtex-mode LaTeX-mode TeX-mode) . quiescent-turn-on-flyspell))
+    :config
+    (progn
+      (define-key flyspell-mode-map (kbd "C-.") nil)
+      (add-hook 'text-mode-hook   #'quiescent-turn-on-flyspell)
+      (add-hook 'bibtex-mode-hook #'quiescent-turn-on-flyspell)
+      (add-hook 'LaTeX-mode-hook  #'quiescent-turn-on-flyspell)
+      (add-hook 'TeX-mode-hook    #'quiescent-turn-on-flyspell)))
 #+END_SRC
 
 ** Langtool
@@ -6131,11 +6154,18 @@ code belongs to.  Prism does exactly that.
     :ensure t
     ;; Based on the readme for prism, adjusted to look closer to the
     ;; original doom theme
-    :config (prism-set-colors :num 24
-              :desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
-              :colors (list 'font-lock-string-face 'font-lock-keyword-face
-                            'font-lock-function-name-face 'font-lock-constant-face
-                            'font-lock-type-face))
+    :config (progn
+              (prism-set-colors :num 24
+                :desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
+                :colors (list 'font-lock-string-face 'font-lock-keyword-face
+                              'font-lock-function-name-face 'font-lock-constant-face
+                              'font-lock-type-face))
+              ;; Byte compiler can't handle this as a second set of
+              ;; hooks for some reason...
+              (add-hook 'python-mode-hook #'prism-whitespace-mode)
+              (add-hook 'makefile-mode-hook #'prism-whitespace-mode)
+              (add-hook 'haskell-mode-hook #'prism-whitespace-mode)
+              (add-hook 'yaml-mode-hook #'prism-whitespace-mode))
     :hook (((clojure-mode
              emacs-lisp-mode
              lisp-mode
@@ -6153,9 +6183,7 @@ code belongs to.  Prism does exactly that.
              rust-mode
              racket-mode
              rustic-mode)
-            . quiescent-prism-mode)
-           ((python-mode makefile-mode haskell-mode yaml-mode)
-            . prism-whitespace-mode)))
+            . quiescent-prism-mode)))
 #+END_SRC
 
 Line feed is a common feature of lisp code and EMACS outputs from
@@ -6186,12 +6214,12 @@ of the defaults which the mode has built in.)
       (prettify-symbols-mode 1)))
 
   (use-package prog-mode
-   :init (progn
-        (setq prettify-symbols-unprettify-at-point 'right-edge))
-   :hook (((prog-mode text-mode prog-mode)
-        . quiescent-activate-pretify-symbols-mode)
-       (emacs-lisp-mode . quiescent-pretify-elisp)
-       (prog-mode . quiescent-prettify-prog-mode)))
+    :init (progn
+            (setq prettify-symbols-unprettify-at-point 'right-edge))
+    :config (progn
+              (add-hook 'emacs-lisp-mode-hook #'quiescent-pretify-elisp)
+              (add-hook 'prog-mode-hook #'quiescent-prettify-prog-mode))
+    :hook (((prog-mode text-mode prog-mode) . quiescent-activate-pretify-symbols-mode)))
 
   (defconst quiescent-prog-mode-symbols '()
     "An alist of substitutions to pretify in prog mode.")

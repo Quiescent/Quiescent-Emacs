@@ -7,8 +7,6 @@
 (eval-when-compile
   (require 'cl))
 
-(require 'use-package)
-
 (use-package eros
   :ensure t)
 

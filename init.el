@@ -24,6 +24,21 @@
 ;; :type 'integer
 ;; :group 'semantic)
 
+(require 'package)
+
+;; ===Package===
+;; Loaded here because of overrides.
+(setq package-archive-priorities '((org   . 3)
+                                   (melpa . 2)
+                                   (gnu   . 1)))
+(setq package-archives
+      (quote
+       (("gnu"          . "http://elpa.gnu.org/packages/")
+        ("org"          . "http://orgmode.org/elpa/")
+        ("melpa"        . "http://melpa.org/packages/"))))
+
+(package-initialize)
+
 ;; For debugging what gets compiled at startup
 ;;(debug-on-entry #'byte-compile)
 

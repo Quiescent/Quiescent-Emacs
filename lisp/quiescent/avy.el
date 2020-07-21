@@ -4,16 +4,14 @@
 
 ;;; Code:
 
-(require 'use-package)
-
 (use-package avy
-    :ensure t
-    :config (progn
-              (setq avy-timeout-seconds 0.1)
-              (global-set-key (kbd "s-x") #'quiescent-avy-super-jump)
-              (global-set-key (kbd "s-.") #'avy-goto-word-or-subword-1)
-              (global-set-key (kbd "s-c") #'quiescent-avy-copy-symbol)
-              (global-set-key (kbd "s-C") #'quiescent-avy-copy-sexp)))
+  :ensure t
+  :config (progn
+            (setq avy-timeout-seconds 0.1)
+            (global-set-key (kbd "s-x") #'quiescent-avy-super-jump)
+            (global-set-key (kbd "s-.") #'avy-goto-word-or-subword-1)
+            (global-set-key (kbd "s-c") #'quiescent-avy-copy-symbol)
+            (global-set-key (kbd "s-C") #'quiescent-avy-copy-sexp)))
 
 (defun quiescent-avy-super-jump ()
   "Jump to a point with avy and then find the definition."
@@ -52,9 +50,9 @@ of a candidate then you can jump to it."
   (let ((char (read-string (concat "search: " (or str "")))))
     (if (member (aref char 0) '(?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9))
         (quiescent-jump-to-candidate char str)
-        (let ((search-string (concat str char)))
-          (quiescent-highlight-matches search-string)
-          (call-interactively (quiescent-goto-char search-string))))))
+      (let ((search-string (concat str char)))
+        (quiescent-highlight-matches search-string)
+        (call-interactively (quiescent-goto-char search-string))))))
 
 
 (define-key isearch-mode-map (kbd "C-'") 'avy-isearch)

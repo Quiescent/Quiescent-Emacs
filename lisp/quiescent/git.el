@@ -44,10 +44,10 @@
 (defun q-git-to-org-time-stamp (git-time-stamp)
   "Convert GIT-TIME-STAMP into org format for time stamps."
   (cl-labels ((month-to-int (month)
-                (cdr (assoc month q-git-month-translation-alist))))
+                            (cdr (assoc month q-git-month-translation-alist))))
     (pcase (split-string git-time-stamp " " t)
       (`(,_ ,month ,day ,time ,year ,_)
-        (format "%s-%s-%02d %s" year (month-to-int month) (string-to-number day) time)))))
+       (format "%s-%s-%02d %s" year (month-to-int month) (string-to-number day) time)))))
 
 (defun q-git-parse-log-entry (log-entry-text)
   "Parse LOG-ENTRY-TEXT into a list structure."
@@ -156,12 +156,10 @@ of it's lines."
   "Parse S into an EMACS time list (SEC MINUTE HOUR DAY MONTH YEAR DOW DST UTCOFF)."
   (pcase (split-string s " " t)
     (`(,_ ,month ,day ,_ ,year)
-      `(0 0 0 ,(string-to-number day) ,(quiescent-parse-month month) ,(string-to-number year) 0 nil 0))))
-
-(require 'use-package)
+     `(0 0 0 ,(string-to-number day) ,(quiescent-parse-month month) ,(string-to-number year) 0 nil 0))))
 
 (use-package git-timemachine
-    :ensure t)
+  :ensure t)
 
 (provide 'quiescent/git)
 ;;; quiescent/git ends here

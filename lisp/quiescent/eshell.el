@@ -7,13 +7,13 @@
 
 ;;; Code:
 
-(require 'use-package)
+(require 'package)
 (eval-and-compile
   (when (package-installed-p 'use-package-chords)
     (package-activate 'use-package-chords))
   (use-package use-package-chords
-      :ensure t))
-(require 'eshell)
+    :ensure t))
+
 (require 'em-prompt)
 (require 'vc-git)
 
@@ -26,7 +26,7 @@
   (if (or (string-equal (buffer-name) eshell-buffer-name)
           (string-match quiescent-eshell-project-buffer-regexp (buffer-name)))
       (delete-window)
-      (quiescent-eshell-switch-to-and-change-dir)))
+    (quiescent-eshell-switch-to-and-change-dir)))
 
 (defun quiescent-eshell-smart-initialise ()
   "Initialise `eshell-smart'."
@@ -34,12 +34,12 @@
     (eshell-smart-initialize)))
 
 (use-package em-smart
-    :chords ((",s" . quiescent-eshell))
-    :config (progn
-              (setq eshell-where-to-jump 'begin)
-              (setq eshell-review-quick-commands nil)
-              (setq eshell-smart-space-goes-to-end t)
-              (add-hook 'eshell-mode-hook 'quiescent-eshell-smart-initialize)))
+  :chords ((",s" . quiescent-eshell))
+  :config (progn
+            (setq eshell-where-to-jump 'begin)
+            (setq eshell-review-quick-commands nil)
+            (setq eshell-smart-space-goes-to-end t)
+            (add-hook 'eshell-mode-hook 'quiescent-eshell-smart-initialize)))
 
 ;; This is originally borrowed from Ben's journal, but has since been
 ;; heavily modified
@@ -51,7 +51,7 @@
     (let* ((possible-roots     (ignore-errors (project-roots (project-current))))
            (eshell-buffer-name (if possible-roots
                                    (format "*eshell: %s*" (car possible-roots))
-                                   "*popup-eshell*")))
+                                 "*popup-eshell*")))
       (eshell)
       (switch-to-prev-buffer)
       (switch-to-buffer-other-window eshell-buffer-name))
@@ -89,15 +89,15 @@
      (with-face (concat (eshell/pwd) " ") :background header-bg)
      (with-face (format-time-string "(%Y-%m-%d %H:%M) " (current-time)) :background header-bg :foreground "#888")
      (with-face
-         (or (ignore-errors (format "(%s)" (car (vc-git-branches)))) "")
-       :background header-bg)
+      (or (ignore-errors (format "(%s)" (car (vc-git-branches)))) "")
+      :background header-bg)
      (with-face "\n" :background header-bg)
      (with-face user-login-name :foreground "#5180b3")
      "@"
      (with-face "localhost" :foreground "green")
      (if (= (user-uid) 0)
          (with-face " #" :foreground "red")
-         " $")
+       " $")
      " ")))
 
 (defun quiescent-eshell-prompt ()
@@ -130,7 +130,7 @@ See `eshell-prompt-regexp'."
     (dotimes (_ (abs n))
       (if (> n 0)
           (re-search-forward eshell-prompt-regexp nil t nil)
-          (re-search-backward eshell-prompt-regexp nil t nil)))
+        (re-search-backward eshell-prompt-regexp nil t nil)))
     (when (< n 0)
       (re-search-forward eshell-prompt-regexp nil t nil))))
 
