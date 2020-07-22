@@ -10,9 +10,9 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Capa_1"
    enable-background="new 0 0 505.003 505.003"
-   height="20"
-   viewBox="0 0 19.72668 19.72668"
-   width="20"
+   height="20pt"
+   viewBox="0 0 26.30224 26.30224"
+   width="20pt"
    version="1.1"
    sodipodi:docname="social.svg"
    inkscape:version="0.92.4 5da689c313, 2019-01-14">
@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -46,11 +46,12 @@
        inkscape:collect="always"
        xlink:href="#linearGradient1652"
        id="linearGradient1654"
-       x1="5.4843049"
-       y1="14.823799"
-       x2="1.2157642"
-       y2="16.863752"
-       gradientUnits="userSpaceOnUse" />
+       x1="2.2658923"
+       y1="16.653214"
+       x2="1.7578126"
+       y2="16.931509"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.357861,0,0,1.357861,-0.24815498,-0.21920909)" />
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -65,22 +66,23 @@
      inkscape:window-height="1036"
      id="namedview1097"
      showgrid="false"
-     inkscape:zoom="8.8918332"
-     inkscape:cx="-4.0907568"
-     inkscape:cy="27.100652"
+     inkscape:zoom="21.441274"
+     inkscape:cx="29.518284"
+     inkscape:cy="12.692542"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="Capa_1" />
+     inkscape:current-layer="Capa_1"
+     units="pt" />
   <circle
-     style="fill:url(#linearGradient1654);fill-opacity:1;stroke:none;stroke-width:0.98788726;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     style="fill:url(#linearGradient1654);fill-opacity:1;stroke:none;stroke-width:1.34141362;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
      id="path1646"
-     cx="9.8375254"
-     cy="9.8430862"
-     r="9.1440859" />
+     cx="13.109838"
+     cy="13.146334"
+     r="12.416398" />
   <g
      id="g1094"
-     transform="matrix(0.03089908,0,0,0.03089908,2.0755307,2.3175428)">
+     transform="matrix(0.04195666,0,0,0.04195666,2.5701273,2.9276923)">
     <g
        id="g1086">
       <path
