@@ -209,8 +209,6 @@ Supply the (optional) list of ARGS to that process."
   (when (null quiescent-starting-up)
     (indium-interaction-mode 1)))
 
-(add-hook 'js2-mode-hook #'quiescent-indium-interaction-mode)
-
 (use-package js2-refactor
   :ensure t)
 
