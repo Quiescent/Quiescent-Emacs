@@ -3467,6 +3467,7 @@ js2-mode and give that a bash.
   <<js2-highlight-var-at-point>>
   <<js2-highlight-var-at-point-fix-timer>>
   <<js2-mode-extras>>
+  <<nodejs-repl>>
 #+END_SRC
 
 **** Eslint
@@ -3666,6 +3667,28 @@ which I do when I'm using Ramda.  The key to solving this is to add a
 case for handling =var= declarations (and maybe =let= and =const= too)
 e.g. =js2-var-decl-node-p= to =js2-imene-walk-ast=.  I don't have the
 time right now but I'm pretty sure that I'll be taking a look soon.
+
+**** NodeJS Repl
+Sometimes you want to just work with a REPL for some Node code that
+you're hacking away it.  In those instances full-blown installations
+like Indium provide too much functionality and require that you setup
+a whole project.  In those instances I prefer to just connect to a
+REPL and run some commands.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref nodejs-repl :lexical t
+  (use-package nodejs-repl
+    :ensure t)
+
+  (defun quiescent-activate-node-js-repl ()
+    "Activate a node-js repl for this session."
+    (interactive)
+    (progn
+      (define-key js2-mode-map (kbd "C-x C-e") #'nodejs-repl-send-last-expression)
+      (define-key js2-mode-map (kbd "C-c C-j") #'nodejs-repl-send-line)
+      (define-key js2-mode-map (kbd "C-c C-r") #'nodejs-repl-send-region)
+      (define-key js2-mode-map (kbd "C-c C-l") #'nodejs-repl-load-file)
+      (define-key js2-mode-map (kbd "C-c C-z") #'nodejs-repl-switch-to-repl)))
+#+end_src
 
 ** Typescript
 A project at work is using type script for tests.  I've started this
