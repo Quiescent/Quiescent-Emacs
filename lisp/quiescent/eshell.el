@@ -20,6 +20,8 @@
 (defconst quiescent-eshell-project-buffer-regexp "\*eshell.*\*"
   "A regular expression which matches project eshell buffer names.")
 
+(require 'eshell)
+
 (defun quiescent-eshell ()
   "Create split current window and make bottom half an eshell instance."
   (interactive)
@@ -39,7 +41,7 @@
             (setq eshell-where-to-jump 'begin)
             (setq eshell-review-quick-commands nil)
             (setq eshell-smart-space-goes-to-end t)
-            (add-hook 'eshell-mode-hook 'quiescent-eshell-smart-initialize)))
+            (add-hook 'eshell-mode-hook 'quiescent-eshell-smart-initialise)))
 
 ;; This is originally borrowed from Ben's journal, but has since been
 ;; heavily modified
@@ -48,10 +50,8 @@
   "Switch to eshell and make sure we're in the directory the current buffer is in."
   (interactive)
   (let ((dir default-directory))
-    (let* ((possible-roots     (ignore-errors (project-roots (project-current))))
-           (eshell-buffer-name (if possible-roots
-                                   (format "*eshell: %s*" (car possible-roots))
-                                 "*popup-eshell*")))
+    (let* ((root               (ignore-errors (project-root (project-current))))
+           (eshell-buffer-name (if root (format "*eshell: %s*" root) "*popup-eshell*")))
       (eshell)
       (switch-to-prev-buffer)
       (switch-to-buffer-other-window eshell-buffer-name))
