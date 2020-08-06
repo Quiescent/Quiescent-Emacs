@@ -1565,21 +1565,19 @@ I've also decided to use skeletons to make general SQL statements.
   (define-skeleton quiescent--react-function
       "Insert a react Function component."
     ""
-    "import React, { Component } from 'react';\n"
+    "import React from 'react';\n"
     "\n"
-    "export default function "
+    "export const "
     (quiescent-dash-to-camel
      (file-name-sans-extension
       (file-name-nondirectory (buffer-file-name))))
-    "("
+    " = ("
     (""
      str ", ")
-    ") "
-    "{\n"
-    "  return (\n"
+    ") => "
+    "(\n"
     "    <div></div>\n"
-    "  );\n"
-    "}\n")
+    ");\n")
 #+END_SRC
 
 ** Paredit
