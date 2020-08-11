@@ -6299,11 +6299,19 @@ because I want it to feel less cluttered.
   (defvar quiescent-org-agenda-visible-width 128
     "The width of the visible portion of the org agenda buffer.")
 
-  (defun quiescent-setup-agenda-margins ()
+  (defun quiescent-full-window-width (window)
+    "Produce the width of WINDOW including its margins."
+    (let ((margins (window-margins window)))
+      (+ (window-width window)
+         (or (car margins) 0)
+         (or (cdr margins) 0))))
+
+  (defun quiescent-setup-agenda-margins (&rest _)
     "Compute the margins for the agenda buffer and make it so."
     (dolist (window (window-list))
       (when (string-equal "*Org Agenda*" (buffer-name (window-buffer window)))
-       (let ((margin-width (round (max 0 (/ (- (window-width) quiescent-org-agenda-visible-width) 2)))))
+        (let ((margin-width (round (max 0 (/ (- (quiescent-full-window-width window)
+                                                quiescent-org-agenda-visible-width) 2)))))
          (set-window-margins window margin-width margin-width)))))
 
   (defun quiescent-reset-margins (&rest _)
@@ -6313,6 +6321,7 @@ because I want it to feel less cluttered.
         (set-window-margins window 0 0))))
 
   (advice-add #'split-window :before #'quiescent-reset-margins)
+  (advice-add #'split-window :after #'quiescent-setup-agenda-margins)
 
   (add-hook 'window-configuration-change-hook #'quiescent-setup-agenda-margins)
   (add-hook 'window-size-change-hook #'quiescent-setup-agenda-margins)
