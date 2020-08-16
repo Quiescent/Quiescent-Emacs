@@ -35,6 +35,7 @@
  '(icomplete-max-delay-chars 0)
  '(icomplete-minibuffer-setup-hook nil)
  '(icomplete-show-matches-on-no-input t)
+ '(jka-compr-verbose nil)
  '(large-file-warning-threshold 50000000)
  '(magit-tag-arguments nil)
  '(mail-source-delete-incoming 10)
