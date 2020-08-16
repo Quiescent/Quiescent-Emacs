@@ -47,6 +47,7 @@ environment.  This is done with the binding =C-c C-c=.
   <<change-keyboard-layouts>>
   <<system-specific-tasks>>
   <<system-specific-config>>
+  <<inhibit-tramp-progress>>
 #+END_SRC
 
 This section details the modifications which I've made to Emacs in
@@ -190,6 +191,18 @@ where emacs should start.
   (when (file-exists-p mail-settings-path)
     (load-file mail-settings-path))
 #+END_SRC
+
+** TRAMP
+Tramp is a fantastic system which uses UNIX tools to make any machine
+or environment appear as though it were local to this machine.  There
+are aspects of it that require customisation.  For instance when it
+opens compressed files then it indicates progress and shadows the
+eldoc prompt.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref inhibit-tramp-progress :lexical t
+  (setq tramp-inhibit-progress-reporter t)
+#+end_src
+
 
 * Programming Modifications Across the Board
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref programming-modifications-across-the-board :exports none
