@@ -107,6 +107,12 @@
           ([?\s-&] . (lambda (command)
                        (interactive (list (read-shell-command "$ ")))
                        (start-process-shell-command command nil command)))
+          ([?\s-*] . (lambda ()
+                       (interactive)
+                       (start-process-shell-command "*Firefox*" nil "firefox --new-tab --url https://www.vocabulary.com/")))
+          ([?\s-$] . (lambda ()
+                       (interactive)
+                       (start-process-shell-command "*Screenshot*" nil "import /home/edward/screenshot.png")))
           ;; Bind "s-<f2>" to "slock", a simple X display locker.
           ([s-f2] . (lambda ()
                       (interactive)
