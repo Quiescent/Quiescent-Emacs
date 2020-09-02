@@ -1739,9 +1739,7 @@ block or starting the definition of some sort of object literal.
 
   (defun quiescent-setup-electric-layout-js2-mode ()
     "Setup electric layout for js2-mode."
-    (progn
-      (add-to-list 'electric-layout-rules '(40 . after))
-      (add-to-list 'electric-layout-rules '(41 . before))))
+    (progn))
 
   (add-hook 'js2-mode-hook #'quiescent-setup-electric-layout-js2-mode)
   (add-hook 'rjsx-mode-hook #'quiescent-setup-electric-layout-js2-mode)
