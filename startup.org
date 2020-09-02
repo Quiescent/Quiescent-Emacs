@@ -1785,7 +1785,7 @@ up with this.
    :config
    (progn
      (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-     (add-hook 'prog-mode #'quiescent-emr-initialize)))
+     (add-hook 'prog-mode-hook #'quiescent-emr-initialize)))
 #+END_SRC
 
 ** Temp Buffers
