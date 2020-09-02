@@ -6067,8 +6067,8 @@ supports richer features.  Such as searching, occur and more.
        :hook (pdf-view-mode . quiescent-disable-composable-mode)
        :demand t
        :config (progn
-		 (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
-		 (pdf-tools-install))))
+                 (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
+                 (pdf-tools-install))))
 
   (eval install-pdf-tools)
 
