@@ -1694,15 +1694,18 @@ block or starting the definition of some sort of object literal.
   (require 'electric)
 
   (defun quiescent-activate-electric-layout ()
-    "Activate electric pair local mode."
+    "Activate electric layout local mode."
     (when (null quiescent-starting-up)
       (electric-layout-local-mode t)))
 
+  (defun quiescent-disable-electric-layout ()
+    "Disable electric layout local mode."
+    (when (null quiescent-starting-up)
+      (electric-layout-local-mode -1)))
 
   (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-activate-electric-layout))
         '(js-mode-hook
           js2-mode-hook
-          rjsx-mode-hook
           python-mode-hook
           typescript-mode-hook
           sh-mode-hook
@@ -1728,6 +1731,9 @@ block or starting the definition of some sort of object literal.
           inferior-ess-r-mode-hook
           terraform-mode-hook
           c-mode-hook))
+
+  (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-disable-electric-layout))
+        '(rjsx-mode-hook))
 
   (make-variable-buffer-local 'electric-layout-rules)
 
