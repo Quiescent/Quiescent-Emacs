@@ -3385,12 +3385,15 @@ on the mailing list.
 
   (defun quiescent-electric-layout-create-tag (n &optional killflag)
     "When N is 1 and KILLFLAG nil, if next char is ?< then insert a newline."
-    (progn
-      (save-excursion
-        (newline 2)
-        (indent-for-tab-command))
-      (forward-line 1)
-      (indent-for-tab-command)))
+    (when (and (eq n 1)
+               (null killflag)
+               (looking-at-p "<"))
+      (progn
+        (save-excursion
+          (newline 2)
+          (indent-for-tab-command))
+        (forward-line 1)
+        (indent-for-tab-command))))
 
   (advice-add #'rjsx-delete-creates-full-tag :after #'quiescent-electric-layout-create-tag)
 #+END_SRC
