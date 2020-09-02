@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: expression
+# key: e
+# --
+${1:variable}=$\{ $0 \}\
