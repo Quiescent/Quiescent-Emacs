@@ -3789,7 +3789,7 @@ working typescript setup I thought that I'd go ahead and set it up.
      (tide-setup)
      (define-key tide-mode-map (kbd "M-?") 'tide-references)
      (tide-hl-identifier-mode +1)
-     (setq company-backends '(company-tide company-files))
+     (setq-local company-backends '(company-tide company-files))
      (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack))))
 #+END_SRC
 
