@@ -2,4 +2,4 @@
 # name: expression
 # key: e
 # --
-${1:variable}=$\{ $0 \}\
+${1:variable}=\{ $0 \}
