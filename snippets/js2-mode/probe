@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: probe
-# key: p
+# key: probe
 # --
 function probe(msg) {
   if (!msg) msg = "";
