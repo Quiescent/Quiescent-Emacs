@@ -806,6 +806,15 @@ supported completion framework.
         (setq company-frontends '(company-preview-frontend))
       (setq company-frontends '(company-pseudo-tooltip-frontend))))
 
+  (defun quiescent-company-complete-selection ()
+    "Complete the current selection, unless we're in comint buffers.
+
+  In comint buffers defer to the comint send input command."
+    (interactive)
+    (if (derived-mode-p 'comint-mode)
+        (call-interactively #'comint-send-input)
+      (call-interactively #'company-complete-selection)))
+
   (use-package company
    :ensure t
    :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
@@ -819,6 +828,7 @@ supported completion framework.
      (define-key company-active-map (kbd "M-,")   #'company-select-previous)
      (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
      (define-key company-active-map (kbd "C-m")   nil)
+     (define-key company-active-map (kbd "<return>") #'quiescent-company-complete-selection)
      (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
      (global-set-key (kbd "C-'") #'company-complete-selection)
      (global-set-key (kbd "C-.") #'company-complete)
