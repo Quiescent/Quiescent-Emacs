@@ -819,6 +819,7 @@ supported completion framework.
      (define-key company-active-map (kbd "M-,")   #'company-select-previous)
      (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
      (define-key company-active-map (kbd "C-m")   nil)
+     (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
      (global-set-key (kbd "C-'") #'company-complete-selection)
      (global-set-key (kbd "C-.") #'company-complete)
      (global-set-key (kbd "C-,") #'company-complete)
