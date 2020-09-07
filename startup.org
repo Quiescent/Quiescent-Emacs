@@ -808,7 +808,7 @@ supported completion framework.
 
   (use-package company
    :ensure t
-   :hook (((prog-mode text-mode) . quiescent-activate-company-mode))
+   :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
    :config
    (progn
      (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
