@@ -3787,9 +3787,11 @@ list which it was in, with that list.
   (defun quiescent-js2-raise-variable (p)
     "Raise the variable at point, P."
     (interactive "d")
-    (let ((expression (thing-at-point 'sexp)))
+    (let* ((node       (js2r--closest-extractable-node))
+           (expression (buffer-substring (js2-node-abs-pos node) (js2-node-abs-end node))))
       (backward-up-list)
-      (kill-sexp)
+      (let ((new-node (js2r--closest-extractable-node)))
+        (delete-region (js2-node-abs-pos new-node) (js2-node-abs-end new-node)))
       (insert expression)))
 
   (define-key js2-highlight-vars-local-keymap (kbd "M-r") nil)
