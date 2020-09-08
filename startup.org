@@ -3554,6 +3554,7 @@ js2-mode and give that a bash.
   <<js2-highlight-var-at-point-fix-timer>>
   <<js2-mode-extras>>
   <<nodejs-repl>>
+  <<js2-raise-variable>>
 #+END_SRC
 
 **** Eslint
@@ -3774,6 +3775,25 @@ REPL and run some commands.
       (define-key js2-mode-map (kbd "C-c C-r") #'nodejs-repl-send-region)
       (define-key js2-mode-map (kbd "C-c C-l") #'nodejs-repl-load-file)
       (define-key js2-mode-map (kbd "C-c C-z") #'nodejs-repl-switch-to-repl)))
+#+end_src
+
+**** Raise Variable
+I write a lot of Lisp and one of the things that you can do very
+easily is move expressions up one node in the syntax tree.  i.e. you
+can put the point on a list, and then raise that list to replace the
+list which it was in, with that list.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref js2-raise-variable :lexical t
+  (defun quiescent-js2-raise-variable (p)
+    "Raise the variable at point, P."
+    (interactive "d")
+    (let ((expression (thing-at-point 'sexp)))
+      (backward-up-list)
+      (kill-sexp)
+      (insert expression)))
+
+  (define-key js2-highlight-vars-local-keymap (kbd "M-r") nil)
+  (define-key js2-mode-map (kbd "M-r") #'quiescent-js2-raise-variable)
 #+end_src
 
 ** Typescript
