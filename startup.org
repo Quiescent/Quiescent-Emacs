@@ -2224,6 +2224,7 @@ Before we can configure helm we need to load the package.
       (helm-ff-file-name-history-use-recentf t)
       (helm-grep-input-idle-delay            0.02)
       (helm-input-idle-delay                 0)
+      (helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json'")
       :config (progn
                 (require 'helm-config)
                 (helm-mode 1)
