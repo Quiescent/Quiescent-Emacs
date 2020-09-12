@@ -2452,7 +2452,8 @@ post it's become a package on Melpa(!)
               (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
               (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
               (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-              (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous))
+              (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)
+              (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common))
     :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 #+END_SRC
 
