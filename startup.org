@@ -3788,7 +3788,7 @@ list which it was in, with that list.
   (defun quiescent-js2-raise-variable (p)
     "Raise the variable at point, P."
     (interactive "d")
-    (let* ((node          (ignore-errors (js2r--closest-extractable-node)))
+    (let* ((node          (ignore-errors (js2-node-at-point)))
            (node-start    (and node (js2-node-abs-pos node)))
            (up-list-point (save-excursion (ignore-errors (backward-up-list)) (point)))
            (expression    (if (or (null node) (= up-list-point node-start))
