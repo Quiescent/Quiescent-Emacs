@@ -4964,6 +4964,7 @@ switching or being distracted by adds and animation.
   <<org-reveal>>
   <<secretaria>>
   <<org-brain>>
+  <<org-pomodoro>>
 #+END_SRC
 Note: this section was heavily modified and the flow might not make a
 whole lot of sense anymore.  I've aggregated all of the code blocks
@@ -5465,6 +5466,17 @@ tool.
           org-brain-file-entries-use-title nil))
 #+end_src
 
+*** Org Pomodoro
+The Pomodoro technique is a method of maximizing productivity by
+engaging in shorter spans of concentration and then giving your brain
+a break regularly.  I'm interested in trying it out, and, of course,
+Emacs has a package for it.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-pomodoro :lexical t
+  (use-package org-pomodoro
+    :ensure t
+    :custom (org-pomodoro-length 45))
+#+end_src
 
 ** Htmlize
 Org mode can export to HTML with source code highlighting.  You need
