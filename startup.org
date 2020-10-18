@@ -5475,7 +5475,7 @@ Emacs has a package for it.
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-pomodoro :lexical t
   (use-package org-pomodoro
     :ensure t
-    :custom (org-pomodoro-length 45))
+    :custom (org-pomodoro-length 25))
 #+end_src
 
 ** Htmlize
