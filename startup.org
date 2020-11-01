@@ -3880,9 +3880,6 @@ provides interactive development and debugging and has been the
 inspiration for many modes after it.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref slime :lexical t
-  (defconst slime--sbcl-helper-path "~/quicklisp/slime-helper.el"
-    "Path to sbcl-generated slime helper elisp file.")
-
   (use-package slime-company
       :ensure t)
 
@@ -3960,9 +3957,6 @@ inspiration for many modes after it.
       (add-hook 'slime-mode-hook      #'quiescent-setup-slime-completion)
       (add-hook 'slime-repl-mode-hook #'quiescent-setup-slime-completion))
     :init (progn (setq inferior-lisp-program "sbcl")
-                 (if (file-exists-p slime--sbcl-helper-path)
-                     (load slime--sbcl-helper-path)
-                   (warn "Slime helper file not found"))
                  (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))))
 
   (defun quiescent-setup-slime ()
@@ -3970,6 +3964,13 @@ inspiration for many modes after it.
     (slime-setup '(slime-fancy slime-company slime-c-p-c slime-highlight-edits slime-xref-browser)))
 
   (add-hook 'after-init-hook #'quiescent-setup-slime)
+
+  (defun quiescent-slime-restart-advice (f &rest args)
+    "Wrap call to Slime restart function, F, with ARGS saving window state."
+    (save-window-excursion
+      (apply f args)))
+
+  (advice-add #'slime-restart-sentinel :around #'quiescent-slime-restart-advice)
 #+END_SRC
 
 Instructions for setup:
@@ -3983,8 +3984,6 @@ Instructions for setup:
     previous command should have dropped you into the ~sbcl~ REPL).
  6. Add ~quicklisp~ to the startup of ~sbcl~ with
     ~(ql:add-to-init-file)~.
- 7. Run ~(ql:quickload "quicklisp-slime-helper")~ to get a helper
-    ~elisp~ file to start slime.
 
 ** Clojure
 Yet another server-based program for editing code in Emacs is CIDER.
