@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: let
+# name: lambda
 # key: l
 # --
-(let* ((${1:name} ${2:value})) $0)
+(lambda (${1:args}) (${2:body}))

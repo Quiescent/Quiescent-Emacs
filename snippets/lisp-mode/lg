@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: log
+# key: lg
+# --
+(format t "~a~%" $1)$0

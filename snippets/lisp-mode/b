@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: bind
+# key: b
+# --
+(bind ((${1:name} ${2:value}))
+  $0)
