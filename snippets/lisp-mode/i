@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: iter
+# key: i
+# --
+(iter
+  ($0))
