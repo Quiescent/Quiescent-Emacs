@@ -3385,6 +3385,45 @@ and tag completion mechanisms than the built in mode.
     :ensure t
     :config
     (add-hook 'web-mode-hook #'emmet-mode))
+
+  (use-package mmm-mode
+    :ensure t
+    :config
+    (setq mmm-global-mode 'maybe)
+    (mmm-add-mode-ext-class 'html-mode "\\.html\\'" 'html-js)
+    (mmm-add-mode-ext-class 'html-mode "\\.html\\'" 'embedded-css))
+
+  (defun quiescent-indirectly-edit-script (point)
+    "Indirectly edit the script that POINT is in.
+
+  Produce an error if it isn't in a script."
+    (interactive "p")
+    (let* ((script-start (save-excursion
+                           (web-mode-element-parent)
+                           (when (looking-at "<script")
+                             (web-mode-tag-end))))
+           (script-end (save-excursion
+                         (when script-start
+                           (goto-char script-start)
+                           (web-mode-element-end)
+                           (backward-char)
+                           (web-mode-tag-beginning)
+                           (point)))))
+      (when (and script-start script-end)
+        (narrow-to-region script-start script-end)
+        (js2-mode))))
+
+  (defun quiescent-indirectly-edit-script-dwim (point)
+    "Either start or end an indirect edit session for script that POINT is in."
+    (interactive "p")
+    (if (buffer-narrowed-p)
+        (progn
+          (widen)
+          (web-mode 1))
+      (quiescent-indirectly-edit-script point)))
+
+  (define-key web-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)
+  (define-key js2-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)
 #+END_SRC
 
 ** SASS
