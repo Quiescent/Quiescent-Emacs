@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: use
+# key: u
+# --
+(:use :$1)$0

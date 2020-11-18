@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: quickload
+# key: q
+# --
+(ql:quickload :$1)$0
