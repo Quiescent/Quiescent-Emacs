@@ -3429,7 +3429,8 @@ and tag completion mechanisms than the built in mode.
       (define-key js2-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)))
 
   (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'html-tidy 'web-mode))
+    (flycheck-add-mode 'html-tidy 'web-mode)
+    (flycheck-add-next-checker 'html-tidy 'html-jshint))
 #+END_SRC
 
 ** SASS

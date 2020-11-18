@@ -44,6 +44,8 @@
      "stdin" (flycheck-dequalify-error-ids errors)))
   :modes (web-mode))
 
+(add-to-list 'flycheck-checkers 'html-jshint t)
+
 ;; Courtesy: http://daniel-bush.blogspot.co.za/2014/12/emacs-flycheck-and-jshint-and-other.html
 (flycheck-define-checker javascript-jscs
   "A JavaScript style checker using jscs.
