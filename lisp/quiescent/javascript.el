@@ -44,6 +44,8 @@
      "stdin" (flycheck-dequalify-error-ids errors)))
   :modes (web-mode))
 
+(flycheck-add-next-checker 'html-tidy 'html-jshint)
+
 (add-to-list 'flycheck-checkers 'html-jshint t)
 
 ;; Courtesy: http://daniel-bush.blogspot.co.za/2014/12/emacs-flycheck-and-jshint-and-other.html
