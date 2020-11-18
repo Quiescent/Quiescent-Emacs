@@ -34,6 +34,16 @@
 
 (require 'flycheck)
 
+(flycheck-define-checker html-jshint
+  "A JavaScript linter for html."
+  :command ("jshint" "--extract=auto" "--reporter=checkstyle" source)
+  :error-parser flycheck-parse-checkstyle
+  :error-filter
+  (lambda (errors)
+    (flycheck-remove-error-file-names
+     "stdin" (flycheck-dequalify-error-ids errors)))
+  :modes (web-mode))
+
 ;; Courtesy: http://daniel-bush.blogspot.co.za/2014/12/emacs-flycheck-and-jshint-and-other.html
 (flycheck-define-checker javascript-jscs
   "A JavaScript style checker using jscs.
