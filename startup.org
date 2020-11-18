@@ -3422,7 +3422,7 @@ and tag completion mechanisms than the built in mode.
           (web-mode 1))
       (quiescent-indirectly-edit-script point)))
 
-  (eval-after-load "js2-mode"
+  (with-eval-after-load "js2-mode"
     (progn
       (require 'js2-mode)
       (define-key web-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)
