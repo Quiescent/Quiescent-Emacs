@@ -269,7 +269,7 @@ where emacs should start.
   <<keyboard-macros>>
   <<string-replacement>>
   <<aligned-navigation>>
-  <<semantic>>
+  ;;<<semantic>>
   <<separedit>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
