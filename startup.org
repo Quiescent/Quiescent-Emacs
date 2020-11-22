@@ -617,39 +617,41 @@ what Iy mode will give you, and it's not only for multiple cursors
 this is just the best case I could think of.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref iy-mods :lexical t
-  (defun quiescent-init-iy-hydra-forward ()
-    "Start using the iy hydra with iy forward."
-    (interactive)
-    (call-interactively 'iy-go-to-char)
-    (quiescent-hydra-iy-go-to-char/body))
+  ;; (defun quiescent-init-iy-hydra-forward ()
+  ;;   "Start using the iy hydra with iy forward."
+  ;;   (interactive)
+  ;;   (call-interactively 'iy-go-to-char)
+  ;;   (quiescent-hydra-iy-go-to-char/body))
 
-  (defun quiescent-init-iy-hydra-backward ()
-    "Start using the iy hydra with iy backward."
-    (interactive)
-    (call-interactively 'iy-go-to-char-backward)
-    (quiescent-hydra-iy-go-to-char/body))
+  ;; (defun quiescent-init-iy-hydra-backward ()
+  ;;   "Start using the iy hydra with iy backward."
+  ;;   (interactive)
+  ;;   (call-interactively 'iy-go-to-char-backward)
+  ;;   (quiescent-hydra-iy-go-to-char/body))
 
-  (use-package iy-go-to-char
-   :ensure t)
+  ;; (use-package iy-go-to-char
+  ;;  :ensure t)
 
-  (global-set-key (kbd "s-d") #'quiescent-init-iy-hydra-forward)
-  (global-set-key (kbd "s-i") #'quiescent-init-iy-hydra-backward)
+  ;; (global-set-key (kbd "s-d") #'quiescent-init-iy-hydra-forward)
+  ;; (global-set-key (kbd "s-i") #'quiescent-init-iy-hydra-backward)
 
-  (defhydra quiescent-hydra-iy-go-to-char (:color amaranth)
-    "
-      Iy go to character Hydra
-      ^Forward^                    ^Backward^
-      ^^^^^^^^-------------------------------
-      _f_: forward              _b_: backward
-      _n_: continue forward     _p_: continue backward
+  ;; (defhydra quiescent-hydra-iy-go-to-char (:color amaranth)
+  ;;   "
+  ;;     Iy go to character Hydra
+  ;;     ^Forward^                    ^Backward^
+  ;;     ^^^^^^^^-------------------------------
+  ;;     _f_: forward              _b_: backward
+  ;;     _n_: continue forward     _p_: continue backward
 
-      _q_: quit
-      "
-    ("f" iy-go-to-char                   nil)
-    ("n" iy-go-to-char-continue          nil)
-    ("b" iy-go-to-char-backward          nil)
-    ("p" iy-go-to-char-continue-backward nil)
-    ("q" nil                             nil))
+  ;;     _q_: quit
+  ;;     "
+  ;;   ("f" iy-go-to-char                   nil)
+  ;;   ("n" iy-go-to-char-continue          nil)
+  ;;   ("b" iy-go-to-char-backward          nil)
+  ;;   ("p" iy-go-to-char-continue-backward nil)
+  ;;   ("q" nil                             nil))
+
+  ;; iy seems to have dissapeared!?
 #+END_SRC
 
 ** Cross Link
