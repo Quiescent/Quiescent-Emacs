@@ -6273,7 +6273,6 @@ frames, fullscreen etc.
 * Library Additions to Emacs
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref library-additions-to-emacs :exports none :lexical t
   <<async>>
-  <<gcmh>>
 #+END_SRC
 
 Because Emacs is extensible it's possible to extend the features of
@@ -6300,6 +6299,9 @@ collection while the system is idle.  If you can manage this then
 longer running tasks will run with far less garbage collection.  Since
 user interaction is the main axis of computation in Emacs it seems
 reasonable that this will just be a good improvement overall.
+
+I've turned it off because I've encountered very long pauses recently
+and I think that they may be massive GC pauses.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref gcmh :lexical t
   (use-package gcmh
