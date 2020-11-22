@@ -211,8 +211,8 @@ Supply the (optional) list of ARGS to that process."
 ;; To start debugging, open the following URL in Chrome:
 ;;     chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:9229/a8ef938b-045a-4098-b50e-e1a18cf415c7
 
-(use-package indium
-  :ensure t)
+;; (use-package indium
+;;   :ensure t)
 
 (defun quiescent-is-js2-mode ()
   "Produce t if this buffer is in `js2-mode'."
