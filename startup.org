@@ -4536,6 +4536,7 @@ Statistics (ESS) package.
   <<linkd>>
   <<calctex>>
   <<excorporate>>
+  <<screenshot>>
 #+END_SRC
 
 ** GNUs
@@ -5978,6 +5979,20 @@ find anything at all.
   (use-package excorporate
       :ensure t)
 #+END_SRC
+
+** Taking Screenshots
+When Reddit is nice, it's awesome!  I found a package that someone
+wrote which can take screenshots of text to share with others.  It'll
+handle margins well and add a drop frame too!
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref screenshot :exports none :lexical t
+  (use-package posframe
+    :ensure t)
+
+  (eval-when '(compile load eval)
+    (require 'screenshot)
+    (add-to-list 'load-path "~/.emacs.d/lisp/screenshot"))
+#+end_src
 
 * Writing Natural Language
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
