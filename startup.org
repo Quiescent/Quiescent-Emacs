@@ -5990,8 +5990,8 @@ handle margins well and add a drop frame too!
     :ensure t)
 
   (eval-when '(compile load eval)
-    (require 'screenshot)
-    (add-to-list 'load-path "~/.emacs.d/lisp/screenshot"))
+    (add-to-list 'load-path "~/.emacs.d/lisp/screenshot")
+    (require 'screenshot))
 #+end_src
 
 * Writing Natural Language
