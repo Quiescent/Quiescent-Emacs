@@ -19,3 +19,6 @@
 [submodule "lisp/org-brain-export"]
 	path = lisp/org-brain-export
 	url = git@github.com:Kungsgeten/org-brain-export.git
+[submodule "lisp/screenshot"]
+	path = lisp/screenshot
+	url = git@github.com:tecosaur/screenshot.git
