@@ -57,7 +57,13 @@
  '(smtpmail-smtp-service 25)
  '(tags-revert-without-query t)
  '(tide-imenu-flatten t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(zoneinfo-style-world-list
+   '(("America/Los_Angeles" "Seattle")
+     ("America/New_York" "New York")
+     ("Europe/London" "London")
+     ("Europe/Paris" "Paris")
+     ("Africa/Johannesburg" "Johannesburg"))))
 
 ;; Rainbow delimeters theme from: https://ericscrivner.me/2015/06/better-emacs-rainbow-delimiters-color-scheme/
 (custom-set-faces
