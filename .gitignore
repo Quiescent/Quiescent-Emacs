@@ -9,6 +9,8 @@
 *~
 
 # Folders
+racket-mode/
+image-dired/
 .cask/
 url/
 4clojure-answers/
@@ -25,6 +27,7 @@ transient/
 
 # Files
 bbdb
+projects
 notes
 conf/system-conf.el
 org-settings/inbox.org

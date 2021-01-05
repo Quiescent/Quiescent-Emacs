@@ -4,6 +4,8 @@
 (setq mc/cmds-to-run-for-all
       '(
         Custom-newline
+        LaTeX-insert-left-brace
+        TeX-insert-backslash
         artist-backward-char
         artist-forward-char
         artist-next-line
@@ -19,6 +21,7 @@
         c-electric-paren
         c-electric-semi&comma
         c-electric-slash
+        company-complete
         complete-or-cycle-word-at-point
         complete-symbol
         completion-at-point
@@ -33,13 +36,16 @@
         composable-copy-region-as-kill
         composable-kill-region
         composable-save-region
+        composable-upcase-region
         dabbrev-completion
         delete-horizontal-space
+        delete-indentation
         dired-mark
         dired-next-line
         down-list
         ediff-dir-diff-copy-file
         electric-pair-delete-pair
+        enh-ruby-electric-brace
         eval-expression
         forward-sentence
         forward-sexp
@@ -54,6 +60,7 @@
         iy-go-to-char--command
         jdee-kill-camel-tok
         js2-line-break
+        kill-region
         kill-sentence
         kill-sexp
         magit-discard
@@ -62,7 +69,12 @@
         mark-sexp
         markdown-outdent-or-delete
         next-error
+        org-agenda-do-date-earlier
+        org-agenda-do-date-later
+        org-agenda-next-line
+        org-agenda-previous-line
         org-beginning-of-line
+        org-comment-dwim
         org-cycle
         org-delete-char
         org-end-of-line
@@ -75,6 +87,7 @@
         org-schedule
         org-self-insert-command
         org-shiftdown
+        org-shiftright
         org-yank
         other-frame
         paredit-backslash
@@ -92,6 +105,7 @@
         paredit-open-round
         paredit-raise-sexp
         paredit-semicolon
+        paredit-splice-sexp
         paredit-split-sexp
         picture-clear-column
         picture-clear-line
@@ -102,12 +116,18 @@
         quiescent-backward-up-list
         quiescent-correct-linting-errors-at-point
         quiescent-hydra-iy-go-to-char/nil
+        replace-string
         rjsx-delete-creates-full-tag
+        rjsx-electric-gt
+        rjsx-electric-lt
+        rjsx-jump-tag
         ruby-end-of-block
+        run-python
         save-some-buffers
         sgml-slash
         sh-assignment
         slime-autodoc-space
+        slime-compile-and-load-file
         slime-eval-defun
         smartscan-symbol-go-backward
         smie-down-list
@@ -139,7 +159,9 @@
       '(
         dired-do-delete
         dired-toggle-read-only
+        emr-show-refactor-menu
         end-of-buffer
+        handle-switch-frame
         ibuffer-do-delete
         ibuffer-do-kill-on-deletion-marks
         ibuffer-toggle-sorting-mode
@@ -151,6 +173,9 @@
         mark-whole-buffer
         overwrite-mode
         proced-send-signal
+        quiescent-close-help
+        slime-compile-defun
+        string-rectangle
         switch-to-buffer
         wgrep-change-to-wgrep-mode
         window-jump-down

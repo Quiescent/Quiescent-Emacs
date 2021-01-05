@@ -70,7 +70,7 @@
                                                   user-emacs-directory)))
           (when (or (not (file-exists-p config-tangled))
                     (file-newer-than-file-p config-source config-tangled))
-            (org-babel-tangle-file config-source config-tangled 'emacs-lisp))
+            (org-babel-tangle-file config-source config-tangled "emacs-lisp"))
           (when (null (byte-recompile-file config-tangled nil 0))
             (error "Compilation errors"))
           (load-file config-compiled)))
