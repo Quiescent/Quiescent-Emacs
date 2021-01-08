@@ -162,20 +162,19 @@ Supply the (optional) list of ARGS to that process."
   (let* ((node-process-name (quiescent-node-name-for-this-file))
          (random-port       (quiescent-random-node-port))
          (file-path         (buffer-file-name))
-         (node-process
-          (progn
-            (when (bufferp (get-buffer node-process-name))
-              (with-current-buffer node-process-name (erase-buffer)))
-            (apply
-             #'start-process
-             node-process-name
-             node-process-name
-             process
-             (cons (format "--inspect-brk=%s" random-port)
-                   (reverse (cons file-path
-                                  (reverse args)))))))
          port
          path)
+    (progn
+      (when (bufferp (get-buffer node-process-name))
+        (with-current-buffer node-process-name (erase-buffer)))
+      (apply
+       #'start-process
+       node-process-name
+       node-process-name
+       process
+       (cons (format "--inspect-brk=%s" random-port)
+             (reverse (cons file-path
+                            (reverse args))))))
     (with-current-buffer node-process-name
       (let ((buffer-text (progn
                            (while (string= "" (buffer-string))
