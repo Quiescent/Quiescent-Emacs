@@ -128,7 +128,7 @@ which does any necessary prep for the test."
 ;; Left these here because I think that they might be useful
 (defun quiescent-babel-process-name (buffer-name)
   "Produce a babel process name for BUFFER-NAME."
-  (format "*babel-process-%s*" (buffer-name)))
+  (format "*babel-process-%s*" buffer-name))
 
 (defvar quiescent-use-babel-with-launched-files t
   "Whether files should first be translated before being debugged.")
