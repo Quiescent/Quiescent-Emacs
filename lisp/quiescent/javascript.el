@@ -86,7 +86,7 @@ See URL `https://www.npmjs.com/package/jscs'."
     (flycheck-select-checker 'javascript-jshint)))
 
 (defconst quiescent-node-url-extracting-regexp "://.*127.0.0.1:\\([0-9]+\\)/\\(.*\\)"
-  "A regular expression which can extract the port and path of the node process for indium.")
+  "A regular expression which can extract the port and path of node process.")
 
 (defconst quiescent-node-buffer-failed "failed"
   "A regular expression to match instances where the node buffer failed to start.")
