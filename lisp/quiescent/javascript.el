@@ -226,7 +226,7 @@ Supply the (optional) list of ARGS to that process."
 (use-package js2-refactor
   :ensure t)
 
-(defun quiescent-pluse-ignoring-args (&rest args)
+(defun quiescent-pluse-ignoring-args (&rest _)
   "Run `xref-pulse-momentarily' ignoring ARGS."
   (xref-pulse-momentarily))
 
