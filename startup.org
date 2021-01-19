@@ -2215,6 +2215,9 @@ Before we can configure helm we need to load the package.
     (let ((default-directory (locate-dominating-file default-directory ".git")))
       (helm-grep-do-git-grep arg)))
 
+  (cl-evel-when '(compile load execute)
+                (add-to-load-path "~/.emacs.d/lisp/helm-rg"))
+
   (use-package helm
       :ensure t
       :demand t
@@ -2238,8 +2241,12 @@ Before we can configure helm we need to load the package.
                 (global-set-key (kbd "C-x C-f")   #'helm-find-files)
                 (global-set-key (kbd "C-x b")     #'helm-buffers-list)
                 (global-set-key (kbd "M-x")       #'helm-M-x)
-                (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep)
-                (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep)
+                (if (eq system-type 'windows-nt)
+                    (global-set-key (kbd "C-S-f")     #'helm-rg)
+                    (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
+                (if (eq system-type 'windows-nt)
+                    (global-set-key (kbd "C-c p s g") #'helm-rg)
+                    (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
                 (global-set-key (kbd "C-h C-f")   #'helm-recentf))
       :init (with-eval-after-load "helm"
               (helm-mode 1)))
