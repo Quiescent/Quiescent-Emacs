@@ -77,6 +77,21 @@ See URL `https://www.npmjs.com/package/jscs'."
   (when (null quiescent-starting-up)
     (flycheck-select-checker 'javascript-eslint)))
 
+;; From https://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint
+          (and root
+               (expand-file-name (format "node_modules/.bin/eslint%s"
+                                         (if (eq system-type 'windows-nt) ".cmd" ""))
+                                 root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
 (defun quiescent-select-jshint ()
   "Select JSHint as the linter in this buffer."
   (interactive)
