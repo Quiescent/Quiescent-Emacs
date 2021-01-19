@@ -2215,9 +2215,12 @@ Before we can configure helm we need to load the package.
     (let ((default-directory (locate-dominating-file default-directory ".git")))
       (helm-grep-do-git-grep arg)))
 
-  (cl-evel-when '(compile load execute)
-                (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg")
-                (require 'helm-rg))
+  (eval-when-compile
+    (require 'cl-macs))
+
+  (cl-eval-when '(compile load execute)
+    (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg")
+    (require 'helm-rg))
 
   (use-package helm
       :ensure t
@@ -2232,25 +2235,25 @@ Before we can configure helm we need to load the package.
       (helm-input-idle-delay                 0)
       (helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json' ':!*yarn.lock'")
       :config (progn
-                (require 'helm-config)
-                (helm-mode 1)
-                (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
-                (require 'helm-adaptive)
-                (helm-adaptive-mode t)
-                (global-set-key (kbd "M-y")       #'helm-show-kill-ring)
-                (global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
-                (global-set-key (kbd "C-x C-f")   #'helm-find-files)
-                (global-set-key (kbd "C-x b")     #'helm-buffers-list)
-                (global-set-key (kbd "M-x")       #'helm-M-x)
-                (if (eq system-type 'windows-nt)
-                    (global-set-key (kbd "C-S-f")     #'helm-rg)
-                    (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
-                (if (eq system-type 'windows-nt)
-                    (global-set-key (kbd "C-c p s g") #'helm-rg)
-                    (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
-                (global-set-key (kbd "C-h C-f")   #'helm-recentf))
+		(require 'helm-config)
+		(helm-mode 1)
+		(define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
+		(require 'helm-adaptive)
+		(helm-adaptive-mode t)
+		(global-set-key (kbd "M-y")       #'helm-show-kill-ring)
+		(global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
+		(global-set-key (kbd "C-x C-f")   #'helm-find-files)
+		(global-set-key (kbd "C-x b")     #'helm-buffers-list)
+		(global-set-key (kbd "M-x")       #'helm-M-x)
+		(if (eq system-type 'windows-nt)
+		    (global-set-key (kbd "C-S-f")     #'helm-rg)
+		    (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
+		(if (eq system-type 'windows-nt)
+		    (global-set-key (kbd "C-c p s g") #'helm-rg)
+		    (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
+		(global-set-key (kbd "C-h C-f")   #'helm-recentf))
       :init (with-eval-after-load "helm"
-              (helm-mode 1)))
+	      (helm-mode 1)))
 #+END_SRC
 
 ** Shell
