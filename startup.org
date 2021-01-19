@@ -3638,7 +3638,7 @@ things like fixing linting and then remove them later.  This section
 is dedicated to doing that sort of thing for Javascript.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eslint-fix-mode :lexical t
-  (defvar quiescent-javascript-eslint-fix-modes '(js2-mode web-mode js-jsx-mode)
+  (defvar quiescent-javascript-eslint-fix-modes '(js2-mode web-mode js-jsx-mode rjsx-mode)
     "The modes which should have eslint --fix run on their files.")
 
   (define-minor-mode quiescent-global-javascript-eslint-fix-mode ()
@@ -3670,13 +3670,14 @@ is dedicated to doing that sort of thing for Javascript.
 
   (defun quiescent-javascript-eslint-this-file ()
     "Eslint this file with fix turned on."
+    (interactive)
     (when (member major-mode quiescent-javascript-eslint-fix-modes)
       (setq quiescent-buffer-to-revert (current-buffer))
       (async-start-process (format "eslint-%s" (buffer-file-name))
                   "eslint"
                   (lambda (process) (auto-revert-buffers))
                   "--fix"
-                  (shell-quote-argument (buffer-file-name)))))
+                  (buffer-file-name))))
 #+END_SRC
 
 Note that the following packages might be required globally to make
