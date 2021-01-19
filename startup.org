@@ -2216,7 +2216,7 @@ Before we can configure helm we need to load the package.
       (helm-grep-do-git-grep arg)))
 
   (cl-evel-when '(compile load execute)
-                (add-to-load-path "~/.emacs.d/lisp/helm-rg")
+                (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg")
                 (require 'helm-rg))
 
   (use-package helm
