@@ -57,6 +57,8 @@ get_external_dependencies:
 	cd ~/.emacs.d/ && git submodule update --init lisp/ado-mode
 	@echo "> Fetching org-brain-export"
 	cd ~/.emacs.d/ && git submodule update --init lisp/org-brain-export
+	@echo "> Fetching helm-rg"
+	cd ~/.emacs.d/ && git submodule update --init lisp/helm-rg
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
@@ -79,6 +81,9 @@ build_external_dependencies:
 	@echo "> Building org-brain-export"
 	cd ~/.emacs.d/lisp/org-brain-export && rm -rf *.elc
 	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/org-brain-export/org-brain-export.el\")"
+	@echo "> Building helm-rg"
+	cd ~/.emacs.d/lisp/helm-rg && rm -rf *.elc
+	$(EMACS_CLIENT) --eval "(byte-compile-file \"~/.emacs.d/lisp/org-brain-export/helm-rg.el\")"
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="

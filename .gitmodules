@@ -22,3 +22,6 @@
 [submodule "lisp/screenshot"]
 	path = lisp/screenshot
 	url = git@github.com:tecosaur/screenshot.git
+[submodule "lisp/helm-rg"]
+	path = lisp/helm-rg
+	url = git@github.com:microamp/helm-rg.git
