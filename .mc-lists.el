@@ -47,6 +47,7 @@
         electric-pair-delete-pair
         enh-ruby-electric-brace
         eval-expression
+        fill-paragraph
         forward-sentence
         forward-sexp
         gnus-summary-mark-as-read-forward
