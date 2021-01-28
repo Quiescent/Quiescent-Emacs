@@ -2218,7 +2218,7 @@ Before we can configure helm we need to load the package.
   (eval-when-compile
     (require 'cl-macs))
 
-  (eval-when-compile
+  (eval-and-compile
     (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
   (require 'helm-rg)
 
