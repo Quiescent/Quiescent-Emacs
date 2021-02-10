@@ -2453,7 +2453,8 @@ post it's become a package on Melpa(!)
     "Setup completion for the Emacs shell."
     (when (null quiescent-starting-up)
       (company-mode 1)
-      (esh-autosuggest-mode 1)))
+      (esh-autosuggest-mode 1)
+      (setq company-backends '(esh-autosuggest company-files))))
 
   (use-package esh-autosuggest
     :ensure t
