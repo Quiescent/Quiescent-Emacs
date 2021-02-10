@@ -2454,7 +2454,8 @@ post it's become a package on Melpa(!)
     (when (null quiescent-starting-up)
       (company-mode 1)
       (esh-autosuggest-mode 1)
-      (setq company-backends '(esh-autosuggest company-files))))
+      (setq company-backends '(esh-autosuggest company-capf company-files))
+      (setq completion-at-point-functions '(comint-completion-at-point t))))
 
   (use-package esh-autosuggest
     :ensure t
