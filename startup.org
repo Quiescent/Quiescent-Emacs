@@ -74,7 +74,7 @@ in Bash.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref exec-path-from-shell :lexical t
   (use-package exec-path-from-shell
-    :ensure t
+    :straight t
     :init
     (when (not (or (equal system-type 'windows-nt)
                    (equal system-type 'gnu/linux)))
@@ -374,7 +374,7 @@ documentation]] for more.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tiny-mode :lexical t
   (use-package tiny
-      :ensure t
+      :straight t
       :config (tiny-setup-default))
 #+END_SRC
 
@@ -469,7 +469,7 @@ useful.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref visual-marks :lexical t
   (use-package visible-mark
-    :ensure t
+    :straight t
     :config (progn
               (global-visible-mark-mode 1)
               (setq visible-mark-max 1)
@@ -482,7 +482,7 @@ the visible buffer.  Auto Highlight Mode does this for you.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref auto-highlight-symbol :lexical t
   (use-package auto-highlight-symbol
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Hydra
@@ -501,7 +501,7 @@ Hydra to [[Emacs Package Management][my package management]].
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref hydra :lexical t
   (use-package hydra
-    :ensure t
+    :straight t
     :config
     (progn
       <<hydra-drawing>>
@@ -543,7 +543,7 @@ left/right/up/down in my windows.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref window-jump :lexical t
   (use-package window-jump
-    :ensure t
+    :straight t
     :init (when (and (boundp 'key-chord-mode)
                      (not key-chord-mode))
             (key-chord-mode 1)
@@ -630,7 +630,7 @@ this is just the best case I could think of.
   ;;   (quiescent-hydra-iy-go-to-char/body))
 
   ;; (use-package iy-go-to-char
-  ;;  :ensure t)
+  ;;  :straight t)
 
   ;; (global-set-key (kbd "s-d") #'quiescent-init-iy-hydra-forward)
   ;; (global-set-key (kbd "s-i") #'quiescent-init-iy-hydra-backward)
@@ -683,7 +683,7 @@ macros.  This is what made me decide to try it out.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref multiple-cursors :lexical t
   (use-package multiple-cursors
-    :ensure t
+    :straight t
     :config
     (progn
       (global-set-key (kbd "s-SPC")   #'mc/edit-lines)
@@ -705,7 +705,7 @@ than mc.  However IEdit isn't as generic as mc.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref iedit :lexical t
   (use-package iedit
-      :ensure t
+      :straight t
       :config (global-set-key (kbd "M-s ,") #'iedit-mode))
 #+END_SRC
 
@@ -818,7 +818,7 @@ supported completion framework.
       (call-interactively #'company-complete-selection)))
 
   (use-package company
-   :ensure t
+   :straight t
    :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
    :config
    (progn
@@ -885,7 +885,7 @@ good expericence.  Company has a mode for that called
       (company-statistics-mode 1)))
 
   (use-package company-statistics
-   :ensure t
+   :straight t
    :init (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
 #+END_SRC
 
@@ -899,7 +899,7 @@ a manual install of it.  I'll take a look a bit later.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eacl :lexical t
   (use-package eacl
-    :ensure t
+    :straight t
     :config
     (progn
       (global-set-key (kbd "s-<tab>") #'eacl-complete-multiline)
@@ -947,7 +947,7 @@ In order to start using it you must run the following command:
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref realgud :lexical t
   (use-package realgud
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Cleaning up Files
@@ -1000,7 +1000,7 @@ so far.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref flycheck :lexical t
   ;; TODO more carefully consider which modes need flycheck
   (use-package flycheck
-    :ensure t
+    :straight t
     :init (add-hook 'prog-mode-hook #'quiescent-enable-flycheck-prog)
     :hook (((latex-mode message-mode
                         org-mode text-mode
@@ -1026,16 +1026,16 @@ so far.
       (flycheck-mode 1)))
 
   ;; From http://emacsist.com/10784
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-           (id (one-or-more (not (any " "))))
-           (message) line-end))
-    :modes (text-mode markdown-mode gfm-mode message-mode latex-mode org-mode))
+  ;; (flycheck-define-checker 'proselint
+  ;;   "A linter for prose."
+  ;;   :command ("proselint" source-inplace)
+  ;;   :error-patterns
+  ;;   ((warning line-start (file-name) ":" line ":" column ": "
+  ;;          (id (one-or-more (not (any " "))))
+  ;;          (message) line-end))
+  ;;   :modes (text-mode markdown-mode gfm-mode message-mode latex-mode org-mode))
 
-  (add-to-list 'flycheck-checkers 'proselint)
+  ;; (add-to-list 'flycheck-checkers 'proselint)
 
   (defun quiescent-enable-flycheck (&optional rest)
     "Enable flycheck mode.
@@ -1200,7 +1200,7 @@ snippets would be overridden every time that I upgrade the package.
 
 
   (use-package yasnippet
-      :ensure t
+      :straight t
       :init (progn
               (yas-global-mode 1)
               (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
@@ -1505,7 +1505,7 @@ I've also decided to use skeletons to make general SQL statements.
     "    }\n")
 
   (use-package s
-      :ensure t)
+      :straight t)
 
   (defun quiescent-abbreviate-table-name (table-name)
     "Produce the abbreviation of TABLE-NAME."
@@ -1612,7 +1612,7 @@ parenthesis in paredit mode.
       (enable-paredit-mode)))
 
   (use-package paredit
-    :ensure t
+    :straight t
     :config (progn
               (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
               (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
@@ -1778,7 +1778,7 @@ to that: fancy-narrow.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref fancy-narrow :lexical t
   (use-package fancy-narrow
-      :ensure t
+      :straight t
       :config (fancy-narrow-mode))
 #+END_SRC
 
@@ -1798,7 +1798,7 @@ up with this.
       (emr-initialize)))
 
   (use-package emr
-   :ensure t
+   :straight t
    :config
    (progn
      (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
@@ -1820,7 +1820,7 @@ done.
   <<temp-view-format-eshell>>
 
   (use-package json-mode
-    :ensure t)
+    :straight t)
 
   (defvar *temp-view-produce-output* nil
     "If non-nil then all functions which would create a buffer instead produce the output.")
@@ -2057,7 +2057,7 @@ ahead and installed that too.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref editor-config :lexical t
   (use-package editorconfig
-   :ensure t
+   :straight t
    :init (with-eval-after-load "editorconfig"
            (editorconfig-mode 1)))
 #+END_SRC
@@ -2078,7 +2078,7 @@ the above problems.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref eval-on-save :lexical t
   (use-package eros
-    :ensure t)
+    :straight t)
 
   (defconst eval-on-save-modes-to-save-in '(emacs-lisp-mode)
     "Modes in which we should eval on save.")
@@ -2223,7 +2223,7 @@ Before we can configure helm we need to load the package.
   (require 'helm-rg)
 
   (use-package helm
-      :ensure t
+      :straight t
       :demand t
       :custom
       (helm-split-window-in-side-p           t)
@@ -2458,7 +2458,7 @@ post it's become a package on Melpa(!)
       (setq completion-at-point-functions '(comint-completion-at-point t))))
 
   (use-package esh-autosuggest
-    :ensure t
+    :straight t
     :demand t
     :config (progn
               (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
@@ -2620,7 +2620,7 @@ package called goto-chg, which provides a change history.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref goto-chg :lexical t
   (use-package goto-chg
-    :ensure t
+    :straight t
     :config (progn
               (bind-chord "'," 'goto-last-change)
               (bind-chord ",." 'goto-last-change-reverse)))
@@ -2722,7 +2722,7 @@ configure Universal Ctags in order to get acceptable results.
   (defvar install-ggtags
     (lambda ()
       `(use-package ggtags
-      :ensure t
+      :straight t
       :config (progn
              (define-key ggtags-mode-map (kbd "M-.") nil)
              (define-key ggtags-mode-map (kbd "C-c M-.") #'ggtags-find-tag-dwim)
@@ -2743,7 +2743,7 @@ usages and searching logs among other things.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref smartscan :lexical t
   (use-package smartscan
-    :ensure t
+    :straight t
     :demand t
     :hook ((org-mode . quiescent-smartscan-enable))
     :config (progn
@@ -2773,10 +2773,10 @@ had to add it to my configuration.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref wgrep :lexical t
   (use-package wgrep
-   :ensure t)
+   :straight t)
 
   (use-package wgrep-ag
-   :ensure t)
+   :straight t)
 #+END_SRC
 
 ** Read Only Regions
@@ -2920,7 +2920,7 @@ when you switch buffer it becomes the most recent file.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref recentf-ext :lexical t
   (use-package recentf-ext
-    :ensure t)
+    :straight t)
 #+END_SRC
 
 Now for the magical part.  I'm going to combine buffer switch with
@@ -3141,7 +3141,7 @@ content elsewhere.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref separedit :lexical t
   (use-package separedit
-    :ensure t
+    :straight t
     :config
     (progn
       (define-key prog-mode-map (kbd "C-c '") #'separedit)
@@ -3215,7 +3215,7 @@ the ideas I saw, for instance:
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref julia :lexical t
   (use-package julia-mode
-    :ensure t)
+    :straight t)
 #+END_SRC
 
 We ended up implemented the sieve of Eratosthenes and it was
@@ -3252,7 +3252,7 @@ further from it's correct position.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref yaml :lexical t
   (use-package yaml-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Groovy
@@ -3263,7 +3263,7 @@ so it should have a bunch of features which I'm as of yet unaware of.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref groovy :lexical t
   (use-package groovy-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** C Mode
@@ -3344,7 +3344,7 @@ but I might find other features as I use it more.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref plantuml :lexical t
   (use-package plantuml-mode
-    :ensure t)
+    :straight t)
 #+END_SRC
 
 ** fSharp mode
@@ -3354,7 +3354,7 @@ powerful and can do completion and syntax checking.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref fsharp :lexical t
   (use-package fsharp-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Graphviz Dot Mode
@@ -3363,7 +3363,7 @@ wanted a mode to do syntax highlighting.  This is it.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref graphviz-dot :lexical t
   (use-package graphviz-dot-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Web Mode
@@ -3376,7 +3376,7 @@ and tag completion mechanisms than the built in mode.
   (setq sgml-quick-keys 'close)
 
   (use-package company-web
-    :ensure t
+    :straight t
     :config (add-hook 'html-mode-hook #'quiescent-setup-company-web-completion))
 
   (defun quiescent-setup-company-web-completion ()
@@ -3385,7 +3385,7 @@ and tag completion mechanisms than the built in mode.
       (setq-local company-backends '(company-web-html company-dabbrev))))
 
   (use-package web-mode
-    :ensure t
+    :straight t
     :config
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
@@ -3402,12 +3402,12 @@ and tag completion mechanisms than the built in mode.
         (define-key js2-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim))))
 
   (use-package emmet-mode
-    :ensure t
+    :straight t
     :config
     (add-hook 'web-mode-hook #'emmet-mode))
 
   (use-package mmm-mode
-    :ensure t
+    :straight t
     :config
     (setq mmm-global-mode 'maybe)
     (mmm-add-mode-ext-class 'html-mode "\\.html\\'" 'html-js)
@@ -3453,7 +3453,7 @@ go ahead and get a mode for it.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref sass :lexical t
   (use-package sass-mode
-   :ensure t)
+   :straight t)
 #+END_SRC
 
 ** RJSX Mode
@@ -3468,7 +3468,7 @@ on the mailing list.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rjsx :lexical t
   (use-package rjsx-mode
-   :ensure t
+   :straight t
    :init (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
    :config (add-hook 'rjsx-mode-hook #'quiescent-disable-semantic-mode))
 
@@ -3499,7 +3499,7 @@ don't use.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref powershell :lexical t
   (use-package powershell
-      :ensure t
+      :straight t
       :config (add-to-list 'auto-mode-alist '("\\.ps1$" . powershell-mode)))
 #+END_SRC
 
@@ -3585,7 +3585,7 @@ kept the definition here for reference.
 Deprecated because it doesn't actually work all that well...
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref sql-indent :lexical t
   (use-package sql-indent
-    :ensure t
+    :straight t
     :config (eval-after-load "sql"
               '(load-library "sql-indent")))
 #+END_SRC
@@ -3773,7 +3773,7 @@ using the js2-mode ast... want.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref js2-highlight-var-at-point :lexical t
   (use-package js2-highlight-vars
-   :ensure t)
+   :straight t)
 
   (defun quiescent-activate-js2-highlight-vars-mode ()
     "Activate `js2-highlight-vars'."
@@ -3842,7 +3842,7 @@ REPL and run some commands.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref nodejs-repl :lexical t
   (use-package nodejs-repl
-    :ensure t)
+    :straight t)
 
   (defun quiescent-activate-node-js-repl ()
     "Activate a node-js repl for this session."
@@ -3894,7 +3894,7 @@ configuration section to help out with that.
   <<tide>>
 
   (use-package typescript-mode
-      :ensure t
+      :straight t
       :config (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
 #+END_SRC
 
@@ -3904,7 +3904,7 @@ working typescript setup I thought that I'd go ahead and set it up.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tide :lexical t
   (use-package tide
-   :ensure t
+   :straight t
    :init
    (progn
      (add-hook 'js2-mode-hook        #'quiescent-setup-tide-mode)
@@ -3931,7 +3931,7 @@ still manages to be memory safe.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rust :lexical t
   (use-package rust-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 There's an entire setup for a development environment which integrates
@@ -3940,7 +3940,7 @@ going to give it a bash.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rustic :lexical t
   (use-package rustic
-    :ensure t
+    :straight t
     :config
     (progn
       (setq rustic-lsp-server 'rust-analyzer)
@@ -3958,7 +3958,7 @@ inspiration for many modes after it.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref slime :lexical t
   (use-package slime-company
-      :ensure t)
+      :straight t)
 
   (defun quiescent-setup-slime-completion ()
     "Setup company for slime."
@@ -4021,7 +4021,7 @@ inspiration for many modes after it.
            (slime-repl-save-history path)))
 
   (use-package slime
-    :ensure t
+    :straight t
     :config
     (progn
       (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
@@ -4085,7 +4085,7 @@ well during the workshop.
       (company-mode 1)))
 
   (use-package cider
-    :ensure t
+    :straight t
     :config
     (progn
       (add-hook 'clojure-mode-hook    #'quiescent-setup-clojure-hooks)
@@ -4136,7 +4136,7 @@ I watched an intro to edebug and here are some of the headlines:
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref macrostep :lexical t
   (use-package macrostep
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 I recently studied the special form `condition-case'.  This is the
@@ -4184,11 +4184,11 @@ completion and error hints) well.
   <<scala-edit-string>>
 
   (use-package scala-mode
-      :ensure t
+      :straight t
       :mode "\\.s\\(cala\\|bt\\)$")
 
   (use-package sbt-mode
-      :ensure t
+      :straight t
       :commands sbt-start sbt-command
       :config
       ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
@@ -4216,7 +4216,7 @@ completion and error hints) well.
       (eglot-ensure)))
 
   (use-package eglot
-      :ensure t
+      :straight t
       :config
       (progn
         (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
@@ -4324,7 +4324,7 @@ the Dockerfile package.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref dockerfile :lexical t
   (use-package dockerfile-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Kotlin
@@ -4345,7 +4345,7 @@ of the Entelect Challenge in 2019 (the year in which I'm writing this!
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref kotlin :lexical t
   (use-package kotlin-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Terraform
@@ -4355,7 +4355,7 @@ would be nice.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref terraform :lexical t
   (use-package terraform-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Emacs Jupyter
@@ -4367,7 +4367,7 @@ own notes as we go.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref emacs-jupyter :lexical t
   (use-package jupyter
-    :ensure t)
+    :straight t)
 #+end_src
 
 ** Python
@@ -4466,7 +4466,7 @@ try again with Emacs this time.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref racket :lexical t
   (use-package racket-mode
-    :ensure t)
+    :straight t)
 #+end_src
 
 ** Ado Mode
@@ -4487,7 +4487,7 @@ on CodeWars.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref enh-ruby :lexical t
   (use-package enh-ruby-mode
-    :ensure t
+    :straight t
     :config
     (progn
       (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
@@ -4501,7 +4501,7 @@ on CodeWars.
       (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
 
   (use-package robe
-    :ensure t
+    :straight t
     :config
     (progn
       (add-hook 'enh-ruby-mode-hook #'robe-mode)
@@ -4517,7 +4517,7 @@ Statistics (ESS) package.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref ess :lexical t
   (use-package ess
-    :ensure t)
+    :straight t)
 #+end_src
 
 * Non-Programming Usages
@@ -4576,7 +4576,7 @@ it a bash and see if it can provide the 99% of what I need.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref e-reader none :lexical t
   (use-package ereader
-    :ensure t)
+    :straight t)
 #+END_SRC
 
 ** CSV Data
@@ -4591,7 +4591,7 @@ CSV files.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref csv :lexical t
   (use-package csv-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** iBuffer Mode
@@ -4630,7 +4630,7 @@ multiple projects.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref bufler :lexical t
   (use-package bufler
-    :ensure t
+    :straight t
     :config (progn
               (setq bufler-face-prefix "prism-level-")))
 #+END_SRC
@@ -4671,7 +4671,7 @@ as many features.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref markdown :lexical t
   (use-package markdown-mode
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Dired Mode
@@ -4707,7 +4707,7 @@ makes the sub directory opening more like a tree view.
   (setq dired-dwim-target t)
 
   (use-package dired-subtree
-      :ensure t
+      :straight t
       :config (define-key dired-mode-map (kbd ",") 'dired-subtree-toggle))
 
   (defun quiescent-dired-filter-group-mode ()
@@ -4716,7 +4716,7 @@ makes the sub directory opening more like a tree view.
       (dired-filter-group-mode 1)))
 
   (use-package dired-filter
-    :ensure t
+    :straight t
     :config
     (progn
       (define-key dired-mode-map (kbd "C-c C-'") #'dired-filter-group-mode)
@@ -4745,7 +4745,7 @@ makes the sub directory opening more like a tree view.
                            "sh" "asd")))))))
 
   (use-package diredfl
-      :ensure t
+      :straight t
       :config
       (progn
      ;; My modifications to the font locking
@@ -5109,10 +5109,10 @@ and clean UI using icons and I adapted it to my workflow.
     (org-capture goto keys))
 
   (use-package all-the-icons
-    :ensure t)
+    :straight t)
 
   (use-package org
-    :ensure t
+    :straight t
     :chords (("xc" . quiescent-org-capture))
     :after all-the-icons
     :config
@@ -5228,7 +5228,7 @@ and clean UI using icons and I adapted it to my workflow.
     "console.log(`${require('util').inspect(function(){\n%s\n}())}`);")
 
   (use-package ob-async
-    :ensure t)
+    :straight t)
 
   (add-hook 'after-init-hook #'quiescent-setup-org-babel-languages)
 
@@ -5256,9 +5256,9 @@ and clean UI using icons and I adapted it to my workflow.
   (use-package ob-shell)
   (use-package ob-python)
   (use-package ob-mermaid
-    :ensure t)
+    :straight t)
   (use-package cider
-    :ensure t
+    :straight t
     :demand t)
   (use-package ob-clojure
     :init (setq org-babel-clojure-backend 'cider))
@@ -5405,7 +5405,7 @@ to help write activation hook functions in Emacs Lisp.
       (org-bullets-mode 1)))
 
   (use-package org-bullets
-    :ensure t
+    :straight t
     :config (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode))
 #+END_SRC
 
@@ -5416,7 +5416,7 @@ org mode (such as the weird colour for special block separators).
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-beautify-theme :lexical t
   (use-package org-beautify-theme
-      :ensure t
+      :straight t
       :defer
       :init (when (null (getenv "VIRTUAL_TERMINAL"))
               (load-theme 'org-beautify)))
@@ -5491,7 +5491,7 @@ simple way of doing things but it lets you be productive.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-reveal :lexical t
   (use-package ox-reveal
-      :ensure t
+      :straight t
       :demand t)
 
   (require 'url)
@@ -5514,7 +5514,7 @@ things.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref secretaria :lexical t
   (use-package secretaria
-    :ensure t)
+    :straight t)
 #+end_src
 
 *** Org Brain
@@ -5527,7 +5527,7 @@ tool.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-brain :lexical t
   (use-package org-brain
-    :ensure t
+    :straight t
     :init
     (setq org-brain-path "~/org/brain")
     :config
@@ -5552,7 +5552,7 @@ Emacs has a package for it.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-pomodoro :lexical t
   (use-package org-pomodoro
-    :ensure t
+    :straight t
     :custom (org-pomodoro-length 25))
 #+end_src
 
@@ -5562,7 +5562,7 @@ the Htmlize package to do it though.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref htmlize :lexical t
   (use-package htmlize
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** EPresent
@@ -5583,7 +5583,7 @@ I've decided to use it for a lightning talk I'm giving on Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref epresent :lexical t
   (use-package epresent
-   :ensure t)
+   :straight t)
 
   (defun outline-hide-body ()
     "I think that epresent expects this function to be here.
@@ -5622,7 +5622,7 @@ document.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref demo-it :lexical t
   (use-package demo-it
-   :ensure t)
+   :straight t)
 #+END_SRC
 
 Demo it needs org-tree-slide in order to make your demonstration flick
@@ -5630,7 +5630,7 @@ between slides in the org buffer.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-tree-slide :lexical t
   (use-package org-tree-slide
-   :ensure t)
+   :straight t)
 #+END_SRC
 
 ** Magit Mode
@@ -5643,7 +5643,7 @@ variable so that I could connect to repositories over HTTPS.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref magit-setup :lexical t
   (use-package magit
-      :ensure t
+      :straight t
       :config
       (progn
         (setenv "GIT_ASKPASS" "git-gui--askpass")
@@ -5695,7 +5695,7 @@ waiting for things which are blocking me.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref chess :lexical t
   (use-package chess
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Typing Game
@@ -5704,7 +5704,7 @@ archives which is inspired by typing of the dead.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref typing-game :lexical t
   (use-package typing
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Slock
@@ -5734,7 +5734,7 @@ discovered that it also has support for connecting to Docker.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tramp :lexical t
   (use-package docker-tramp
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Gnu Plot
@@ -5744,7 +5744,7 @@ but the possibilities are limitless.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref gnuplot :lexical t
   (use-package gnuplot
-    :ensure t)
+    :straight t)
 #+END_SRC
 
 ** 4Clojure
@@ -5754,7 +5754,7 @@ client for that ;)
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref 4clojure :lexical t
   (use-package 4clojure
-    :ensure t)
+    :straight t)
 
   <<4clojure-convenience>>
   <<track-4clojure-progress>>
@@ -5938,7 +5938,7 @@ and followed the guidance of some unknown soul on the Internet.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref bbdb :lexical t
   (use-package bbdb
-    :ensure t
+    :straight t
     :defer 10
     :config (progn
               (setq bbdb-file "~/.emacs.d/bbdb"
@@ -5954,7 +5954,7 @@ Emacs and potentially even share them with my team (!)
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref rest-client :lexical t
   (use-package restclient
-   :ensure t
+   :straight t
    :config (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
 #+END_SRC
 
@@ -5991,7 +5991,7 @@ find anything at all.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref excorporate :exports none :lexical t
   (use-package excorporate
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Taking Screenshots
@@ -6001,7 +6001,7 @@ handle margins well and add a drop frame too!
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref screenshot :exports none :lexical t
   (use-package posframe
-    :ensure t)
+    :straight t)
 
   (eval-when '(compile load eval)
     (add-to-list 'load-path "~/.emacs.d/lisp/screenshot")
@@ -6035,7 +6035,7 @@ going to build up on it.
   (require 'cl-lib)
 
   (use-package writeroom-mode
-    :ensure t)
+    :straight t)
 
   (defvar ia-writer-highlight-current-sentance-delay 0.1
     "The number of seconds to wait before highlighting the current sentance.")
@@ -6195,7 +6195,7 @@ invoke it in order to check the grammar of what I'm writing.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref langtool :lexical t
   (use-package langtool
-      :ensure t
+      :straight t
       :config (progn
                 (setq langtool-default-language "en-GB")
                 (when quiescent-macbook
@@ -6219,7 +6219,7 @@ supports richer features.  Such as searching, occur and more.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref pdf-tools :lexical t
   (defvar install-pdf-tools
     '(use-package pdf-tools
-       :ensure t
+       :straight t
        :hook (pdf-view-mode . quiescent-disable-composable-mode)
        :demand t
        :config (progn
@@ -6319,7 +6319,7 @@ speed up my interaction with large projects.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref async :lexical t
   (use-package async
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** GCMH
@@ -6334,7 +6334,7 @@ and I think that they may be massive GC pauses.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref gcmh :lexical t
   (use-package gcmh
-    :ensure t
+    :straight t
     :demand t
     :config (gcmh-mode 1))
 #+end_src
@@ -6362,7 +6362,7 @@ mode line and they're reasonably efficient.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref themes :lexical t
   (use-package doom-themes
-      :ensure t
+      :straight t
       :config (progn
                 ;; Global settings (defaults)
                 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -6392,7 +6392,7 @@ mode line and they're reasonably efficient.
                 (quiescent-load-dark-theme)))
 
   (use-package doom-modeline
-      :ensure t
+      :straight t
       :config (doom-modeline-mode t))
 #+END_SRC
 
@@ -6407,7 +6407,7 @@ code belongs to.  Prism does exactly that.
       (prism-mode 1)))
 
   (use-package prism
-    :ensure t
+    :straight t
     ;; Based on the readme for prism, adjusted to look closer to the
     ;; original doom theme
     :config (progn
@@ -6450,7 +6450,7 @@ I decided to use the package myself.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref page-break-lines :lexical t
   (use-package page-break-lines
-   :ensure t
+   :straight t
    :config (progn
              (add-to-list 'page-break-lines-modes 'sql-mode)
              (global-page-break-lines-mode 1)))
@@ -6521,7 +6521,7 @@ the rabbit hole you've gone.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref mb-depth :lexical t
   (use-package mb-depth
-      :ensure t)
+      :straight t)
 #+END_SRC
 
 ** Agenda Margins

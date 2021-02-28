@@ -24,7 +24,7 @@
 (require 'quiescent/haskell)
 
 (use-package js2-mode
-  :ensure t
+  :straight t
   :config (progn
             (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
             (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
@@ -227,7 +227,7 @@ Supply the (optional) list of ARGS to that process."
 ;;     chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:9229/a8ef938b-045a-4098-b50e-e1a18cf415c7
 
 ;; (use-package indium
-;;   :ensure t)
+;;   :straight t)
 
 (defun quiescent-is-js2-mode ()
   "Produce t if this buffer is in `js2-mode'."
@@ -239,7 +239,7 @@ Supply the (optional) list of ARGS to that process."
     (indium-interaction-mode 1)))
 
 (use-package js2-refactor
-  :ensure t)
+  :straight t)
 
 (defun quiescent-pluse-ignoring-args (&rest _)
   "Run `xref-pulse-momentarily' ignoring ARGS."

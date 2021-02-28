@@ -5,7 +5,7 @@
 ;;; Code:
 
 (use-package avy
-  :ensure t
+  :straight t
   :config (progn
             (setq avy-timeout-seconds 0.1)
             (global-set-key (kbd "s-x") #'quiescent-avy-super-jump)

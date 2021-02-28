@@ -21,7 +21,7 @@
     (turn-on-haskell-doc-mode)))
 
 (use-package haskell-mode
-  :ensure t
+  :straight t
   :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
 
 (defun quiescent-activate-dante ()
@@ -30,7 +30,7 @@
     (dante-mode 1)))
 
 (use-package dante
-  :ensure t
+  :straight t
   :after haskell-mode
   :commands 'dante-mode
   :init (add-hook 'haskell-mode-hook #'quiescent-activate-dante))
@@ -56,7 +56,7 @@ Used as Advice around the `interro-goto-definition' function F."
 
 ;; Haskell mode
 (use-package async
-  :ensure t)
+  :straight t)
 (defun haskell-mode-generate-tags (&optional and-then-find-this-tag)
   "Generate tags using Hasktags.  This is synchronous function.
 

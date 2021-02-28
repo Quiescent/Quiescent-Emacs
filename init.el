@@ -24,21 +24,6 @@
 ;; :type 'integer
 ;; :group 'semantic)
 
-(require 'package)
-
-;; ===Package===
-;; Loaded here because of overrides.
-(setq package-archive-priorities '((org   . 3)
-                                   (melpa . 2)
-                                   (gnu   . 1)))
-(setq package-archives
-      (quote
-       (("gnu"          . "http://elpa.gnu.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/")
-        ("melpa"        . "http://melpa.org/packages/"))))
-
-(package-initialize)
-
 ;; For debugging what gets compiled at startup
 ;;(debug-on-entry #'byte-compile)
 
@@ -65,9 +50,7 @@
                (config-source (expand-file-name "startup.org"
                                                 user-emacs-directory))
                (config-tangled (expand-file-name "startup.el"
-                                                 user-emacs-directory))
-               (config-compiled (expand-file-name "startup.elc"
-                                                  user-emacs-directory)))
+                                                 user-emacs-directory)))
           (when (or (not (file-exists-p config-tangled))
                     (file-newer-than-file-p config-source config-tangled))
             (org-babel-tangle-file config-source config-tangled "emacs-lisp"))

@@ -26,9 +26,9 @@
 
 ;; Required for org-brain export.  It's not a proper package yet.
 (use-package xmlgen
-  :ensure t)
+  :straight t)
 (use-package a
-  :ensure t)
+  :straight t)
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
 

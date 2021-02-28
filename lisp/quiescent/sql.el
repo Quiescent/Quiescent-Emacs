@@ -14,9 +14,9 @@
 (require 'sql)
 
 (use-package flx
-  :ensure t)
+  :straight t)
 (use-package flx-ido
-  :ensure t)
+  :straight t)
 
 (defun quiescent-fuzzy-completion (prefix completions)
   "Complete the given PREFIX using a fixed list of COMPLETIONS.

@@ -12,7 +12,7 @@
   (when (package-installed-p 'use-package-chords)
     (package-activate 'use-package-chords))
   (use-package use-package-chords
-    :ensure t))
+    :straight t))
 
 (require 'em-prompt)
 (require 'vc-git)

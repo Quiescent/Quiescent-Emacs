@@ -159,7 +159,7 @@ of it's lines."
      `(0 0 0 ,(string-to-number day) ,(quiescent-parse-month month) ,(string-to-number year) 0 nil 0))))
 
 (use-package git-timemachine
-  :ensure t)
+  :straight t)
 
 (provide 'quiescent/git)
 ;;; quiescent/git ends here
