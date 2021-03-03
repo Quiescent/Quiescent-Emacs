@@ -52,7 +52,9 @@
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(safe-local-variable-values
-   '((eval progn
+   '((js2-missing-semi-one-line-override)
+     (js2-strict-missing-semi-warning)
+     (eval progn
            (dolist
                (v
                 '("node_modules" "bower_components" ".sass_cache" ".cache" ".npm"))
