@@ -90,6 +90,7 @@
  '(font-lock-function-name-face ((t (:foreground "#c678dd" :weight bold))))
  '(font-lock-keyword-face ((t (:foreground "#51afef" :weight extra-bold))))
  '(hl-line ((t (:inherit nil :background "#2c323b"))))
+ '(js2-external-variable ((t (:foreground "orange2"))))
  '(js2-highlight-vars-face ((t (:underline t))))
  '(js2-highlight-vars-second-face ((t (:underline "white"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "light steel blue"))))
