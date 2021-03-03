@@ -2218,10 +2218,6 @@ Before we can configure helm we need to load the package.
   (eval-when-compile
     (require 'cl-macs))
 
-  (eval-and-compile
-    (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
-  (require 'helm-rg)
-
   (use-package helm
       :straight t
       :demand t
@@ -2235,6 +2231,9 @@ Before we can configure helm we need to load the package.
       (helm-input-idle-delay                 0)
       (helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json' ':!*yarn.lock'")
       :config (progn
+                (eval-and-compile
+                  (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
+                (require 'helm-rg)
                 (require 'helm-config)
                 (helm-mode 1)
                 (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
