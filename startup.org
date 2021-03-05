@@ -833,7 +833,30 @@ and cross link to that buffer every time it is invoked from the
 starting buffer, until a clear command is called.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref quiescent-cross-link :lexical t
-  (require 'quiescent/cross-link-mode)
+  (defvar quiescent-cross-link-linked-buffer nil
+    "The buffer which this buffer is cross linked to.")
+
+  (make-variable-buffer-local 'quiescent-cross-link-linked-buffer)
+
+  (defun quiescent-cross-link ()
+    "Cross link symbols in the current buffer to another buffer."
+    (interactive)
+    (let ((search-symbol (thing-at-point 'symbol)))
+      (when (not quiescent-cross-link-linked-buffer)
+        (call-interactively 'quiescent-cross-link-set-cross-linked-buffer))
+      (pop-to-buffer quiescent-cross-link-linked-buffer)
+      (goto-char (point-min))
+      (search-forward search-symbol)))
+
+  (defun quiescent-coss-link-reset ()
+    "Reset the linked buffer for current buffer."
+    (interactive)
+    (setq quiescent-cross-link-linked-buffer nil))
+
+  (defun quiescent-cross-link-set-cross-linked-buffer (linked-buffer-name)
+    "Set the LINKED-BUFFER-NAME of the buffer to link this buffer to."
+    (interactive "bEnter buffer name to link to: ")
+    (setq quiescent-cross-link-linked-buffer linked-buffer-name))
 #+END_SRC
 
 ** Multiple Cursors
