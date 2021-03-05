@@ -6349,7 +6349,19 @@ There are plenty of hacks for editing text available on the internet
 and on the Emacs wiki.  I intend to aggregate them here.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref editing :lexical t
-  (require 'quiescent/editing)
+  ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
+  (defun unfill-paragraph (&optional region)
+    "Unfill REGION, otherwise paragraph at point.
+
+  i.e. the reverse of fill paragraph."
+    (interactive (progn (barf-if-buffer-read-only) '(t)))
+    (let ((fill-column (point-max))
+          ;; This would override `fill-column' if it's an integer.
+          (emacs-lisp-docstring-fill-column t))
+      (fill-paragraph nil region)))
+
+  ;; Handy key definition
+  (define-key global-map "\M-Q" 'unfill-paragraph)
 #+END_SRC
 
 ** Fly Spell
