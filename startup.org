@@ -352,7 +352,34 @@ would have been able to tell me except that it definitely got confused
 by some of the changes and didn't recognise them as moves/renames.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref buffer-disjunction :lexical t
-  (require 'quiescent/buffer-disjunction)
+  (defvar *buffer-disjunction-results-buffer-name* "*disjunction-results*"
+    "The name of the buffer to display disjunction results in.")
+
+  (require 'cl-lib)
+
+  (defun buffer-disjunction-lines-from-buffer (buffer)
+    "Produce the lines in BUFFER as a list of strings."
+    (with-current-buffer buffer
+      (split-string (buffer-substring (point-min) (point-max))
+                    "\n"
+                    " ")))
+
+  (defun buffer-disjunction-buffer-disjunction (this-buffer that-buffer)
+    "Produce lines which are not in both THIS-BUFFER and THAT-BUFFER.
+
+    Results are displayed in a new buffer controlled by
+    `*buffer-disjunction-results-buffer-name*'."
+    (interactive "bThis buffer: \nbThat buffer:")
+    (let* ((these-lines    (buffer-disjunction-lines-from-buffer this-buffer))
+           (those-lines    (buffer-disjunction-lines-from-buffer that-buffer))
+           (results-buffer (get-buffer *buffer-disjunction-results-buffer-name*))
+           (diff           (mapcar (lambda (x) (concat x "\n"))
+                                   (cl-set-difference these-lines those-lines))))
+      (switch-to-buffer (if (not (bufferp results-buffer))
+                            (generate-new-buffer *buffer-disjunction-results-buffer-name*)
+                            results-buffer))
+      (erase-buffer)
+      (mapc #'insert diff)))
 #+END_SRC
 
 Shortly after writing this I realised that I actually needed an
