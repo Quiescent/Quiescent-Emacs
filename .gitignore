@@ -24,6 +24,7 @@ games/
 org-settings/
 system-specific-tasks/
 transient/
+eln-cache/
 
 # Files
 bbdb
