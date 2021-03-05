@@ -27,28 +27,28 @@ get_external_dependencies:
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
-	cd $(EMACS_D_DIR)lisp/too-long-lines-mode/ && $(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "too-long-lines-mode.el"
+	cd $(EMACS_D_DIR)/lisp/too-long-lines-mode/ && $(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "too-long-lines-mode.el"
 	@echo "> Building calctex"
-	cd $(EMACS_D_DIR)lisp/calctex/ && $(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "calctex.el"
+	cd $(EMACS_D_DIR)/lisp/calctex/ && $(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "calctex.el"
 	@echo "> Building project-command-at-interval"
-	cd $(EMACS_D_DIR)lisp/project-command-at-interval && make
+	cd $(EMACS_D_DIR)/lisp/project-command-at-interval && make
 	@echo "> Building pyenv"
-	cd $(EMACS_D_DIR)lisp/pyvenv/ && make compile
-	@echo "> Building ado-mode"
-	cd $(EMACS_D_DIR)lisp/ado-mode/lisp && rm -rf *.elc
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-clip.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-cus.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-font-lock.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-font.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-mode.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-stata-info.el"
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/ado-mode/lisp/ado-to-stata.el"
-	@echo "> Building org-brain-export"
-	cd $(EMACS_D_DIR)lisp/org-brain-export && rm -rf *.elc
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/org-brain-export/org-brain-export.el"
-	@echo "> Building helm-rg"
-	cd $(EMACS_D_DIR)lisp/helm-rg && rm -rf *.elc
-	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)lisp/org-brain-export/helm-rg.el"
+	cd $(EMACS_D_DIR)/lisp/pyvenv/ && make compile
+	@echo "> IGNORING Building ado-mode -- there appear to be errors compiling it"
+#	cd $(EMACS_D_DIR)/lisp/ado-mode/lisp && rm -rf *.elc
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-clip.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-cus.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-font-lock.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-font.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-mode.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-stata-info.el"
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/ado-mode/lisp/ado-to-stata.el"
+	@echo "> IGNORING Building org-brain-export -- it needs org-brain, which comes from startup.org(!)"
+#	cd $(EMACS_D_DIR)/lisp/org-brain-export && rm -rf *.elc
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/org-brain-export/org-brain-export.el"
+	@echo "> IGNORING Building helm-rg -- it needs helm, which comes from startup.org(!)"
+#	cd $(EMACS_D_DIR)/lisp/helm-rg && rm -rf *.elc
+#	$(EMACS) $(EMACS_FLAGS) $(EMACS_BYTE_COMPILE_FLAGS) "$(EMACS_D_DIR)/lisp/helm-rg/helm-rg.el"
 
 build_wiki:
 	@echo "==========Building Wiki Libraries=========="
