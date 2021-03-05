@@ -1026,7 +1026,7 @@ supported completion framework.
     "Switch to completing with a dropdown."
     (interactive)
     (if (equal company-frontends '(company-pseudo-tooltip-frontend))
-        (setq company-frontends '(company-preview-frontend))
+	(setq company-frontends '(company-preview-frontend))
       (setq company-frontends '(company-pseudo-tooltip-frontend))))
 
   (defun quiescent-company-complete-selection ()
@@ -1035,7 +1035,7 @@ supported completion framework.
   In comint buffers defer to the comint send input command."
     (interactive)
     (if (derived-mode-p 'comint-mode)
-        (call-interactively #'comint-send-input)
+	(call-interactively #'comint-send-input)
       (call-interactively #'company-complete-selection)))
 
   (use-package company
@@ -1043,6 +1043,10 @@ supported completion framework.
    :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
    :config
    (progn
+     (defun quiescent-activate-company-mode ()
+       "Activate company mode."
+       (when (null quiescent-starting-up)
+	 (company-mode 1)))
      (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
      (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
      (define-key company-active-map (kbd "C-.")   #'company-select-next)
@@ -1069,11 +1073,6 @@ supported completion framework.
 
   (add-hook 'python-mode-hook #'quiescent-remove-semantic-backend)
 
-  (defun quiescent-activate-company-mode ()
-    "Activate company mode."
-    (when (null quiescent-starting-up)
-      (company-mode 1)))
-
   (defun quiescent-supress-message-around (f &rest args)
     "Supress messages when executing F with ARGS."
     (let ((inhibit-message t))
@@ -1099,15 +1098,15 @@ good expericence.  Company has a mode for that called
 `company-statistics'.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref company-statistics :lexical t
-  (defun quiescent-activate-company-statistics ()
-    "Activate `company-statistics-mode'."
-    (when (and (null quiescent-starting-up)
-            (boundp 'company-statistics-mode))
-      (company-statistics-mode 1)))
-
   (use-package company-statistics
-   :straight t
-   :init (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
+    :straight t
+    :config
+    (defun quiescent-activate-company-statistics ()
+      "Activate `company-statistics-mode'."
+      (when (and (null quiescent-starting-up)
+		 (boundp 'company-statistics-mode))
+	(company-statistics-mode 1)))
+    :init (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
 #+END_SRC
 
 ** Emacs Complete Lines
@@ -1223,28 +1222,40 @@ so far.
   (use-package flycheck
     :straight t
     :init (add-hook 'prog-mode-hook #'quiescent-enable-flycheck-prog)
+    :config
+    (defun quiescent-enable-flycheck (&optional rest)
+      "Enable flycheck mode.
+
+      Ignore REST."
+      (when (null quiescent-starting-up)
+	(flycheck-mode 1)))
+
+    (defun quiescent-disable-flycheck (&optional rest)
+      "Disable flycheck mode.
+
+      Ignore REST."
+      (flycheck-mode -1))
+    (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode)
+      "Modes in which flycheck should not be activated.
+
+  Usually because of too much overhead in checking.")
+
+    (defun quiescent-enable-flycheck-prog (&optional rest)
+      "Decide whether flycheck should be enabled in this prog mode.
+
+  Ignore REST."
+      (when (and (null quiescent-starting-up)
+		 (not (member major-mode quiescent-modes-not-to-activate-flycheck-in)))
+	(flycheck-mode 1)))
     :hook (((latex-mode message-mode
-                        org-mode text-mode
-                        gfm-mode markdown-mode LaTeX-mode)
-            . quiescent-enable-flycheck)))
+			org-mode text-mode
+			gfm-mode markdown-mode LaTeX-mode)
+	    . quiescent-enable-flycheck)))
 
   (with-eval-after-load "flycheck"
     (progn
       (define-key flycheck-mode-map (kbd "M-n") #'flycheck-next-error)
-      (define-key flycheck-mode-map (kbd "M-p") #'flycheck-previous-error)))
-
-  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode)
-    "Modes in which flycheck should not be activated.
-
-  Usually because of too much overhead in checking.")
-
-  (defun quiescent-enable-flycheck-prog (&optional rest)
-    "Decide whether flycheck should be enabled in this prog mode.
-
-  Ignore REST."
-    (when (and (null quiescent-starting-up)
-            (not (member major-mode quiescent-modes-not-to-activate-flycheck-in)))
-      (flycheck-mode 1)))
+      (define-key flycheck-mode-map (kbd "M-p") #'flycheck-previous-error)))u
 
   ;; From http://emacsist.com/10784
   ;; (flycheck-define-checker 'proselint
@@ -1258,27 +1269,14 @@ so far.
 
   ;; (add-to-list 'flycheck-checkers 'proselint)
 
-  (defun quiescent-enable-flycheck (&optional rest)
-    "Enable flycheck mode.
-
-  Ignore REST."
-    (when (null quiescent-starting-up)
-      (flycheck-mode 1)))
-
-  (defun quiescent-disable-flycheck (&optional rest)
-    "Disable flycheck mode.
-
-  Ignore REST."
-    (flycheck-mode -1))
-
   (defun quiescent-add-probable-include-dir-for-cpp ()
     "Add a probable include directory clang flycheck.
 
-  We guess that the include dir is probably one up and into
-  `include'."
+    We guess that the include dir is probably one up and into
+    `include'."
     (when (null quiescent-starting-up)
       (setq flycheck-clang-include-path
-         (list (expand-file-name "../include/")))))
+	    (list (expand-file-name "../include/")))))
 
   (defun quiescent-set-flycheck-language-standard ()
     "Set the language standard for flycheck."
@@ -1286,11 +1284,11 @@ so far.
       (setq flycheck-clang-language-standard "c++11")))
 
   (add-hook 'c++-mode-hook
-         #'quiescent-set-flycheck-language-standard)
+	    #'quiescent-set-flycheck-language-standard)
   (add-hook 'c++-mode-hook
-         #'quiescent-add-probable-include-dir-for-cpp)
+	    #'quiescent-add-probable-include-dir-for-cpp)
   (add-hook 'c-mode-hook
-         #'quiescent-add-probable-include-dir-for-cpp)
+	    #'quiescent-add-probable-include-dir-for-cpp)
 #+END_SRC
 
 ** Flymake Mode
@@ -1341,40 +1339,39 @@ I've chosen a few language modes to load show hide in.
     (interactive "P")
     (if hs-minor-mode
      (if (condition-case nil
-           (hs-toggle-hiding)
-            (error t))
-         (hs-show-all))
+	   (hs-toggle-hiding)
+	    (error t))
+	 (hs-show-all))
      (toggle-selective-display column)))
 
   ;; Fix XML folding
   (add-to-list 'hs-special-modes-alist
-            (list 'nxml-mode
-               "<!--\\|<[^/>]*[^/]>"
-               "-->\\|</[^/>]*[^/]>"
-               "<!--"
-               'nxml-forward-element
-               nil))
+	    (list 'nxml-mode
+	       "<!--\\|<[^/>]*[^/]>"
+	       "-->\\|</[^/>]*[^/]>"
+	       "<!--"
+	       'nxml-forward-element
+	       nil))
 
   ;; Fix HTML folding
   (dolist (mode '(sgml-mode
-            html-mode
-            html-erb-mode))
+	    html-mode
+	    html-erb-mode))
     (add-to-list 'hs-special-modes-alist
-           (list mode
-                 "<!--\\|<[^/>]*[^/]>"
-                 "-->\\|</[^/>]*[^/]>"
-                 "<!--"
-                 'sgml-skip-tag-forward
-                 nil)))
-
-  (defun quiescent-activate-hs-minor-mode ()
-    "Activate `hs-minor-mode'."
-    (when (null quiescent-starting-up)
-      (hs-minor-mode 1)))
+	   (list mode
+		 "<!--\\|<[^/>]*[^/]>"
+		 "-->\\|</[^/>]*[^/]>"
+		 "<!--"
+		 'sgml-skip-tag-forward
+		 nil)))
 
   (use-package hideshow
     :config
     (progn
+      (defun quiescent-activate-hs-minor-mode ()
+	"Activate `hs-minor-mode'."
+	(when (null quiescent-starting-up)
+	  (hs-minor-mode 1)))
       (global-set-key (kbd "C-=") #'toggle-hiding)
       (add-hook 'c-mode-common-hook   #'quiescent-activate-hs-minor-mode)
       (add-hook 'emacs-lisp-mode-hook #'quiescent-activate-hs-minor-mode)
@@ -1827,27 +1824,26 @@ Emacs wiki which prevents hippi-expand from inserting an extra
 parenthesis in paredit mode.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref paredit :lexical t
-  (defun quiescent-activate-paredit-mode ()
-    "Activate paredit mode."
-    (when (null quiescent-starting-up)
-      (enable-paredit-mode)))
-
   (use-package paredit
     :straight t
     :config (progn
-              (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
-              (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
-              (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
-              (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
-              (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
-              (add-hook 'lisp-mode-hook                        #'quiescent-activate-paredit-mode)
-              (add-hook 'lisp-interaction-mode-hook            #'quiescent-activate-paredit-mode)
-              (add-hook 'scheme-mode-hook                      #'quiescent-activate-paredit-mode)
-              (add-hook 'cider-mode-hook                       #'quiescent-activate-paredit-mode)
-              (add-hook 'cider-repl-mode-hook                  #'quiescent-activate-paredit-mode)
-              (add-hook 'slime-repl-mode-hook                  #'quiescent-activate-paredit-mode)
-              (add-hook 'racket-mode-hook                      #'quiescent-activate-paredit-mode)
-              (add-hook 'racket-repl-mode-hook                 #'quiescent-activate-paredit-mode)))
+	      (defun quiescent-activate-paredit-mode ()
+		"Activate paredit mode."
+		(when (null quiescent-starting-up)
+		  (enable-paredit-mode)))
+	      (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
+	      (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
+	      (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
+	      (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
+	      (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
+	      (add-hook 'lisp-mode-hook                        #'quiescent-activate-paredit-mode)
+	      (add-hook 'lisp-interaction-mode-hook            #'quiescent-activate-paredit-mode)
+	      (add-hook 'scheme-mode-hook                      #'quiescent-activate-paredit-mode)
+	      (add-hook 'cider-mode-hook                       #'quiescent-activate-paredit-mode)
+	      (add-hook 'cider-repl-mode-hook                  #'quiescent-activate-paredit-mode)
+	      (add-hook 'slime-repl-mode-hook                  #'quiescent-activate-paredit-mode)
+	      (add-hook 'racket-mode-hook                      #'quiescent-activate-paredit-mode)
+	      (add-hook 'racket-repl-mode-hook                 #'quiescent-activate-paredit-mode)))
 #+END_SRC
 ** Electric Pair Mode
 So Emacs has a built in mode for pairing brackets.  It looks a lot
@@ -2012,18 +2008,17 @@ becomes closer to an IDE.  I suppose that the needs direct where I end
 up with this.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref emacs-refactor :lexical t
-  (defun quiescent-emr-initialize ()
-    "Initialise `emr', but only if it's been loaded."
-    (when (and (null quiescent-starting-up)
-            (boundp 'emr-initialize))
-      (emr-initialize)))
-
   (use-package emr
-   :straight t
-   :config
-   (progn
-     (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
-     (add-hook 'prog-mode-hook #'quiescent-emr-initialize)))
+    :straight t
+    :config
+    (progn
+      (defun quiescent-emr-initialize ()
+	"Initialise `emr', but only if it's been loaded."
+	(when (and (null quiescent-starting-up)
+		   (boundp 'emr-initialize))
+	  (emr-initialize)))
+      (define-key prog-mode-map (kbd "M-RET") 'emr-show-refactor-menu)
+      (add-hook 'prog-mode-hook #'quiescent-emr-initialize)))
 #+END_SRC
 
 ** Temp Buffers
@@ -3085,20 +3080,19 @@ usages and searching logs among other things.
     :demand t
     :hook ((org-mode . quiescent-smartscan-enable))
     :config (progn
-           (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
-           (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
-           (setq smartscan-symbol-selector "symbol")))
-
-  (defun quiescent-smartscan-enable ()
-    "Enable smartscan."
-    (when (and (null quiescent-starting-up)
-            (boundp 'smartscan-mode))
-      (smartscan-mode 1)))
+	      (defun quiescent-smartscan-enable ()
+		"Enable smartscan."
+		(when (and (null quiescent-starting-up)
+			   (boundp 'smartscan-mode))
+		  (smartscan-mode 1)))
+	      (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
+	      (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
+	      (setq smartscan-symbol-selector "symbol")))
 
   (defun quiescent-disable-smartscan ()
     "Disable smartscan mode."
     (when (and (null quiescent-starting-up)
-            (boundp 'smartscan-mode))
+	       (boundp 'smartscan-mode))
       (smartscan-mode -1)))
 
   (add-hook 'eshell-mode-hook #'quiescent-disable-smartscan)
@@ -5216,10 +5210,8 @@ environment when you're doing stuff in Emacs.  ~pyenv~ makes this
 quite simple to do.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref pyvenv :lexical t
-  (eval-and-compile
-    (add-to-list 'load-path "~/.emacs.d/lisp/pyvenv/"))
-
-  (use-package pyvenv)
+  (use-package pyvenv
+    :load-path "~/.emacs.d/lisp/pyvenv/")
 
   (defun quiescent-python-use-conda ()
     "Use an anaconda environment for python development."
@@ -6234,13 +6226,13 @@ Org bullets is available from MELPA.  I actually wrote a snippet here
 to help write activation hook functions in Emacs Lisp.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref org-bullets :lexical t
-  (defun quiescent-activate-org-bullets-mode ()
-    (when (null quiescent-starting-up)
-      (org-bullets-mode 1)))
-
   (use-package org-bullets
     :straight t
-    :config (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode))
+    :config
+    (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode)
+    (defun quiescent-activate-org-bullets-mode ()
+      (when (null quiescent-starting-up)
+	(org-bullets-mode 1))))
 #+END_SRC
 
 =org-beautify-theme= makes all of the headings larger.  It's a theme
@@ -6994,7 +6986,7 @@ handle margins well and add a drop frame too!
   (use-package posframe
     :straight t)
 
-  (eval-when '(compile load eval)
+  (eval-and-compile
     (add-to-list 'load-path "~/.emacs.d/lisp/screenshot")
     (require 'screenshot))
 #+end_src
@@ -7172,17 +7164,16 @@ the actual spell checks and use the standard British dictionary.
 **** TODO Migrate Settings out of customise and to here for flyspell
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref ispell :lexical t
-  (defun quiescent-turn-on-flyspell ()
-    "Turn on `flyspell'."
-    (when (null quiescent-starting-up)
-      (turn-on-flyspell)))
-
   (use-package flyspell
     :init (progn
-         (setq ispell-dictionary "british")
-         (setq ispell-program-name "aspell"))
+	    (setq ispell-dictionary "british")
+	    (setq ispell-program-name "aspell"))
     :config
     (progn
+      (defun quiescent-turn-on-flyspell ()
+	"Turn on `flyspell'."
+	(when (null quiescent-starting-up)
+	  (turn-on-flyspell)))
       (define-key flyspell-mode-map (kbd "C-.") nil)
       (add-hook 'text-mode-hook   #'quiescent-turn-on-flyspell)
       (add-hook 'bibtex-mode-hook #'quiescent-turn-on-flyspell)
@@ -7404,45 +7395,44 @@ modify nested blocks font lock so that you can tell what block some
 code belongs to.  Prism does exactly that.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prism :lexical t
-  (defun quiescent-prism-mode ()
-    "Enable Prism, only when we're not loading."
-    (when (null quiescent-starting-up)
-      (prism-mode 1)))
-
   (use-package prism
     :straight t
     ;; Based on the readme for prism, adjusted to look closer to the
     ;; original doom theme
     :config (progn
-              (prism-set-colors :num 24
-                :desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
-                :colors (list 'font-lock-string-face 'font-lock-keyword-face
-                              'font-lock-function-name-face 'font-lock-constant-face
-                              'font-lock-type-face))
-              ;; Byte compiler can't handle this as a second set of
-              ;; hooks for some reason...
-              (add-hook 'python-mode-hook #'prism-whitespace-mode)
-              (add-hook 'makefile-mode-hook #'prism-whitespace-mode)
-              (add-hook 'haskell-mode-hook #'prism-whitespace-mode)
-              (add-hook 'yaml-mode-hook #'prism-whitespace-mode))
+	      (defun quiescent-prism-mode ()
+		"Enable Prism, only when we're not loading."
+		(when (null quiescent-starting-up)
+		  (prism-mode 1)))
+	      (prism-set-colors :num 24
+		:desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
+		:colors (list 'font-lock-string-face 'font-lock-keyword-face
+			      'font-lock-function-name-face 'font-lock-constant-face
+			      'font-lock-type-face))
+	      ;; Byte compiler can't handle this as a second set of
+	      ;; hooks for some reason...
+	      (add-hook 'python-mode-hook #'prism-whitespace-mode)
+	      (add-hook 'makefile-mode-hook #'prism-whitespace-mode)
+	      (add-hook 'haskell-mode-hook #'prism-whitespace-mode)
+	      (add-hook 'yaml-mode-hook #'prism-whitespace-mode))
     :hook (((clojure-mode
-             emacs-lisp-mode
-             lisp-mode
-             c++-mode
-             c-mode
-             js-mode
-             js2-mode
-             rjsx-mode
-             typescript-mode
-             sh-mode
-             css-mode
-             scala-mode
-             java-mode
-             ruby-mode
-             rust-mode
-             racket-mode
-             rustic-mode)
-            . quiescent-prism-mode)))
+	     emacs-lisp-mode
+	     lisp-mode
+	     c++-mode
+	     c-mode
+	     js-mode
+	     js2-mode
+	     rjsx-mode
+	     typescript-mode
+	     sh-mode
+	     css-mode
+	     scala-mode
+	     java-mode
+	     ruby-mode
+	     rust-mode
+	     racket-mode
+	     rustic-mode)
+	    . quiescent-prism-mode)))
 #+END_SRC
 
 Line feed is a common feature of lisp code and EMACS outputs from
@@ -7467,36 +7457,32 @@ convenient to view a lambda as the actual Greek character (that's one
 of the defaults which the mode has built in.)
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prettify :lexical t
-  (defun quiescent-activate-pretify-symbols-mode ()
-    "Activate `pretify-symbols-mode'."
-    (when (null quiescent-starting-up)
-      (prettify-symbols-mode 1)))
-
   (use-package prog-mode
     :init (progn
-            (setq prettify-symbols-unprettify-at-point 'right-edge))
+	    (setq prettify-symbols-unprettify-at-point 'right-edge))
     :config (progn
-              (add-hook 'emacs-lisp-mode-hook #'quiescent-pretify-elisp)
-              (add-hook 'prog-mode-hook #'quiescent-prettify-prog-mode))
+	      (defconst quiescent-prog-mode-symbols '()
+		"An alist of substitutions to pretify in prog mode.")
+	      (defun quiescent-prettify-prog-mode ()
+		"Pretify general set of symbols in prog mode."
+		(when (null quiescent-starting-up)
+		  (dolist (symbol-mapping quiescent-prog-mode-symbols)
+		    (push symbol-mapping prettify-symbols-alist))))
+	      (defun quiescent-activate-pretify-symbols-mode ()
+		"Activate `pretify-symbols-mode'."
+		(when (null quiescent-starting-up)
+		  (prettify-symbols-mode 1)))
+	      (defun quiescent-pretify-elisp ()
+		"Pretify symbols in Emacs Lisp mode."
+		(when (null quiescent-starting-up)
+		  (progn
+		    (push '("pcase-lambda" . 955) prettify-symbols-alist)
+		    (push '("defun"        . 402) prettify-symbols-alist)
+		    (push '("defvar"       . 957) prettify-symbols-alist)
+		    (push '("defconst"     . 986) prettify-symbols-alist))))
+	      (add-hook 'emacs-lisp-mode-hook #'quiescent-pretify-elisp)
+	      (add-hook 'prog-mode-hook #'quiescent-prettify-prog-mode))
     :hook (((prog-mode text-mode prog-mode) . quiescent-activate-pretify-symbols-mode)))
-
-  (defconst quiescent-prog-mode-symbols '()
-    "An alist of substitutions to pretify in prog mode.")
-
-  (defun quiescent-prettify-prog-mode ()
-    "Pretify general set of symbols in prog mode."
-    (when (null quiescent-starting-up)
-      (dolist (symbol-mapping quiescent-prog-mode-symbols)
-     (push symbol-mapping prettify-symbols-alist))))
-
-  (defun quiescent-pretify-elisp ()
-    "Pretify symbols in Emacs Lisp mode."
-    (when (null quiescent-starting-up)
-      (progn
-     (push '("pcase-lambda" . 955) prettify-symbols-alist)
-     (push '("defun"        . 402) prettify-symbols-alist)
-     (push '("defvar"       . 957) prettify-symbols-alist)
-     (push '("defconst"     . 986) prettify-symbols-alist))))
 
   (defun quiescent-indent-region-w/o-prettify-before (&rest _)
     "Indent regions without prettify turned on so that it's not improperly offset."
