@@ -43,6 +43,7 @@ places
 recentf
 snippets/**/.yas*.el
 srecode-map.el
+startup-deps.el
 startup.el
 tramp
 company-statistics-cache.el
