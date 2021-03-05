@@ -4744,272 +4744,268 @@ makes the sub directory opening more like a tree view.
                            "sh" "asd")))))))
 
   (use-package diredfl
-      :straight t
-      :config
-      (progn
-     ;; My modifications to the font locking
-     (defface quiescent-diredfl-autofile-name
-         '((t (:foreground "#3f444a"))) ; Very dark blue
-       "*Face used in Dired for names of files that are autofile bookmarks."
-       :group 'diredfl)
-     (setq diredfl-autofile-name 'quiescent-diredfl-autofile-name)
+    :straight t
+    :config
+    (progn
+      ;; My modifications to the font locking
+      (defface quiescent-diredfl-autofile-name
+        '((t (:foreground "#3f444a"))) ; Very dark blue
+        "*Face used in Dired for names of files that are autofile bookmarks."
+        :group 'diredfl)
+      (setq diredfl-autofile-name 'quiescent-diredfl-autofile-name)
 
-     (defface quiescent-diredfl-compressed-file-name
-         '((t (:foreground "#ECBE7B")))
-       "*Face used for compressed file names."
-       :group 'diredfl)
-     (setq diredfl-compressed-file-name 'quiescent-diredfl-compressed-file-name)
+      (defface quiescent-diredfl-compressed-file-name
+        '((t (:foreground "#ECBE7B")))
+        "*Face used for compressed file names."
+        :group 'diredfl)
+      (setq diredfl-compressed-file-name 'quiescent-diredfl-compressed-file-name)
 
-     (defface quiescent-diredfl-compressed-file-suffix
-         '((t (:foreground "#905e3c")))
-       "*Face used for compressed file suffixes in Dired buffers.
+      (defface quiescent-diredfl-compressed-file-suffix
+        '((t (:foreground "#905e3c")))
+        "*Face used for compressed file suffixes in Dired buffers.
   This means the `.' plus the file extension.  Example: `.zip'."
-       :group 'diredfl)
-     (setq diredfl-compressed-file-suffix 'quiescent-diredfl-compressed-file-suffix)
+        :group 'diredfl)
+      (setq diredfl-compressed-file-suffix 'quiescent-diredfl-compressed-file-suffix)
 
-     (defface quiescent-diredfl-date-time
-         '((t (:foreground "#46D9FF")))
-       "*Face used for date and time in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-date-time 'quiescent-diredfl-date-time)
+      (defface quiescent-diredfl-date-time
+        '((t (:foreground "#46D9FF")))
+        "*Face used for date and time in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-date-time 'quiescent-diredfl-date-time)
 
-     (defface quiescent-diredfl-deletion
-         '((t (:foreground "#ff6c6b")))
-       "*Face used for deletion flags (D) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-deletion 'quiescent-diredfl-deletion)
+      (defface quiescent-diredfl-deletion
+        '((t (:foreground "#ff6c6b")))
+        "*Face used for deletion flags (D) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-deletion 'quiescent-diredfl-deletion)
 
-     (defface quiescent-diredfl-deletion-file-name
-         '((t (:foreground "#ff6c6b")))
-       "*Face used for names of deleted files in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-deletion-file-name 'quiescent-diredfl-deletion-file-name)
+      (defface quiescent-diredfl-deletion-file-name
+        '((t (:foreground "#ff6c6b")))
+        "*Face used for names of deleted files in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-deletion-file-name 'quiescent-diredfl-deletion-file-name)
 
-     (defface quiescent-diredfl-dir-heading
-         '((t (:foreground "#51afef")))
-       "*Face used for directory headings in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-dir-heading 'quiescent-diredfl-dir-heading)
+      (defface quiescent-diredfl-dir-heading
+        '((t (:foreground "#51afef")))
+        "*Face used for directory headings in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-dir-heading 'quiescent-diredfl-dir-heading)
 
-     (defface quiescent-diredfl-dir-name
-         '((t (:foreground "#51afef")))
-       "*Face used for directory names."
-       :group 'diredfl)
-     (setq diredfl-dir-name 'quiescent-diredfl-dir-name)
+      (defface quiescent-diredfl-dir-name
+        '((t (:foreground "#51afef")))
+        "*Face used for directory names."
+        :group 'diredfl)
+      (setq diredfl-dir-name 'quiescent-diredfl-dir-name)
 
-     (defface quiescent-diredfl-dir-priv
-         '((t (:foreground "#51afef")))
-       "*Face used for directory privilege indicator (d) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-dir-priv 'quiescent-diredfl-dir-priv)
+      (defface quiescent-diredfl-dir-priv
+        '((t (:foreground "#51afef")))
+        "*Face used for directory privilege indicator (d) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-dir-priv 'quiescent-diredfl-dir-priv)
 
-     (defface quiescent-diredfl-exec-priv
-         '((t (:foreground "#98be65")))
-       "*Face used for execute privilege indicator (x) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-exec-priv 'quiescent-diredfl-exec-priv)
+      (defface quiescent-diredfl-exec-priv
+        '((t (:foreground "#98be65")))
+        "*Face used for execute privilege indicator (x) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-exec-priv 'quiescent-diredfl-exec-priv)
 
-     ;; For this to show up, you need `F' among the options in `dired-listing-switches'.
-     ;; For example, I use "-alF" for `dired-listing-switches'.
-     (defface quiescent-diredfl-executable-tag
-         '((t (:foreground "#98be65")))
-       "*Face used for executable tag (*) on file names in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-executable-tag 'quiescent-diredfl-executable-tag)
+      ;; For this to show up, you need `F' among the options in `dired-listing-switches'.
+      ;; For example, I use "-alF" for `dired-listing-switches'.
+      (defface quiescent-diredfl-executable-tag
+        '((t (:foreground "#98be65")))
+        "*Face used for executable tag (*) on file names in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-executable-tag 'quiescent-diredfl-executable-tag)
 
-     (defface quiescent-diredfl-file-name
-         '((t (:foreground "#bbc2cf")))
-       "*Face used for file names (without suffixes) in Dired buffers.
+      (defface quiescent-diredfl-file-name
+        '((t (:foreground "#bbc2cf")))
+        "*Face used for file names (without suffixes) in Dired buffers.
   This means the base name.  It does not include the `.'."
-       :group 'diredfl)
-     (setq diredfl-file-name 'quiescent-diredfl-file-name)
+        :group 'diredfl)
+      (setq diredfl-file-name 'quiescent-diredfl-file-name)
 
-     (defface quiescent-diredfl-file-suffix
-         '((t (:foreground "#7d828d")))
-       "*Face used for file suffixes in Dired buffers.
+      (defface quiescent-diredfl-file-suffix
+        '((t (:foreground "#7d828d")))
+        "*Face used for file suffixes in Dired buffers.
   This means the `.' plus the file extension.  Example: `.elc'."
-       :group 'diredfl)
-     (setq diredfl-file-suffix 'quiescent-diredfl-file-suffix)
+        :group 'diredfl)
+      (setq diredfl-file-suffix 'quiescent-diredfl-file-suffix)
 
-     (defface quiescent-diredfl-flag-mark
-         '((t (:foreground "#ECBE7B")))
-       "*Face used for flags and marks (except D) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-flag-mark 'quiescent-diredfl-flag-mark)
+      (defface quiescent-diredfl-flag-mark
+        '((t (:foreground "#ECBE7B")))
+        "*Face used for flags and marks (except D) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-flag-mark 'quiescent-diredfl-flag-mark)
 
-     (defface quiescent-diredfl-flag-mark-line
-         '((t (:foreground "#787831311414")))
-       "*Face used for flagged and marked lines in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-flag-mark-line 'quiescent-diredfl-flag-mark-line)
+      (defface quiescent-diredfl-flag-mark-line
+        '((t (:foreground "#787831311414")))
+        "*Face used for flagged and marked lines in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-flag-mark-line 'quiescent-diredfl-flag-mark-line)
 
-     (defface quiescent-diredfl-ignored-file-name
-         '((t (:foreground "#5B6268")))
-       "*Face used for ignored file names  in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-ignored-file-name 'quiescent-diredfl-ignored-file-name)
+      (defface quiescent-diredfl-ignored-file-name
+        '((t (:foreground "#5B6268")))
+        "*Face used for ignored file names  in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-ignored-file-name 'quiescent-diredfl-ignored-file-name)
 
-     (defface quiescent-diredfl-link-priv
-         '((t (:foreground "#a9a1e1")))
-       "*Face used for link privilege indicator (l) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-link-priv 'quiescent-diredfl-link-priv)
+      (defface quiescent-diredfl-link-priv
+        '((t (:foreground "#a9a1e1")))
+        "*Face used for link privilege indicator (l) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-link-priv 'quiescent-diredfl-link-priv)
 
-     (defface quiescent-diredfl-no-priv
-         '((t (:foreground "#bbc2cf")))
-       "*Face used for no privilege indicator (-) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-no-priv 'quiescent-diredfl-no-priv)
+      (defface quiescent-diredfl-no-priv
+        '((t (:foreground "#bbc2cf")))
+        "*Face used for no privilege indicator (-) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-no-priv 'quiescent-diredfl-no-priv)
 
-     (defface quiescent-diredfl-number
-         '((t (:foreground "#da8548")))
-       "*Face used for numerical fields in Dired buffers.
+      (defface quiescent-diredfl-number
+        '((t (:foreground "#da8548")))
+        "*Face used for numerical fields in Dired buffers.
   In particular, inode number, number of hard links, and file size."
-       :group 'diredfl)
-     (setq diredfl-number 'quiescent-diredfl-number)
+        :group 'diredfl)
+      (setq diredfl-number 'quiescent-diredfl-number)
 
-     (defface quiescent-diredfl-other-priv
-         '((t (:foreground "#c678dd")))
-       "*Face used for l,s,S,t,T privilege indicators in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-other-priv 'quiescent-diredfl-other-priv)
+      (defface quiescent-diredfl-other-priv
+        '((t (:foreground "#c678dd")))
+        "*Face used for l,s,S,t,T privilege indicators in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-other-priv 'quiescent-diredfl-other-priv)
 
-     (defface quiescent-diredfl-rare-priv
-         '((t (:foreground "#bbc2cf")))
-       "*Face used for rare privilege indicators (b,c,s,m,p,S) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-rare-priv 'quiescent-diredfl-rare-priv)
+      (defface quiescent-diredfl-rare-priv
+        '((t (:foreground "#bbc2cf")))
+        "*Face used for rare privilege indicators (b,c,s,m,p,S) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-rare-priv 'quiescent-diredfl-rare-priv)
 
-     (defface quiescent-diredfl-read-priv
-         '((t (:foreground "#ECBE7B")))
-       "*Face used for read privilege indicator (w) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-read-priv 'quiescent-diredfl-read-priv)
+      (defface quiescent-diredfl-read-priv
+        '((t (:foreground "#ECBE7B")))
+        "*Face used for read privilege indicator (w) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-read-priv 'quiescent-diredfl-read-priv)
 
-     (defface quiescent-diredfl-symlink
-         '((t (:foreground "#a9a1e1")))
-       "*Face used for symbolic links in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-symlink 'quiescent-diredfl-symlink)
+      (defface quiescent-diredfl-symlink
+        '((t (:foreground "#a9a1e1")))
+        "*Face used for symbolic links in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-symlink 'quiescent-diredfl-symlink)
 
-     (defface quiescent-diredfl-tagged-autofile-name
-         '((t (:foreground "#5B6268"))) ; Very pale green
-       "*Face used in Dired for names of files that are autofile bookmarks."
-       :group 'diredfl)
-     (setq diredfl-tagged-autofile-name 'quiescent-diredfl-tagged-autofile-name)
+      (defface quiescent-diredfl-tagged-autofile-name
+        '((t (:foreground "#5B6268"))) ; Very pale green
+        "*Face used in Dired for names of files that are autofile bookmarks."
+        :group 'diredfl)
+      (setq diredfl-tagged-autofile-name 'quiescent-diredfl-tagged-autofile-name)
 
-     (defface quiescent-diredfl-write-priv
-         '((t (:foreground "#ff6c6b")))
-       "*Face used for write privilege indicator (w) in Dired buffers."
-       :group 'diredfl)
-     (setq diredfl-write-priv 'quiescent-diredfl-write-priv)
+      (defface quiescent-diredfl-write-priv
+        '((t (:foreground "#ff6c6b")))
+        "*Face used for write privilege indicator (w) in Dired buffers."
+        :group 'diredfl)
+      (setq diredfl-write-priv 'quiescent-diredfl-write-priv)
 
-     (defconst quiescent-diredfl-font-lock-keywords-1
-       (list
-        '("^  \\(.+:\\)$" 1 diredfl-dir-heading) ; Directory headers
-        '("^  wildcard.*$" 0 'default)       ; Override others, e.g. `l' for `diredfl-other-priv'.
-        '("^  (No match).*$" 0 'default)     ; Override others, e.g. `t' for `diredfl-other-priv'.
-        '("[^ .]\\(\\.[^. /]+\\)$" 1 diredfl-file-suffix) ; Suffix, including `.'.
-        '("\\([^ ]+\\) -> .+$" 1 diredfl-symlink) ; Symbolic links
+      (defconst quiescent-diredfl-font-lock-keywords-1
+        (list
+         '("^  \\(.+:\\)$" 1 diredfl-dir-heading) ; Directory headers
+         '("^  wildcard.*$" 0 'default)       ; Override others, e.g. `l' for `diredfl-other-priv'.
+         '("^  (No match).*$" 0 'default)     ; Override others, e.g. `t' for `diredfl-other-priv'.
+         '("[^ .]\\(\\.[^. /]+\\)$" 1 diredfl-file-suffix) ; Suffix, including `.'.
+         '("\\([^ ]+\\) -> .+$" 1 diredfl-symlink) ; Symbolic links
 
-        ;; 1) Date/time and 2) filename w/o suffix.
-        ;;    This is a bear, and it is fragile - Emacs can change `dired-move-to-filename-regexp'.
-        `(,dired-move-to-filename-regexp
-          (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
-          (2 diredfl-date-time t t)         ; Date/time, ISO
-          (,(concat "\\(.+\\)\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions)
-                              "\\)[*]?$"))
+         ;; 1) Date/time and 2) filename w/o suffix.
+         ;;    This is a bear, and it is fragile - Emacs can change `dired-move-to-filename-regexp'.
+         `(,dired-move-to-filename-regexp
+           (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
+           (2 diredfl-date-time t t)         ; Date/time, ISO
+           (,(concat "\\(.+\\)\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions)
+                                           "\\)[*]?$"))
             nil nil (0 diredfl-compressed-file-name keep t))) ; Compressed-file suffix
-        `(,dired-move-to-filename-regexp
-          (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
-          (2 diredfl-date-time t t)         ; Date/time, ISO
-          ("\\(.+\\)$" nil nil (0 diredfl-file-name keep t))) ; Filename (not a compressed file)
+         `(,dired-move-to-filename-regexp
+           (7 diredfl-date-time t t)         ; Date/time, locale (western or eastern)
+           (2 diredfl-date-time t t)         ; Date/time, ISO
+           ("\\(.+\\)$" nil nil (0 diredfl-file-name keep t))) ; Filename (not a compressed file)
 
-        ;; Files to ignore
-        (list (concat "^  \\(.*\\("
-                (mapconcat #'regexp-quote (or (and (boundp 'dired-omit-extensions)  dired-omit-extensions)
-                                     completion-ignored-extensions)
-                        "[*]?\\|")
-                (and diredfl-ignore-compressed-flag
-                     (concat "\\|" (mapconcat #'regexp-quote diredfl-compressed-extensions "[*]?\\|")))
-                "[*]?\\)\\)$") ; Allow for executable flag (*).
-           1 diredfl-ignored-file-name t)
+         ;; Files to ignore
+         (list (concat "^  \\(.*\\("
+                       (mapconcat #'regexp-quote (or (and (boundp 'dired-omit-extensions)  dired-omit-extensions)
+                                                     completion-ignored-extensions)
+                                  "[*]?\\|")
+                       (and diredfl-ignore-compressed-flag
+                            (concat "\\|" (mapconcat #'regexp-quote diredfl-compressed-extensions "[*]?\\|")))
+                       "[*]?\\)\\)$") ; Allow for executable flag (*).
+               1 diredfl-ignored-file-name t)
 
-        ;; Compressed-file (suffix)
-        (list (concat "\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions) "\\)[*]?$"))
-           1 diredfl-compressed-file-suffix t)
-        '("\\([*]\\)$" 1 diredfl-executable-tag t) ; Executable (*)
+         ;; Compressed-file (suffix)
+         (list (concat "\\(" (concat (funcall #'regexp-opt diredfl-compressed-extensions) "\\)[*]?$"))
+               1 diredfl-compressed-file-suffix t)
+         '("\\([*]\\)$" 1 diredfl-executable-tag t) ; Executable (*)
 
-        ;; Inode, hard-links, & file size (. and , are for the decimal point, depending on locale)
-        ;; See comment for `directory-listing-before-filename-regexp' in `files.el' or `files+.el'.
-        '("\\_<\\(\\([0-9]+\\([.,][0-9]+\\)?\\)[BkKMGTPEZY]?[ /]?\\)" 1 'quiescent-diredfl-number)
+         ;; Inode, hard-links, & file size (. and , are for the decimal point, depending on locale)
+         ;; See comment for `directory-listing-before-filename-regexp' in `files.el' or `files+.el'.
+         '("\\_<\\(\\([0-9]+\\([.,][0-9]+\\)?\\)[BkKMGTPEZY]?[ /]?\\)" 1 'quiescent-diredfl-number)
 
-        ;; Directory names - exclude d:/..., Windows drive letter in a dir heading.
-        (list (concat dired-re-maybe-mark dired-re-inode-size "\\(d\\)[^:]")
-           '(1 diredfl-dir-priv t) '(".+" (dired-move-to-filename) nil (0 diredfl-dir-name t)))
+         ;; Directory names - exclude d:/..., Windows drive letter in a dir heading.
+         (list (concat dired-re-maybe-mark dired-re-inode-size "\\(d\\)[^:]")
+               '(1 diredfl-dir-priv t) '(".+" (dired-move-to-filename) nil (0 diredfl-dir-name t)))
 
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\(x\\)") ; o x
-           '(1 diredfl-exec-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([lsStT]\\)") ; o misc
-           '(1 diredfl-other-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\(w\\).") ; o w
-           '(1 diredfl-write-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\(r\\)..") ; o r
-           '(1 diredfl-read-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\(x\\)...") ; g x
-           '(1 diredfl-exec-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([lsStT]\\)...") ; g misc
-           '(1 diredfl-other-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\(w\\)....") ; g w
-           '(1 diredfl-write-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\(r\\).....") ; g r
-           '(1 diredfl-read-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\(x\\)...") ; u x
-           '(1 diredfl-exec-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([lsStT]\\)...") ; u misc
-           '(1 diredfl-other-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\(w\\)....") ; u w
-           '(1 diredfl-write-priv))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\(r\\).....") ; u r
-           '(1 diredfl-read-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\(x\\)") ; o x
+               '(1 diredfl-exec-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([lsStT]\\)") ; o misc
+               '(1 diredfl-other-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\(w\\).") ; o w
+               '(1 diredfl-write-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\(r\\)..") ; o r
+               '(1 diredfl-read-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\(x\\)...") ; g x
+               '(1 diredfl-exec-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([lsStT]\\)...") ; g misc
+               '(1 diredfl-other-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\(w\\)....") ; g w
+               '(1 diredfl-write-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\(r\\).....") ; g r
+               '(1 diredfl-read-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\(x\\)...") ; u x
+               '(1 diredfl-exec-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([lsStT]\\)...") ; u misc
+               '(1 diredfl-other-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\(w\\)....") ; u w
+               '(1 diredfl-write-priv))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\(r\\).....") ; u r
+               '(1 diredfl-read-priv))
 
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([-rwxlsStT]\\)") ; o -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\([-rwxlsStT]\\).") ; g -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\([-rwxlsStT]\\)..") ; u -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([-rwxlsStT]\\)...") ; o -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\([-rwxlsStT]\\)....") ; g -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\([-rwxlsStT]\\).....") ; u -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([-rwxlsStT]\\)......") ; o -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\([-rwxlsStT]\\).......") ; g -
-           '(1 diredfl-no-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\([-rwxlsStT]\\)........") ; u -
-           '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]........\\([-rwxlsStT]\\)") ; o -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].......\\([-rwxlsStT]\\).") ; g -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]......\\([-rwxlsStT]\\)..") ; u -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].....\\([-rwxlsStT]\\)...") ; o -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]....\\([-rwxlsStT]\\)....") ; g -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]...\\([-rwxlsStT]\\).....") ; u -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]..\\([-rwxlsStT]\\)......") ; o -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl].\\([-rwxlsStT]\\).......") ; g -
+               '(1 diredfl-no-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "[-dl]\\([-rwxlsStT]\\)........") ; u -
+               '(1 diredfl-no-priv keep))
 
-        (list (concat dired-re-maybe-mark dired-re-inode-size "\\([bcsmpS]\\)") ; (rare)
-           '(1 diredfl-rare-priv keep))
-        (list (concat dired-re-maybe-mark dired-re-inode-size "\\(l\\)[-rwxlsStT]") ; l
-           '(1 diredfl-rare-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "\\([bcsmpS]\\)") ; (rare)
+               '(1 diredfl-rare-priv keep))
+         (list (concat dired-re-maybe-mark dired-re-inode-size "\\(l\\)[-rwxlsStT]") ; l
+               '(1 diredfl-rare-priv keep))
 
-        (list (concat "^\\([^\n " (char-to-string dired-del-marker) "].*$\\)")
-           '(1 diredfl-flag-mark-line prepend))                          ; Flag/mark lines
-        (list (concat "^\\([^\n " (char-to-string dired-del-marker) "]\\)") ; Flags, marks (except D)
-           '(1 diredfl-flag-mark prepend))
+         (list (concat "^\\([^\n " (char-to-string dired-del-marker) "].*$\\)")
+               '(1 diredfl-flag-mark-line prepend))                          ; Flag/mark lines
+         (list (concat "^\\([^\n " (char-to-string dired-del-marker) "]\\)") ; Flags, marks (except D)
+               '(1 diredfl-flag-mark prepend))
 
-        (list (concat "^\\([" (char-to-string dired-del-marker) "].*$\\)") ; Deletion-flagged lines
-           '(1 diredfl-deletion-file-name prepend))
-        (list (concat "^\\([" (char-to-string dired-del-marker) "]\\)") ; Deletion flags (D)
-           '(1 diredfl-deletion prepend))))
-
-     (add-hook 'diredfl-mode-hook #'quiescent-add-third-level-font-lock)
-
-     (diredfl-global-mode 1)))
+         (list (concat "^\\([" (char-to-string dired-del-marker) "].*$\\)") ; Deletion-flagged lines
+               '(1 diredfl-deletion-file-name prepend))
+         (list (concat "^\\([" (char-to-string dired-del-marker) "]\\)") ; Deletion flags (D)
+               '(1 diredfl-deletion prepend))))))
 
   (defun quiescent-add-third-level-font-lock ()
     "Add my own font locking afterwards to fix the background."
@@ -5021,6 +5017,10 @@ makes the sub directory opening more like a tree view.
             quiescent-diredfl-font-lock-keywords-1)
            t nil nil beginning-of-line))
       (font-lock-refresh-defaults)))
+
+  (add-hook 'diredfl-mode-hook #'quiescent-add-third-level-font-lock)
+
+  (diredfl-global-mode 1)
 #+END_SRC
 
 ** EWW

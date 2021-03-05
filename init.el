@@ -35,6 +35,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/conf")
 (require 'system-vars)
+(require 'cl-lib)
 
 (unwind-protect
     (progn
@@ -47,14 +48,38 @@
         (let* ((org-babel-use-quick-and-dirty-noweb-expansion t)
                (org-babel-noweb-error-all-langs t)
                (default-directory "~/.emacs.d")
-               (config-source (expand-file-name "startup.org"
-                                                user-emacs-directory))
-               (config-tangled (expand-file-name "startup.el"
-                                                 user-emacs-directory)))
+               (config-source   (expand-file-name "startup.org"
+                                                  user-emacs-directory))
+               (config-deps     (expand-file-name "startup-deps.el"
+                                                  user-emacs-directory))
+               (config-tangled  (expand-file-name "startup.el"
+                                                  user-emacs-directory))
+               (config-compiled (expand-file-name "startup.elc"
+                                                  user-emacs-directory)))
           (when (or (not (file-exists-p config-tangled))
                     (file-newer-than-file-p config-source config-tangled))
-            (org-babel-tangle-file config-source config-tangled "emacs-lisp"))
-          (load-file config-tangled)))
+            (org-babel-tangle-file config-source config-tangled "emacs-lisp")
+            (let* ((startup-forms (save-window-excursion
+                                    (with-temp-buffer
+                                      (find-file-literally config-tangled)
+                                      (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
+                   (dependencies  (cl-remove-if-not (lambda (form) (eq 'use-package (car form))) startup-forms))
+                   (non-deps      (cl-remove-if     (lambda (form) (eq 'use-package (car form))) startup-forms)))
+              (save-window-excursion
+                (find-file-literally config-deps)
+                (kill-region (point-min) (point-max))
+                (insert (format "(require 'system-vars)\n"))
+                (mapc (lambda (form) (insert (format "%S\n" form))) dependencies)
+                (save-buffer))
+              (save-window-excursion
+                (find-file-literally config-tangled)
+                (kill-region (point-min) (point-max))
+                (insert (format "(require 'system-vars)\n"))
+                (mapc (lambda (form) (insert (format "%S\n" form))) non-deps)
+                (save-buffer)))
+            (byte-compile-file config-tangled))
+          (load-file config-deps)
+          (load-file config-compiled)))
       (put 'narrow-to-region 'disabled nil)
       (put 'scroll-left 'disabled nil))
   (setq quiescent-starting-up nil)
