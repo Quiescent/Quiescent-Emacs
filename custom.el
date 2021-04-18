@@ -10,6 +10,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex")
+ '(alert-default-style 'fringe-message)
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(auto-save-no-message t)

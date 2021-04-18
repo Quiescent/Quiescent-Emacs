@@ -6341,6 +6341,21 @@ things.
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref secretaria :lexical t
   (use-package secretaria
     :straight t)
+
+  (copy-face 'fringe 'quiescent-alert-saved-fringe-face)
+
+  (defun quiescent-alert-fringe-notify (info)
+    (progn
+      (set-face-background 'fringe (cdr (assq (plist-get info :severity)
+                                              alert-severity-colors)))
+      (message "%s" (plist-get info :message))))
+
+  (defun quiescent-alert-fringe-restore (_info)
+    (copy-face 'quiescent-alert-saved-fringe-face 'fringe))
+
+  (alert-define-style 'fringe-message :title "Change the fringe color"
+                      :notifier #'quiescent-alert-fringe-notify
+                      :remover #'quiescent-alert-fringe-restore)
 #+end_src
 
 *** Org Brain
