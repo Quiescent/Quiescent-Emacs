@@ -68,12 +68,14 @@
               (save-window-excursion
                 (find-file-literally config-deps)
                 (kill-region (point-min) (point-max))
+                (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
                 (mapc (lambda (form) (insert (format "%S\n" form))) dependencies)
                 (save-buffer))
               (save-window-excursion
                 (find-file-literally config-tangled)
                 (kill-region (point-min) (point-max))
+                (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
                 (mapc (lambda (form) (insert (format "%S\n" form))) non-deps)
                 (save-buffer))
