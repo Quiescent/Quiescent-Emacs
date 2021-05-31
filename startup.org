@@ -7088,8 +7088,7 @@ going to build up on it.
                          (overlay-put second 'face  '(:foreground "#666168"))))
                      (run-at-time ia-writer-highlight-current-sentance-delay
                                   nil
-                                  (ia-writer-highlight-current-sentance-on-idle-timer-exirey
-                                   (current-buffer))))))))
+                                  (ia-writer-highlight-current-sentance-on-idle-timer-exirey buffer)))))))
 #+END_SRC
 
 ** LaTeX
