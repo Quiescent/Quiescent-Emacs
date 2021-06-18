@@ -5363,6 +5363,7 @@ Statistics (ESS) package.
   <<org-tree-slide>>
   <<magit-setup>>
   <<magit-insert-files>>
+  <<abridge-diff>>
   <<git-commands>>
   <<chess>>
   <<typing-game>>
@@ -6522,6 +6523,21 @@ problem for me because there's no hook either and it runs text mode
       (yank)
       found-it))
 #+END_SRC
+
+** Abridge Diff
+   I often find that I edit files which contain long lines.  Those
+   lines might be images, for example.  When it comes to diffing those
+   files it becomes difficult to see what's changed and can also cause
+   Emacs to grind to a halt as it tries to render those lines.  Enter
+   ~abridge-diff~, a package which promises to provide summaries of
+   those diffs.
+
+   #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref abridge-diff :lexical t
+     (use-package abridge-diff
+       :straight t
+       :after magit ;; optional, if you'd like to use with magit
+       :init (abridge-diff-mode 1))
+   #+end_src
 
 ** Git Commands
 I've added a few commands which I intend to use in eshell to make
