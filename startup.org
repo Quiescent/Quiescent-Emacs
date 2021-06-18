@@ -6488,11 +6488,12 @@ variable so that I could connect to repositories over HTTPS.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref magit-setup :lexical t
   (use-package magit
-      :straight t
-      :config
-      (progn
-        (setenv "GIT_ASKPASS" "git-gui--askpass")
-        (global-set-key (kbd "C-c m") #'magit-status)))
+    :straight t
+    :custom (magit-diff-refine-hunk t)
+    :config
+    (progn
+      (setenv "GIT_ASKPASS" "git-gui--askpass")
+      (global-set-key (kbd "C-c m") #'magit-status)))
 #+END_SRC
 
 I often create commit messages which note the change per file.
