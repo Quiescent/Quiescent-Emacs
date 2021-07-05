@@ -7085,6 +7085,14 @@ going to build up on it.
     (cl-remove-if-not (lambda (overlay) (overlay-get overlay 'hidden))
                       (overlays-in (point-min) (point-max))))
 
+  (defvar ia-writer-hidden-font-colour "#666168"
+    "The colour of the font which should fade into the background.")
+
+  (defun ia-writer-set-light-mode ()
+    "Set the background colour of the overlays for a light-mode theme."
+    (interactive)
+    (setq ia-writer-hidden-font-colour "#e1dfe1"))
+
   (defun ia-writer-highlight-current-sentance-on-idle-timer-exirey (buffer)
     "Highlight the at point when the idle timer expires.
 
@@ -7102,9 +7110,9 @@ going to build up on it.
                                           (make-overlay end         (point-max)))))
                        (when (not overlays)
                          (overlay-put first  'hidden t)
-                         (overlay-put first  'face   '(:foreground "#666168"))
+                         (overlay-put first  'face   `(:foreground ,ia-writer-hidden-font-colour))
                          (overlay-put second 'hidden t)
-                         (overlay-put second 'face  '(:foreground "#666168"))))
+                         (overlay-put second 'face  `(:foreground ,ia-writer-hidden-font-colour))))
                      (run-at-time ia-writer-highlight-current-sentance-delay
                                   nil
                                   (ia-writer-highlight-current-sentance-on-idle-timer-exirey buffer)))))))
