@@ -72,6 +72,7 @@
  '(tags-revert-without-query t)
  '(tide-imenu-flatten t)
  '(tool-bar-mode nil)
+ '(warning-suppress-log-types '((iedit)))
  '(zoneinfo-style-world-list
    '(("America/Los_Angeles" "Seattle")
      ("America/New_York" "New York")
