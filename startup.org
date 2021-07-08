@@ -2793,7 +2793,7 @@ post it's become a package on Melpa(!)
       (esh-autosuggest-mode 1)
       (setq company-backends '(esh-autosuggest company-capf company-files))
       (setq completion-at-point-functions '(comint-completion-at-point t))))
-
+  
   (use-package esh-autosuggest
     :straight t
     :demand t
@@ -2805,7 +2805,8 @@ post it's become a package on Melpa(!)
               (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
               (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
               (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)
-              (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common))
+              (with-eval-after-load "esh-mode"
+                (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common)))
     :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 #+END_SRC
 
