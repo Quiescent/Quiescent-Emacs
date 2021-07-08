@@ -218,7 +218,7 @@ where emacs should start.
   <<eacl>>
   <<completion>>
   <<matt-is-watching>>
-  <<realgud>>
+  ;; <<realgud>>
   <<clean-file>>
   <<compile>>
   <<flycheck>>
@@ -1166,6 +1166,8 @@ Windows.
 
 In order to start using it you must run the following command:
 =M-x load-library RET realgud RET=
+
+# I'm not going to load it for now because it fails native compilation.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref realgud :lexical t
   (use-package realgud
