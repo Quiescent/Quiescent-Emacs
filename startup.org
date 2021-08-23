@@ -5949,7 +5949,6 @@ and clean UI using icons and I adapted it to my workflow.
     :after all-the-icons
     :config
     (progn
-      (org-reload)
       (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
         (when (file-exists-p agenda-files-file)
           (load-file agenda-files-file)))
