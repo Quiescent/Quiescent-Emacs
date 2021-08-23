@@ -48,18 +48,23 @@
         (let* ((org-babel-use-quick-and-dirty-noweb-expansion t)
                (org-babel-noweb-error-all-langs t)
                (default-directory "~/.emacs.d")
-               (config-source   (expand-file-name "startup.org"
-                                                  user-emacs-directory))
-               (config-deps     (expand-file-name "startup-deps.el"
-                                                  user-emacs-directory))
-               (config-tangled  (expand-file-name "startup.el"
-                                                  user-emacs-directory))
-               (config-compiled (expand-file-name "startup.elc"
-                                                  user-emacs-directory)))
+               (build-dir        (concat user-emacs-directory "build/" ))
+               (config-source    (expand-file-name "startup.org"
+                                                   user-emacs-directory))
+               (config-deps      (expand-file-name "startup-deps.el" build-dir))
+               (config-tangled   (expand-file-name "startup.el"
+                                                   user-emacs-directory))
+               (config-extracted (expand-file-name "startup.el" build-dir))
+               (config-compiled  (expand-file-name "startup.elc" build-dir))
+               (native-compilation-available (and (fboundp 'native-comp-available-p)
+                                                  (native-comp-available-p))))
+          (add-to-list 'load-path build-dir)
           (when (or (not (file-exists-p config-tangled))
                     (file-newer-than-file-p config-source config-tangled))
             (org-babel-tangle-file config-source config-tangled "emacs-lisp")
-            (let* ((startup-forms (save-window-excursion
+            (let* ((print-level   nil)
+                   (print-length  nil)
+                   (startup-forms (save-window-excursion
                                     (with-temp-buffer
                                       (find-file-literally config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
@@ -70,20 +75,21 @@
                 (kill-region (point-min) (point-max))
                 (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
-                (mapc (lambda (form) (insert (format "%S\n" form))) dependencies)
+                (mapc (lambda (form) (print form (current-buffer))) dependencies)
                 (save-buffer))
               (save-window-excursion
-                (find-file-literally config-tangled)
+                (find-file-literally config-extracted)
                 (kill-region (point-min) (point-max))
                 (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
-                (mapc (lambda (form) (insert (format "%S\n" form))) non-deps)
+                (mapc (lambda (form) (print form (current-buffer))) non-deps)
+                (insert "\n(provide 'startup)")
                 (save-buffer))
               (load-file config-deps)
-              (byte-compile-file config-tangled)))
-          (load-file config-deps)
+              (byte-compile-file config-extracted)))
           (org-reload)
-          (load-file config-compiled)))
+          (load-file config-deps)
+          (require 'startup)))
       (put 'narrow-to-region 'disabled nil)
       (put 'scroll-left 'disabled nil))
   (setq quiescent-starting-up nil)
