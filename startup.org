@@ -6025,6 +6025,14 @@ and clean UI using icons and I adapted it to my workflow.
       ;; and I think it's buggy.
       (defun org-install-agenda-files-menu () nil)))
 
+  (defvar quiescent-org-reloaded nil
+    "Nil if `org-mode' wasn't yet reloaded.")
+
+  (with-eval-after-load 'org
+    (when (not quiescent-org-reloaded)
+      (org-reload)
+      (setq quiescent-org-reloaded t)))
+
   (defun quiescent-setup-agenda-line-spacing ()
     "Setup line spacing for my agenda in org mode."
     (setq-local line-spacing 5))
