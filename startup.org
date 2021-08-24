@@ -244,6 +244,7 @@ where emacs should start.
   <<helm>>
   <<shells-setup>>
   <<shell-here>>
+  <<unique-shell>>
   <<compilation-minor-mode-key>>
   <<eshell-setup>>
   <<eshell-compilation-minor-mode>>
@@ -2609,6 +2610,19 @@ shell so having a key bound in comint-mode is a pretty good idea.
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref compilation-minor-mode-key :lexical t
   (define-key comint-mode-map (kbd "<f6>") #'compilation-minor-mode)
 #+END_SRC
+
+I call shell with the universal argument a whole lot.  How about
+turning that into a key binding because life's too short to type out
+shell that many times in a day!
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref unique-shell :lexical t
+  (defun quiescent-unique-shell (name)
+    "Create a new shell in this directory with a user specified NAME."
+    (interactive "sShell name: ")
+    (shell (format "*shell: %s*" name)))
+
+  (global-set-key (kbd "<f5>") #'quiescent-unique-shell)
+#+end_src
 
 ** eShell
 Eshell is an extremely powerful shell which comes standard with
