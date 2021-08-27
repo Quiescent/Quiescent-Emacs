@@ -61,24 +61,27 @@
           (add-to-list 'load-path build-dir)
           (when (or (not (file-exists-p config-tangled))
                     (file-newer-than-file-p config-source config-tangled))
-            (org-babel-tangle-file config-source config-tangled "emacs-lisp")
+            ;; Problem is that write-region seems to write the unicode
+            ;; chars escaped instead of evaluated...
+            (let ((coding-system-for-write 'utf-8))
+              (org-babel-tangle-file config-source config-tangled "emacs-lisp"))
             (let* ((print-level   nil)
                    (print-length  nil)
                    (startup-forms (save-window-excursion
                                     (with-temp-buffer
-                                      (find-file-literally config-tangled)
+                                      (find-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
                    (dependencies  (cl-remove-if-not (lambda (form) (eq 'use-package (car form))) startup-forms))
                    (non-deps      (cl-remove-if     (lambda (form) (eq 'use-package (car form))) startup-forms)))
               (save-window-excursion
-                (find-file-literally config-deps)
+                (find-file config-deps)
                 (kill-region (point-min) (point-max))
                 (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
                 (mapc (lambda (form) (print form (current-buffer))) dependencies)
                 (save-buffer))
               (save-window-excursion
-                (find-file-literally config-extracted)
+                (find-file config-extracted)
                 (kill-region (point-min) (point-max))
                 (insert ";;; -*- lexical-binding: t -*-\n\n")
                 (insert (format "(require 'system-vars)\n"))
