@@ -200,6 +200,7 @@ where emacs should start.
   <<buffer-set-operations>>
   <<tiny-mode>>
   <<hippie-expand>>
+  <<avy>>
   <<mark-and-pop>>
   <<ensure-pop-moves>>
   <<visual-marks>>
@@ -2807,7 +2808,7 @@ post it's become a package on Melpa(!)
       (esh-autosuggest-mode 1)
       (setq company-backends '(esh-autosuggest company-capf company-files))
       (setq completion-at-point-functions '(comint-completion-at-point t))))
-  
+
   (use-package esh-autosuggest
     :straight t
     :demand t
