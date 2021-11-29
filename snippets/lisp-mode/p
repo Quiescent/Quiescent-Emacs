@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: read-problem
+# key: p
+# --
+(read-problem "day$1.in")$0
