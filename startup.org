@@ -3530,12 +3530,31 @@ content elsewhere.
      (defvar thought-stack '()
        "The stack of related thoughts.")
 
+     (require 'cl-lib)
+
+     (defun thought-stack-window-points ()
+       "Produce an map of the windows to their current points."
+       (cl-loop
+        with positions = (make-hash-table :test #'equal)
+        for window being the windows
+        do (puthash window (window-point window) positions)
+        finally (return positions)))
+
+     (defun thought-stack-restore-window-points (window-points)
+       "Restore the points that were set in WINDOW-POINTS."
+       (cl-loop
+        for window being the hash-keys of window-points
+        do (set-window-point window (gethash window window-points))))
+
      (defun thought-stack-push (concept)
        "Push CONCEPT onto the thought stack.
 
      Saves the window configuration that's active now."
        (interactive "sPush: ")
-       (push (cons concept (current-window-configuration)) thought-stack))
+       (push (list concept
+                   (current-window-configuration)
+                   (thought-stack-window-points))
+             thought-stack))
 
      (defun thought-stack-pop ()
        "Pop the current concept from the thought stack.
@@ -3546,7 +3565,8 @@ content elsewhere.
        (let ((thought (pop thought-stack)))
          (if thought
              (progn
-               (set-window-configuration (cdr thought))
+               (set-window-configuration (cadr thought))
+               (thought-stack-restore-window-points (caddr thought))
                (message (format "You were doing: %s" (car thought))))
            (error "No thoughts left"))))
 
