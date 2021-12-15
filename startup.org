@@ -273,6 +273,7 @@ where emacs should start.
   <<aligned-navigation>>
   ;;<<semantic>>
   <<separedit>>
+  <<thought-stack>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -3499,6 +3500,73 @@ content elsewhere.
       (define-key prog-mode-map (kbd "C-c '") #'separedit)
       (setq separedit-default-mode 'org-mode)))
 #+END_SRC
+
+** Thought Stack
+   Sometimes, I'll be writing or searching through code and then I'll
+   realise that there's something else to take care of.  Usually I
+   like to complete my current train of thought before returning to
+   finish the other related thought.  It can be hard or disconcerting
+   to keep track of all of these related thoughts, so I'm going to
+   write a mode to take care of that for me.
+
+   #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref thought-stack :lexical t
+     (define-minor-mode thought-stack-mode
+       "Keep track of small related tasks.
+
+     e.g. when refactoring code, you might change the signature of a
+     function and then discover that the function is used in a related
+     way somewhere else.  If you want to switch train of thought, then
+     it might be a good idea to note what you were doing, or you could
+     note the related task before continuing.
+
+     This mode makes that easier by maintaing a stack of things to
+     take care of when you're done with what you're doing."
+       :init-value nil
+       :lighter    nil
+       :keymap     (make-sparse-keymap)
+       :global     t
+       :group      'thought-stack)
+
+     (defvar thought-stack '()
+       "The stack of related thoughts.")
+
+     (defun thought-stack-push (concept)
+       "Push CONCEPT onto the thought stack.
+
+     Saves the window configuration that's active now."
+       (interactive "sPush: ")
+       (push (cons concept (current-window-configuration)) thought-stack))
+
+     (defun thought-stack-pop ()
+       "Pop the current concept from the thought stack.
+
+     Returns the window configuration to what it was when you pushed
+     the thought."
+       (interactive)
+       (let ((thought (pop thought-stack)))
+         (if thought
+             (progn
+               (set-window-configuration (cdr thought))
+               (message (format "You were doing: %s" (car thought))))
+           (error "No thoughts left"))))
+
+     (defun thought-stack-view ()
+       "Print the thought stack in a temporary buffer."
+       (interactive)
+       (progn
+         (switch-to-buffer-other-window (get-buffer-create "*thought-stack*"))
+         (special-mode)
+         (read-only-mode -1)
+         (delete-region (point-min) (point-max))
+         (mapc (lambda (item) (insert (format " * %s\n" (car item)))) thought-stack)
+         (read-only-mode 1)))
+
+     (define-key thought-stack-mode-map (kbd "s-[") #'thought-stack-push)
+     (define-key thought-stack-mode-map (kbd "s-]") #'thought-stack-pop)
+     (define-key thought-stack-mode-map (kbd "s-?") #'thought-stack-view)
+
+     (thought-stack-mode)
+   #+end_src
 
 * Modifications to Specific Programming Language Modes
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref modifications-to-specific-programming-languages :exports none :lexical t
