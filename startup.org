@@ -4861,6 +4861,12 @@ inspiration for many modes after it.
                                 (slime-repl-read-history-filename))))
            (slime-repl-save-history path)))
 
+  (require 'xref)
+
+  (defun quiescent-xref-push-marker-stack (&rest _)
+    "Push the current point onto the xref marker stack."
+    (xref-push-marker-stack))
+
   (use-package slime
     :straight t
     :config
@@ -4868,6 +4874,7 @@ inspiration for many modes after it.
       (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
       (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
+      (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
 
       (require 'slime-repl)
       (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
