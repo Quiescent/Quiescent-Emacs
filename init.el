@@ -37,6 +37,91 @@
 (require 'system-vars)
 (require 'cl-lib)
 
+(use-package all-the-icons
+  :straight t)
+
+(use-package org
+  :straight t
+  :chords (("xc" . quiescent-org-capture))
+  :after all-the-icons
+  :config
+  (progn
+    (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
+      (when (file-exists-p agenda-files-file)
+        (load-file agenda-files-file)))
+    (require 'ox-latex)
+    (setq org-refile-targets
+          '((nil :maxlevel . 3)
+            (org-agenda-files :maxlevel . 2))
+          org-hide-emphasis-markers t
+          org-fontify-done-headline t
+          org-fontify-whole-heading-line t
+          org-fontify-quote-and-verse-blocks t
+          org-plantuml-jar-path "~/.jars/plantuml.jar"
+          org-ditaa-jar-path "~/.jars/ditaa.jar"
+          org-agenda-breadcrumbs-separator " ❱ "
+          org-image-actual-width nil
+          org-src-fontify-natively t
+          org-latex-listings t
+          org-clock-persist 'history
+          org-clock-persist t
+          org-agenda-block-separator (string-to-char " ")
+          org-priority-faces '((?A . (:foreground "light gray" :weight bold))
+                               (?B . (:foreground "dodger blue"))
+                               (?C . (:foreground "OliveDrab")))
+          org-agenda-deadline-faces '((1.0 . (:foreground "white"))
+                                      (0.5 . (:foreground "orange red"))
+                                      (0.0 . (:foreground "dark olive green")))
+          org-columns-default-format
+          "%25ITEM %TODO %3PRIORITY %TAGS %17Effort(Estimated Effort){:} %CLOCKSUM"
+          org-global-properties
+          (quote
+           (("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00")))
+          org-agenda-custom-commands
+          (quote
+           (("c" "Unscheduled" tags "-SCHEDULED={.+}" nil)
+            ("n" "Agenda and all TODOs"
+             ((agenda "" nil)
+              (alltodo "" nil))
+             nil)
+            ("o" "My Agenda"
+             ((agenda "" ((org-agenda-start-day "+0d")
+                          (org-agenda-span 5)
+                          (org-agenda-overriding-header "⚡ Agenda:\n⎺⎺⎺⎺⎺⎺⎺⎺⎺⎺")
+                          (org-agenda-repeating-timestamp-show-all nil)
+                          (org-agenda-prefix-format   "  %-3i  %-15b %t%s")
+                          (org-agenda-todo-keyword-format "")
+                          (org-agenda-current-time-string "<┈┈┈┈┈┈┈ now")
+                          (org-agenda-scheduled-leaders '("" ""))
+                          (org-agenda-timerange-leaders '(" " " (%d/%d): "))
+                          (org-agenda-deadline-leaders '(" ⚡ " " +%3d " " -%2d"))
+                          (org-agenda-time-grid (quote ((daily today remove-match)
+                                                        (0900 1200 1500 1800 2100)
+                                                        "      " "┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈")))))))))
+          org-agenda-category-icon-alist
+          `(("Work" "~/.emacs.d/icons/work.svg" nil nil :ascent center)
+            ("Inbox" "~/.emacs.d/icons/checklist.svg" nil nil :ascent center)
+            ("Repetative" "~/.emacs.d/icons/loop.svg" nil nil :ascent center)
+            ("Games" "~/.emacs.d/icons/walk.svg" nil nil :ascent center)
+            ("Chores" "~/.emacs.d/icons/chore.svg" nil nil :ascent center)
+            ("Social" "~/.emacs.d/icons/social.svg" nil nil :ascent center)
+            ("Writing" "~/.emacs.d/icons/writing.svg" nil nil :ascent center)
+            ("Opensource" "~/.emacs.d/icons/github.svg" nil nil :ascent center)
+            ("Emacs" "~/.emacs.d/icons/emacs.svg" nil nil :ascent center)
+            ("Academics" "~/.emacs.d/icons/exam.svg" nil nil :ascent center)
+            ("Finance" "~/.emacs.d/icons/money.svg" nil nil :ascent center)
+            ("Improvement" "~/.emacs.d/icons/hammer.svg" nil nil :ascent center)))
+    (add-to-list 'org-latex-packages-alist '("" "listings"))
+    (add-to-list 'org-latex-packages-alist '("" "color"))
+    (org-clock-persistence-insinuate)
+    (set-face-foreground 'org-scheduled-today "dodger blue")
+    (define-key org-mode-map (kbd "C-M-g") 'org-plot/gnuplot)
+    (global-set-key (kbd "C-c C-M-f") #'org-next-block)
+    (global-set-key (kbd "C-c C-M-b") #'org-previous-block)
+    ;; Override the menu agenda files function because I don't use it
+    ;; and I think it's buggy.
+    (defun org-install-agenda-files-menu () nil)))
+
 (unwind-protect
     (progn
       (let ((file-name-handler-alist nil))
