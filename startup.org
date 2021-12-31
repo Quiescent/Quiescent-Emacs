@@ -4964,6 +4964,20 @@ Ielm instance I have running will be updated automatically.
   (use-package eros
     :straight t)
 
+  ;; From: https://stackoverflow.com/questions/9617183/how-to-find-which-file-provided-the-feature-in-emacs-elisp
+  (eval-when-compile (require 'cl-lib))
+  (defun locate-feature (feature)
+    "Return file name as string where FEATURE was provided."
+    (interactive "Sfeature: ")
+    (cl-dolist (file-info load-history)
+      (mapc (lambda (element)
+              (when (and (consp element)
+                         (eq (car element) 'provide)
+                         (eq (cdr element) feature))
+                (message "%s defined in %s" feature (car file-info))
+                (cl-return (car file-info))))
+            (cdr file-info))))
+
   (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'quiescent-switch-to-ielm-buffer)
   (define-key emacs-lisp-mode-map (kbd "C-c C-k") #'eval-buffer)
 
