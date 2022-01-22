@@ -1895,7 +1895,8 @@ with.
        ess-r-mode-hook
        inferior-ess-r-mode-hook
        terraform-mode-hook
-       c-mode-hook))
+       c-mode-hook
+       csharp-mode-hook))
 
   (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
