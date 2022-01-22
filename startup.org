@@ -7481,6 +7481,7 @@ and I think that they may be massive GC pauses.
   <<splash-screen>>
   <<mb-depth>>
   <<agenda-margins>>
+  <<xhair>>
 #+END_SRC
 
 Emacs has support for themes.  One may design a theme and have it
@@ -7687,6 +7688,17 @@ because I want it to feel less cluttered.
   (add-hook 'window-configuration-change-hook #'quiescent-setup-agenda-margins)
   (add-hook 'window-size-change-hook #'quiescent-setup-agenda-margins)
   (add-hook 'org-agenda-mode-hook #'quiescent-setup-agenda-margins)
+#+end_src
+
+** Xhair
+Sometimes it's convenient to be able to see the column and row that
+the point is on.  I used to use a package on the EmacsWiki called
+~crosshairs.el~, but there's a newer (shinier) package called ~xhair.el~
+that I'm using now.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref xhair :lexical t
+  (use-package xhair
+    :straight t)
 #+end_src
 
 * Conclusion
