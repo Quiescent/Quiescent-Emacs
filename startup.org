@@ -4889,7 +4889,7 @@ inspiration for many modes after it.
 
   (defun quiescent-setup-slime ()
     "Setup slime."
-    (slime-setup '(slime-fancy slime-company slime-c-p-c slime-highlight-edits slime-xref-browser)))
+    (slime-setup '(slime-fancy slime-company slime-c-p-c slime-highlight-edits slime-xref-browser slime-asdf)))
 
   (add-hook 'after-init-hook #'quiescent-setup-slime)
 
