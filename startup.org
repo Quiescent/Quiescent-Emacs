@@ -4790,6 +4790,16 @@ going to give it a bash.
       (setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
       (setq rustic-lsp-client 'eglot)
       (remove-hook 'rustic-mode-hook #'flycheck-mode)))
+
+  (defun rustic-mode--find-project-root (directory)
+    "Produce the root of Rust project containing DIRECTORY."
+    (let ((rustic-root (locate-dominating-file directory "cargo.toml")))
+      (when rustic-root
+        (cons 'transient rustic-root))))
+
+  (require 'project)
+
+  (add-hook 'project-find-functions #'rustic-mode--find-project-root)
 #+END_SRC
 
 ** Common Lisp
