@@ -3962,18 +3962,22 @@ dev environment -- pretty awesome.
     :straight t
     :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
 
-  (defun quiescent-activate-dante ()
-    "Activate `dante-mode'."
-    (when (null quiescent-starting-up)
-      (dante-mode 1)))
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
-  (use-package dante
-    :straight t
-    :after haskell-mode
-    :commands 'dante-mode
-    :init (add-hook 'haskell-mode-hook #'quiescent-activate-dante))
+  (custom-set-variables
+    '(haskell-process-suggest-remove-import-lines t)
+    '(haskell-process-auto-import-loaded-modules t)
+    '(haskell-process-log t))
 
   (custom-set-variables '(haskell-tags-on-save t))
+
+  (custom-set-variables
+    '(haskell-process-type 'stack-ghci))
+
+  (define-key interactive-haskell-mode-map (kbd "M-n") #'haskell-goto-next-error)
+  (define-key interactive-haskell-mode-map (kbd "M-p") #'haskell-goto-prev-error)
 
   (defun quiescent-disable-flycheck-mode ()
     "Disable flycheck mode."
@@ -3982,15 +3986,6 @@ dev environment -- pretty awesome.
 
   (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flycheck-mode)
   (add-hook 'haskell-debug-mode-hook #'quiescent-disable-flyspell-mode)
-
-  (defun quiescent-xref-backup-advice (f)
-    "Use `xref-find-definitions' as a backup to `interro-goto-definition'.
-
-  Used as Advice around the `interro-goto-definition' function F."
-    (when (string-equal "Couldn't resolve to any modules." (funcall-interactively f))
-      (funcall-interactively #'xref-find-definitions (xref--read-identifier "Find definitions of: "))))
-
-  (advice-add #'dante-goto-definition :around #'quiescent-xref-backup-advice)
 
   ;; Haskell mode
   (use-package async
