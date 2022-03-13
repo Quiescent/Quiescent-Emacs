@@ -274,6 +274,7 @@ where emacs should start.
   ;;<<semantic>>
   <<separedit>>
   <<thought-stack>>
+  <<dumb-jump>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -3588,6 +3589,20 @@ content elsewhere.
 
      (thought-stack-mode)
    #+end_src
+
+** Dumb Jump
+Sometimes, sophisticated methods of finding the definition of a
+function or symbol don't cut it.  This is especially true when you're
+writing a DSL but also true when the resources required to find the
+definition of a function are just too heavy.  Enter "Dump Jump"!
+
+#+begin_src  emacs-lisp :tangle no :noweb yes :noweb-ref dumb-jump :lexical t
+  (use-package dumb-jump
+    :straight t
+    :config
+    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+    (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+#+end_src
 
 * Modifications to Specific Programming Language Modes
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref modifications-to-specific-programming-languages :exports none :lexical t
