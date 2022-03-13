@@ -4894,6 +4894,7 @@ inspiration for many modes after it.
     :config
     (progn
       (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
+      (define-key slime-mode-map (kbd "M-.") #'xref-find-definitions)
       (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
