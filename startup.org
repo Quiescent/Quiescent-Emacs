@@ -3991,8 +3991,9 @@ dev environment -- pretty awesome.
   (custom-set-variables
     '(haskell-process-type 'stack-ghci))
 
-  (define-key interactive-haskell-mode-map (kbd "M-n") #'haskell-goto-next-error)
-  (define-key interactive-haskell-mode-map (kbd "M-p") #'haskell-goto-prev-error)
+  (with-eval-after-load "interactive-haskell-mode"
+    (define-key interactive-haskell-mode-map (kbd "M-n") #'haskell-goto-next-error)
+    (define-key interactive-haskell-mode-map (kbd "M-p") #'haskell-goto-prev-error))
 
   (defun quiescent-disable-flycheck-mode ()
     "Disable flycheck mode."
