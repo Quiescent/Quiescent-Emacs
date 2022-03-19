@@ -3627,6 +3627,7 @@ definition of a function are just too heavy.  Enter "Dump Jump"!
   <<rust>>
   <<rustic>>
   <<slime>>
+  <<qlot>>
   <<cider>>
   <<emacs-lisp>>
   <<scala>>
@@ -4934,6 +4935,25 @@ Instructions for setup:
     previous command should have dropped you into the ~sbcl~ REPL).
  6. Add ~quicklisp~ to the startup of ~sbcl~ with
     ~(ql:add-to-init-file)~.
+
+*** Working with Qlot
+Qlot is a package manager for Common Lisp that aims to provide
+features that are similar to the likes of ~npm~, ~maven~, ~sbt~ and friends.
+We'd like to use the Qlot REPL for Slime when we're working on a
+project that uses it, here's how to do that.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref qlot :lexical t
+  (defun slime-qlot-exec (directory)
+    "Exec Slime in DIRECTORY with qlot.
+
+  Source: https://github.com/fukamachi/qlot"
+    (interactive (list (read-directory-name "Project directory: ")))
+    (slime-start :program "qlot"
+                 :program-args '("exec" "ros" "-S" "." "run")
+                 :directory directory
+                 :name 'qlot
+                 :env (list (concat "PATH=" (mapconcat 'identity exec-path ":")))))
+#+end_src
 
 ** Clojure
 Yet another server-based program for editing code in Emacs is CIDER.
