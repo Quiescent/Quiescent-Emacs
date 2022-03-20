@@ -4891,12 +4891,21 @@ inspiration for many modes after it.
     "Push the current point onto the xref marker stack."
     (xref-push-marker-stack))
 
+  (defun quiescent-slime-edit-definition (name)
+    "Find the definition of NAME, falling back to xref when we fail."
+    (interactive (list (or (and (not current-prefix-arg)
+                                (slime-symbol-at-point))
+                           (slime-read-symbol-name "Edit Definition of: "))))
+    (condition-case nil
+        (slime-edit-definition name)
+      (error (xref-find-definitions name))))
+
   (use-package slime
     :straight t
     :config
     (progn
       (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
-      (define-key slime-mode-map (kbd "M-.") #'xref-find-definitions)
+      (define-key slime-mode-map (kbd "M-.") #'quiescent-slime-edit-definition)
       (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
       (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
