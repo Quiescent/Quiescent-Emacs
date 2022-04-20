@@ -275,6 +275,7 @@ where emacs should start.
   <<separedit>>
   <<thought-stack>>
   <<dumb-jump>>
+  <<variable-translations>>
 #+END_SRC
 In this section I'll detail the modes and modifications to programming
 in Emacs which don't pertain to any single language and instead modify
@@ -3602,6 +3603,38 @@ definition of a function are just too heavy.  Enter "Dump Jump"!
     :init
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
     (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+#+end_src
+
+** Variable Name Translations
+Ever found a bunch of variables named in capital snake case, kebab
+case, pascal case or snake case and you want it in the other format?
+These functions serve that purpose.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref variable-translations :lexical t
+  (require 'subr-x)
+  (require 'cl-lib)
+
+  (defun capitalise (word)
+    "Produce a properly capitalised WORD."
+    (format "%s%s"
+            (upcase (substring word 0 1))
+            (substring word 1)))
+
+  (defun quiescent-capital-snake-case-to-camel-case ()
+    "Convert the variable name at POINT into camel case from capital snake case."
+    (interactive)
+    (save-excursion
+      (let* ((bounds (bounds-of-thing-at-point 'symbol))
+             (thing  (thing-at-point 'symbol))
+             (words  (thread-last
+                       (split-string thing "_")
+                       (mapcar (lambda (word) (downcase word))))))
+        (goto-char (car bounds))
+        (delete-region (car bounds) (cdr bounds))
+        (insert (apply #'cl-concatenate
+                       'string
+                       (car words)
+                       (mapcar #'capitalise (cdr words)))))))
 #+end_src
 
 * Modifications to Specific Programming Language Modes
