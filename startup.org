@@ -7216,9 +7216,9 @@ having to log into Google in my web browser all the time.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref mu4e :exports none :lexical t
   (eval-and-compile
-    (add-to-list 'load-path "/opt/mu/mu4e"))
-
-  (require 'mu4e)
+    (when (directory-empty-p "/opt/mu/mu4e")
+     (add-to-list 'load-path "/opt/mu/mu4e")
+     (require 'mu4e)))
 
   (with-eval-after-load 'mu4e
     (setq mu4e-sent-folder   "/[Gmail]/Sent Mail"
