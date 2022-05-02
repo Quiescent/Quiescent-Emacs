@@ -156,8 +156,7 @@
                                     (with-temp-buffer
                                       (find-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
-                   (dependencies  (cl-remove-if-not (lambda (form) (eq 'use-package (car form))) startup-forms))
-                   (non-deps      (cl-remove-if     (lambda (form) (eq 'use-package (car form))) startup-forms)))
+                   (dependencies  (cl-remove-if-not (lambda (form) (eq 'use-package (car form))) startup-forms)))
               (save-window-excursion
                 (find-file config-deps)
                 (kill-region (point-min) (point-max))
@@ -165,6 +164,20 @@
                 (insert (format "(require 'system-vars)\n"))
                 (mapc (lambda (form) (print form (current-buffer))) dependencies)
                 (save-buffer))
+              (load-file config-deps)))
+          (when (or (not (file-exists-p config-compiled))
+                    (file-newer-than-file-p config-extracted config-compiled))
+            ;; Problem is that write-region seems to write the unicode
+            ;; chars escaped instead of evaluated...
+            (let ((coding-system-for-write 'utf-8))
+              (org-babel-tangle-file config-source config-tangled "emacs-lisp"))
+            (let* ((print-level   nil)
+                   (print-length  nil)
+                   (startup-forms (save-window-excursion
+                                    (with-temp-buffer
+                                      (find-file config-tangled)
+                                      (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
+                   (non-deps      (cl-remove-if     (lambda (form) (eq 'use-package (car form))) startup-forms)))
               (save-window-excursion
                 (find-file config-extracted)
                 (kill-region (point-min) (point-max))
@@ -177,6 +190,7 @@
               (byte-compile-file config-extracted)))
           (org-reload)
           (load-file config-deps)
+          (load-file config-compiled)
           (require 'startup)))
       (put 'narrow-to-region 'disabled nil)
       (put 'scroll-left 'disabled nil))
