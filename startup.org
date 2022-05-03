@@ -243,6 +243,7 @@ where emacs should start.
   <<too-long-lines>>
   <<ediff-accept-both>>
   <<helm>>
+  <<helm-dash>>
   <<shells-setup>>
   <<shell-here>>
   <<unique-shell>>
@@ -2480,6 +2481,18 @@ Before we can configure helm we need to load the package.
       :init (with-eval-after-load "helm"
               (helm-mode 1)))
 #+END_SRC
+
+*** Helm Dash
+There's a docset repository for a huge number of languages called
+Dash.  It turns out that someone wrote a package in Emacs Lisp that
+reads those doc sets so that you can use them while you code.  I've
+integrated it because I'm tired of flipping over to Firefox to browse
+MDN.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref helm-dash :lexical t
+  (use-package helm-dash
+    :straight t)
+#+end_src
 
 ** Shell
 Sneakypeet is a developer who I met while working at Entelect.  I
