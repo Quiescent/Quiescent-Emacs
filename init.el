@@ -46,7 +46,7 @@
   :after all-the-icons
   :config
   (progn
-    (let ((agenda-files-file (format "%s/org-agenda-file-list.el" org-directory)))
+    (let ((agenda-files-file (format "%s/agenda-file-list.el" org-directory)))
       (when (file-exists-p agenda-files-file)
         (load-file agenda-files-file)))
     (require 'ox-latex)
