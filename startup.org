@@ -2436,50 +2436,49 @@ configured for helm in an [[https://tuhdo.github.io/helm-intro.html][introductio
 Before we can configure helm we need to load the package.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref helm :lexical t
-  (defun quiescent-helm-grep-do-git-grep (arg)
-    "Git grep with helm from the root of the project."
-    (interactive "P")
-    (let ((default-directory (locate-dominating-file default-directory ".git")))
-      (helm-grep-do-git-grep arg)))
+    (defun quiescent-helm-grep-do-git-grep (arg)
+      "Git grep with helm from the root of the project."
+      (interactive "P")
+      (let ((default-directory (locate-dominating-file default-directory ".git")))
+        (helm-grep-do-git-grep arg)))
 
-  (eval-when-compile
-    (require 'cl-macs))
+    (eval-when-compile
+      (require 'cl-macs))
 
-  (use-package helm
-      :straight t
-      :demand t
-      :custom
-      (helm-split-window-in-side-p           t)
-      (helm-move-to-line-cycle-in-source     t)
-      (helm-ff-search-library-in-sexp        t)
-      (helm-scroll-amount                    8)
-      (helm-ff-file-name-history-use-recentf t)
-      (helm-grep-input-idle-delay            0.02)
-      (helm-input-idle-delay                 0)
-      (helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json' ':!*yarn.lock'")
-      :config (progn
-                (eval-and-compile
-                  (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
-                (require 'helm-rg)
-                (require 'helm-config)
-                (helm-mode 1)
-                (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
-                (require 'helm-adaptive)
-                (helm-adaptive-mode t)
-                (global-set-key (kbd "M-y")       #'helm-show-kill-ring)
-                (global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
-                (global-set-key (kbd "C-x C-f")   #'helm-find-files)
-                (global-set-key (kbd "C-x b")     #'helm-buffers-list)
-                (global-set-key (kbd "M-x")       #'helm-M-x)
-                (if (eq system-type 'windows-nt)
-                    (global-set-key (kbd "C-S-f")     #'helm-rg)
-                    (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
-                (if (eq system-type 'windows-nt)
-                    (global-set-key (kbd "C-c p s g") #'helm-rg)
-                    (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
-                (global-set-key (kbd "C-h C-f")   #'helm-recentf))
-      :init (with-eval-after-load "helm"
-              (helm-mode 1)))
+    (use-package helm
+        :straight t
+        :demand t
+        :config (progn
+                  (setq helm-split-window-in-side-p           t
+                        helm-move-to-line-cycle-in-source     t
+                        helm-ff-search-library-in-sexp        t
+                        helm-scroll-amount                    8
+                        helm-ff-file-name-history-use-recentf t
+                        helm-grep-input-idle-delay            0.02
+                        helm-input-idle-delay                 0
+                        helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json' ':!*yarn.lock'")
+                  (eval-and-compile
+                    (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
+                  (require 'helm-rg)
+                  (require 'helm-config)
+                  (helm-mode 1)
+                  (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
+                  (require 'helm-adaptive)
+                  (helm-adaptive-mode t)
+                  (global-set-key (kbd "M-y")       #'helm-show-kill-ring)
+                  (global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
+                  (global-set-key (kbd "C-x C-f")   #'helm-find-files)
+                  (global-set-key (kbd "C-x b")     #'helm-buffers-list)
+                  (global-set-key (kbd "M-x")       #'helm-M-x)
+                  (if (eq system-type 'windows-nt)
+                      (global-set-key (kbd "C-S-f")     #'helm-rg)
+                      (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
+                  (if (eq system-type 'windows-nt)
+                      (global-set-key (kbd "C-c p s g") #'helm-rg)
+                      (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
+                  (global-set-key (kbd "C-h C-f")   #'helm-recentf))
+        :init (with-eval-after-load "helm"
+                (helm-mode 1)))
 #+END_SRC
 
 *** Helm Dash
