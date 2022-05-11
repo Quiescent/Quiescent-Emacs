@@ -3690,6 +3690,7 @@ These functions serve that purpose.
   <<ess>>
   <<swift>>
   <<c-sharp>>
+  <<svelte>>
 #+END_SRC
 It's been said that a programming language can't call itself a
 "programming language" until it has a major mode in EMACS.  What
@@ -5618,6 +5619,17 @@ it wasn't great in Emacs.
 
 #+begin_src emacs-lisp  :tangle no :noweb yes :noweb-ref c-sharp :lexical t
   (use-package csharp-mode
+    :straight t)
+#+end_src
+
+** Svelte
+I might join a project to write an app using Svelte.  Svelte is an
+attempt at a lighter-weight Javascript framework that compiles to
+vanilla JS rather than reifying the state management etc. that React
+and co. espouse.  Let's see how that works in practice.
+
+#+begin_src emacs-lisp  :tangle no :noweb yes :noweb-ref svelte :lexical t
+  (use-package svelte-mode
     :straight t)
 #+end_src
 
