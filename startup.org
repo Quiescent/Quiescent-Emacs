@@ -2607,14 +2607,18 @@ directory which I'm in right now.  The following achieves that by
 feeding =cd default-directory RET= to the shell after it's up.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref shell-here :lexical t
+  (defvar quiescent-supress-cd nil
+    "Whether to not cd to the directory where shell was called.")
+
   (defun quiescent-shell-here (call-shell &rest args)
     "Start shell with CALL-SHELL and ARGS.
   Then switch directory to where we called it from"
     (let ((target-directory default-directory))
       (apply call-shell args)
-      (run-at-time 0.1 nil (lambda ()
-                             (insert (format "cd %s" target-directory))
-                             (comint-send-input)))))
+      (unless quiescent-supress-cd
+        (run-at-time 0.1 nil (lambda ()
+                               (insert (format "cd %s" target-directory))
+                               (comint-send-input))))))
 
   (advice-add #'shell :around #'quiescent-shell-here)
 #+END_SRC
