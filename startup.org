@@ -3614,7 +3614,8 @@ definition of a function are just too heavy.  Enter "Dump Jump"!
     :straight t
     :init
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
-    (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+    (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+    (add-to-list 'dumb-jump-language-file-exts '(:language "javascript" :ext "svelte" "js")))
 #+end_src
 
 ** Variable Name Translations
