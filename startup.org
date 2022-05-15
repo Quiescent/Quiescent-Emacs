@@ -1863,45 +1863,46 @@ else in my Emacs without having any irritating edge cases to deal
 with.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref electric-pair :lexical t
-  (require 'elec-pair)
+    (require 'elec-pair)
 
-  (defun quiescent-activate-electric-pair ()
-    "Activate electric pair local mode."
-    (when (null quiescent-starting-up)
-      (electric-pair-local-mode)))
+    (defun quiescent-activate-electric-pair ()
+      "Activate electric pair local mode."
+      (when (null quiescent-starting-up)
+        (electric-pair-local-mode)))
 
-  (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-activate-electric-pair))
-     '(js-mode-hook
-       js2-mode-hook
-       rjsx-mode-hook
-       python-mode-hook
-       typescript-mode-hook
-       sh-mode-hook
-       css-mode-hook
-       haskell-mode-hook
-       eshell-mode-hook
-       restclient-mode-hook
-       scala-mode-hook
-       java-mode-hook
-       conf-unix-mode-hook
-       c++-mode-hook
-       yaml-mode-hook
-       ruby-mode-hook
-       intero-repl-mode-hook
-       makefile-mode-hook
-       rust-mode-hook
-       rustic-mode-hook
-       conf-mode-hook
-       inferior-python-mode-hook
-       inf-ruby-mode-hook
-       enh-ruby-mode-hook
-       ess-r-mode-hook
-       inferior-ess-r-mode-hook
-       terraform-mode-hook
-       c-mode-hook
-       csharp-mode-hook))
+    (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-activate-electric-pair))
+       '(js-mode-hook
+         js2-mode-hook
+         rjsx-mode-hook
+         python-mode-hook
+         typescript-mode-hook
+         sh-mode-hook
+         css-mode-hook
+         haskell-mode-hook
+         eshell-mode-hook
+         restclient-mode-hook
+         scala-mode-hook
+         java-mode-hook
+         conf-unix-mode-hook
+         c++-mode-hook
+         yaml-mode-hook
+         ruby-mode-hook
+         intero-repl-mode-hook
+         makefile-mode-hook
+         rust-mode-hook
+         rustic-mode-hook
+         conf-mode-hook
+         inferior-python-mode-hook
+         inf-ruby-mode-hook
+         enh-ruby-mode-hook
+         ess-r-mode-hook
+         inferior-ess-r-mode-hook
+         terraform-mode-hook
+         c-mode-hook
+         csharp-mode-hook
+         svelte-mode-hook))
 
-  (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
+    (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 #+END_SRC
 
 *** Notes about ~elec-pair~
