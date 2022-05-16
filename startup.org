@@ -6174,6 +6174,8 @@ switching or being distracted by adds and animation.
   <<secretaria>>
   <<org-brain>>
   <<org-pomodoro>>
+  <<org-rangereport>>
+  <<org-archive-subtrees>>
 #+END_SRC
 Note: this section was heavily modified and the flow might not make a
 whole lot of sense anymore.  I've aggregated all of the code blocks
@@ -6624,6 +6626,32 @@ Emacs has a package for it.
   (use-package org-pomodoro
     :straight t
     :custom (org-pomodoro-length 25))
+#+end_src
+
+*** Org Clock
+There's a built-in time tracking facility in org mode.  I use it to
+bill clients.  Unfortunately, it doesn't provide an out-of-the-box
+solution to daily billing.  I'm going to take a look at snippets from
+the web for generating reports that I'm happy with.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-rangereport :lexical t
+#+end_src
+
+*** Org Archive Done
+Sometimes I have a lot of DONE items clogging up my agenda and making
+things slower.  When that happens, it's great to be able to archive
+all the done items.  This snippet from SO
+(https://stackoverflow.com/questions/6997387/how-to-archive-all-the-done-tasks-using-a-single-command)
+does the trick.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref org-archive-subtrees :lexical t
+  (defun org-archive-done-tasks ()
+    "Archive all tasks marked DONE in the current subtree."
+    (interactive)
+    (mapc (lambda (entry)
+            (goto-char entry)
+            (org-archive-subtree))
+          (reverse (org-map-entries (lambda () (point)) "TODO=\"DONE\"" 'tree))))
 #+end_src
 
 ** Htmlize
