@@ -41,6 +41,30 @@
 (use-package all-the-icons
   :straight t)
 
+(defun quiescent-parent-does-not-mention (phrase)
+  "Produce pos to skip to if no parent of the subtree item mentions PHRASE."
+  (save-excursion
+    (let ((found nil))
+      (while (and (not found)
+                  (condition-case err
+                      (progn
+                        (when (string-match (format "%s" phrase)
+                                            (downcase (buffer-substring-no-properties (point)
+                                                                                      (save-excursion (end-of-line)
+                                                                                                      (point)))))
+                          (setq found t))
+                        (outline-up-heading 1)
+                        t)
+                    (error (setq found (string-match (format "%s" phrase)
+                                                     (downcase (buffer-substring-no-properties (point)
+                                                                                               (save-excursion (end-of-line)
+                                                                                                               (point))))))))))
+      (when (not found)
+        (condition-case err
+            (org-forward-heading-same-level 1)
+          (error (goto-char (point-max))))
+        (point)))))
+
 (use-package org
   :straight t
   :chords (("xc" . quiescent-org-capture))
@@ -198,3 +222,5 @@
   (setq quiescent-starting-up nil)
   (when (eq system-type 'darwin)
     (set-face-attribute 'default nil :height 115)))
+
+(require 'additional-org-agendas)
