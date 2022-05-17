@@ -4689,6 +4689,13 @@ using the js2-mode ast... want.
     (when (null quiescent-starting-up)
       (js2-highlight-vars-mode 1)))
 
+  (defun quiescent-catch-no-js-ast-error (f &rest args)
+    "Run F and catch any errors."
+    (ignore-error (error "No JavaScript AST available")
+      (apply f args)))
+
+  (advice-add 'js2--do-highlight-vars :around #'quiescent-catch-no-js-ast-error)
+
   (add-hook #'js2-mode-hook #'quiescent-activate-js2-highlight-vars-mode)
 #+END_SRC
 
