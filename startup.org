@@ -5644,16 +5644,16 @@ vanilla JS rather than reifying the state management etc. that React
 and co. espouse.  Let's see how that works in practice.
 
 #+begin_src emacs-lisp  :tangle no :noweb yes :noweb-ref svelte :lexical t
-  (defun quiescent-setup-svelte ()
-    "Setup svelte if we're in a file with that exten."
-    (when (thread-last (buffer-file-name (current-buffer))
-                       file-name-extension
-                       (string-equal "svelte"))
-      (lsp)))
-
   (use-package lsp-mode
     :straight t
-    :init (add-hook 'web-mode-hook #'quiescent-setup-svelte))
+    :init (progn
+            (defun quiescent-setup-svelte ()
+              "Setup svelte if we're in a file with that exten."
+              (when (thread-last (buffer-file-name (current-buffer))
+                                 file-name-extension
+                                 (string-equal "svelte"))
+                (lsp)))
+            (add-hook 'web-mode-hook #'quiescent-setup-svelte)))
 #+end_src
 
 * Non-Programming Usages
