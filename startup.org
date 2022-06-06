@@ -6593,6 +6593,39 @@ things.
   (alert-define-style 'fringe-message :title "Change the fringe color"
                       :notifier #'quiescent-alert-fringe-notify
                       :remover #'quiescent-alert-fringe-restore)
+
+  (use-package alert
+    :straight t)
+
+  (require 'alert)
+
+  (defvar *quiescent-reminder-timer* nil
+    "The timer for the current reminder.")
+
+  (defun quiescent-setup-timed-reminder (reminder seconds)
+    "Fires a REMINDER every SECONDS."
+    (interactive "sReminder: \nnSeconds: ")
+    (progn
+      (when *quiescent-reminder-timer*
+        (cancel-timer *quiescent-reminder-timer*))
+      (setq *quiescent-reminder-timer*
+            (run-at-time
+             seconds
+             seconds
+             (lambda () (alert reminder
+                               :title "Reminder"
+                               :severity 'trivial
+                               :style 'libnotify))))))
+
+  (defun quiescent-cancel-timed-reminder ()
+    "Cancel any timed reminder or do nothing if there is none."
+    (interactive)
+    (if *quiescent-reminder-timer*
+        (progn
+          (cancel-timer *quiescent-reminder-timer*)
+          (setq *quiescent-reminder-timer* nil)
+          (message "Cancelled timed reminder."))
+      (error "No timed reminder running")))
 #+end_src
 
 *** Org Brain
