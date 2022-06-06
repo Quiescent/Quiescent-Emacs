@@ -6615,7 +6615,7 @@ things.
              (lambda () (alert reminder
                                :title "Reminder"
                                :severity 'trivial
-                               :style 'libnotify))))))
+                               :style 'fringe-message))))))
 
   (defun quiescent-cancel-timed-reminder ()
     "Cancel any timed reminder or do nothing if there is none."
