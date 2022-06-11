@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: thunk
+# key: th
+# --
+() => {$0}
