@@ -4819,8 +4819,19 @@ since the project which I'm about to start working on requires a
 working typescript setup I thought that I'd go ahead and set it up.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref tide :lexical t
+  (defun quiescent-reboot-tide-on-error (f response)
+    "Advice around F (`tide-dispatch-response') to detect missing RESPONSE.
+
+  Restarts the tide server when it finds it."
+    (let ((message (plist-get response :message)))
+      (if (and message (string-match "Could not find source file" message))
+          (tide-restart-server)
+        (funcall f response))))
+
   (use-package tide
     :straight t
+    :config
+    (advice-add 'tide-dispatch-response :around #'quiescent-reboot-tide-on-error)
     :init
     (progn
       (add-hook 'js2-mode-hook        #'quiescent-setup-tide-mode)
