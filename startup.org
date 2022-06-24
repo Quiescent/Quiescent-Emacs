@@ -7364,6 +7364,7 @@ having to log into Google in my web browser all the time.
   <<langtool>>
   <<pdf-tools>>
   <<fill-unfill-paragraph>>
+  <<define-word>>
 #+END_SRC
 
 Emacs can be used for much more than just writing code and interacting
@@ -7632,6 +7633,16 @@ formats as follows:
     (interactive)
     (quiescent-for-all-paragraphs (unfill-paragraph)))
 #+END_SRC
+
+** Define Word at Point
+I often find myself switching to Firefox to look up a word.  That can
+be slow and cumbersome, so I'm looking into Emacs packages to replace
+that process.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref define-word :lexical t
+  (use-package define-word
+    :straight t)
+#+end_src
 
 * Controlling Emacs
 These are the bindings which I've added to make working with Emacs,
