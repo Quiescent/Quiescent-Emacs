@@ -4589,6 +4589,17 @@ is dedicated to doing that sort of thing for Javascript.
                   (lambda (process) (auto-revert-buffers))
                   "--fix"
                   (buffer-file-name))))
+
+  (defun quiescent-javascript-prettier-fix-this-file ()
+    "Fix all prettier errors on this file."
+    (interactive)
+    (progn
+      (async-start-process (format "prettier:%s" (buffer-file-name))
+                           "prettier"
+                           (lambda (process) (auto-revert-buffers))
+                           (format "--plugin-search-dir=%s" (file-truename (project-root (project-current))))
+                           "--write"
+                           (buffer-file-name))))
 #+END_SRC
 
 Note that the following packages might be required globally to make
