@@ -4913,7 +4913,9 @@ going to give it a bash.
       (setq rustic-lsp-server 'rust-analyzer)
       (setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
       (setq rustic-lsp-client 'eglot)
-      (remove-hook 'rustic-mode-hook #'flycheck-mode)))
+      (remove-hook 'rustic-mode-hook #'flycheck-mode)
+      (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
+      (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
 
   (defun rustic-mode--find-project-root (directory)
     "Produce the root of Rust project containing DIRECTORY."
