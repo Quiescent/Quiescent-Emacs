@@ -2414,6 +2414,7 @@ iComplete: ~fido-vertical-mode~.
   (fido-vertical-mode t)
   (global-set-key (kbd "C-h C-f")   #'recentf-open-files)
   (global-set-key (kbd "C-c p s g") #'quiescent-vc-git-grep)
+  (global-set-key (kbd "M-i") #'imenu)
 #+end_src
 
 ** Shell
