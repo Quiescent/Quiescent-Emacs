@@ -58,122 +58,122 @@
   (eval 
    `(progn
       (use-package xelb
-	:straight t
-	:demand t)
+        :straight t
+        :demand t)
       (use-package exwm
-	:straight t
-	:demand t)
+        :straight t
+        :demand t)
 
       (defun quiescent-exwm-setup-input-simulation ()
-	"Setup my bindings to simulate input in EXWM."
-	(setq exwm-input-simulation-keys
+        "Setup my bindings to simulate input in EXWM."
+        (setq exwm-input-simulation-keys
               '(
-		;; movement
-		([?\C-b] . [left])
-		([?\M-b] . [C-left])
-		([?\C-f] . [right])
-		([?\M-f] . [C-right])
-		([?\C-p] . [up])
-		([?\C-n] . [down])
-		([?\C-a] . [home])
-		([?\C-e] . [end])
-		([?\M-v] . [prior])
-		([?\C-v] . [next])
-		([?\C-d] . [delete])
-		([?\C-k] . [S-end delete])
-		;; cut/paste.
-		([?\C-w] . [?\C-x])
-		([?\M-w] . [?\C-c])
-		([?\C-y] . [?\C-v])
-		;; search
-		([?\C-s] . [?\C-f]))))
+                ;; movement
+                ([?\C-b] . [left])
+                ([?\M-b] . [C-left])
+                ([?\C-f] . [right])
+                ([?\M-f] . [C-right])
+                ([?\C-p] . [up])
+                ([?\C-n] . [down])
+                ([?\C-a] . [home])
+                ([?\C-e] . [end])
+                ([?\M-v] . [prior])
+                ([?\C-v] . [next])
+                ([?\C-d] . [delete])
+                ([?\C-k] . [S-end delete])
+                ;; cut/paste.
+                ([?\C-w] . [?\C-x])
+                ([?\M-w] . [?\C-c])
+                ([?\C-y] . [?\C-v])
+                ;; search
+                ([?\C-s] . [?\C-f]))))
 
       (defun quiescent-exwm-setup-global-bindings ()
-	"Setup global bindings for EXWM mode."
-	(setq exwm-input-global-keys
+        "Setup global bindings for EXWM mode."
+        (setq exwm-input-global-keys
               `(
-               ;; Bind "s-r" to exit char-mode and fullscreen mode.
-               ([?\s-r] . exwm-reset)
-               ;; Bind "s-w" to switch workspace interactively.
-               ([?\s-w] . exwm-workspace-switch)
-               ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-               ,@(mapcar (lambda (i)
-			   `(,(kbd (format "s-%d" i)) .
-                            (lambda ()
-                              (interactive)
-                              (exwm-workspace-switch-create ,i))))
-			 (number-sequence 0 9))
-               ;; Bind "s-&" to launch applications ('M-&' also works if the output
-               ;; buffer does not bother you).
-               ([?\s-&] . (lambda (command)
-			    (interactive (list (read-shell-command "$ ")))
-			    (start-process-shell-command command nil command)))
-               ([?\s-*] . (lambda ()
-			    (interactive)
-			    (start-process-shell-command "*Firefox*" nil "firefox --new-tab --url https://www.vocabulary.com/")))
-               ([?\s-$] . (lambda ()
-			    (interactive)
-			    (start-process-shell-command "*Screenshot*" nil "import /home/edward/screenshot.png")))
-               ;; Bind "s-<f2>" to "slock", a simple X display locker.
-               ([s-f2] . (lambda ()
-			   (interactive)
-			   (start-process "" nil "/usr/bin/slock"))))))
+                ;; Bind "s-r" to exit char-mode and fullscreen mode.
+                ([?\s-r] . exwm-reset)
+                ;; Bind "s-w" to switch workspace interactively.
+                ([?\s-w] . exwm-workspace-switch)
+                ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+                ,@(mapcar (lambda (i)
+                            `(,(kbd (format "s-%d" i)) .
+                              (lambda ()
+                                (interactive)
+                                (exwm-workspace-switch-create ,i))))
+                          (number-sequence 0 9))
+                ;; Bind "s-&" to launch applications ('M-&' also works if the output
+                ;; buffer does not bother you).
+                ([?\s-&] . (lambda (command)
+                             (interactive (list (read-shell-command "$ ")))
+                             (start-process-shell-command command nil command)))
+                ([?\s-*] . (lambda ()
+                             (interactive)
+                             (start-process-shell-command "*Firefox*" nil "firefox --new-tab --url https://www.duckduckgo.com/")))
+                ([?\s-$] . (lambda ()
+                             (interactive)
+                             (start-process-shell-command "*Screenshot*" nil "import /home/edward/screenshot.png")))
+                ;; Bind "s-<f2>" to "slock", a simple X display locker.
+                ([s-f2] . (lambda ()
+                            (interactive)
+                            (start-process "" nil "/usr/bin/slock"))))))
 
       (defun quiescent-exwm-setup-exwm-keys ()
-	"Setup some keys which I use in EXWM."
-	(progn
-	  (define-key exwm-mode-map [?\C-q]     #'exwm-input-send-next-key)
-	  (define-key exwm-mode-map (kbd "s-c") #'org-capture)
-	  (exwm-input-set-key (kbd "C-c C-j")   #'exwm-input-grab-keyboard)
-	  (exwm-input-set-key (kbd "s-b")       #'quiescent-toggle-buffer)
-	  (exwm-input-set-key (kbd "s-z")       #'isearchb-activate)
-	  (exwm-input-set-key (kbd "s-n")       #'switch-to-next-buffer)
-	  (exwm-input-set-key (kbd "s-p")       #'switch-to-prev-buffer)))
+        "Setup some keys which I use in EXWM."
+        (progn
+          (define-key exwm-mode-map [?\C-q]     #'exwm-input-send-next-key)
+          (define-key exwm-mode-map (kbd "s-c") #'org-capture)
+          (exwm-input-set-key (kbd "C-c C-j")   #'exwm-input-grab-keyboard)
+          (exwm-input-set-key (kbd "s-b")       #'quiescent-toggle-buffer)
+          (exwm-input-set-key (kbd "s-z")       #'isearchb-activate)
+          (exwm-input-set-key (kbd "s-n")       #'switch-to-next-buffer)
+          (exwm-input-set-key (kbd "s-p")       #'switch-to-prev-buffer)))
 
       (defun quiescent-exwm-setup-displays-and-start ()
-	"Setup settings for multiple displays and fire it up!"
-	(if quiescent-exwm-multiple-monitors
-	    ;; From https://github.com/ch11ng/exwm/wiki
-	    (progn
+        "Setup settings for multiple displays and fire it up!"
+        (if quiescent-exwm-multiple-monitors
+            ;; From https://github.com/ch11ng/exwm/wiki
+            (progn
               (require 'exwm-randr)
               (when quiescent-home-pc-linux
-		(setq exwm-randr-workspace-output-plist
+                (setq exwm-randr-workspace-output-plist
                       '(0 "DisplayPort-1" 1 "DisplayPort-1"
-			  2 "HDMI-A-0" 3 "HDMI-A-0"
-			  4 "HDMI-A-0" 5 "HDMI-A-0"
-			  6 "HDMI-A-0" 7 "HDMI-A-0"))
-		(add-hook 'exwm-randr-screen-change-hook
-			  (lambda ()
-			    (start-process-shell-command
-			     "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
-		(start-process-shell-command
-		 "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
+                          2 "HDMI-A-0" 3 "HDMI-A-0"
+                          4 "HDMI-A-0" 5 "HDMI-A-0"
+                          6 "HDMI-A-0" 7 "HDMI-A-0"))
+                (add-hook 'exwm-randr-screen-change-hook
+                          (lambda ()
+                            (start-process-shell-command
+                             "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
+                (start-process-shell-command
+                 "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
               (when quiescent-work-machine
-		(setq exwm-randr-workspace-output-plist
+                (setq exwm-randr-workspace-output-plist
                       '(0 "DP-2" 1 "DP-2"
-			  2 "DP-1" 3 "DP-1"
-			  4 "DP-1" 5 "DP-1"
-			  6 "DP-1" 7 "DP-1"))
-		(add-hook 'exwm-randr-screen-change-hook
-			  (lambda ()
-			    (start-process-shell-command
-			     "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
-		(start-process-shell-command
-		 "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
+                          2 "DP-1" 3 "DP-1"
+                          4 "DP-1" 5 "DP-1"
+                          6 "DP-1" 7 "DP-1"))
+                (add-hook 'exwm-randr-screen-change-hook
+                          (lambda ()
+                            (start-process-shell-command
+                             "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
+                (start-process-shell-command
+                 "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
               (exwm-randr-enable))
-	  (exwm-enable)))
+          (exwm-enable)))
 
       (when quiescent-exwm-machine
-	(require 'exwm-config)
-	(defun exwm-config-ido ()
-	  "Override the config function for ido to do nothing since I don't use it."
-	  nil)
-	(exwm-config-default)
-	(fringe-mode 15)
-	(quiescent-exwm-setup-input-simulation)
-	(quiescent-exwm-setup-exwm-keys)
-	(quiescent-exwm-setup-global-bindings)
-	(quiescent-exwm-setup-displays-and-start)))))
+        (require 'exwm-config)
+        (defun exwm-config-ido ()
+          "Override the config function for ido to do nothing since I don't use it."
+          nil)
+        (exwm-config-default)
+        (fringe-mode 15)
+        (quiescent-exwm-setup-input-simulation)
+        (quiescent-exwm-setup-exwm-keys)
+        (quiescent-exwm-setup-global-bindings)
+        (quiescent-exwm-setup-displays-and-start)))))
 
 (provide 'early-init-file)
 ;;; early-init ends here

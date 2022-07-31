@@ -181,7 +181,7 @@
                                     (with-temp-buffer
                                       (find-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
-                   (dependencies  (cl-remove-if-not (lambda (form) (eq 'use-package (car form))) startup-forms)))
+                   (dependencies  (cl-remove-if-not (lambda (form) (member (car form) '(use-package progn))) startup-forms)))
               (save-window-excursion
                 (find-file config-deps)
                 (kill-region (point-min) (point-max))
@@ -202,7 +202,7 @@
                                     (with-temp-buffer
                                       (find-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
-                   (non-deps      (cl-remove-if     (lambda (form) (eq 'use-package (car form))) startup-forms)))
+                   (non-deps      (cl-remove-if (lambda (form) (member (car form) (member (car form) '(use-package progn)))) startup-forms)))
               (save-window-excursion
                 (find-file config-extracted)
                 (kill-region (point-min) (point-max))

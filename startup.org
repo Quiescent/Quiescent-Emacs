@@ -242,8 +242,7 @@ where emacs should start.
   <<eval-on-save>>
   <<too-long-lines>>
   <<ediff-accept-both>>
-  <<helm>>
-  <<helm-dash>>
+  <<fido-mode>>
   <<shells-setup>>
   <<shell-here>>
   <<unique-shell>>
@@ -729,15 +728,9 @@ forward.
     ("j" xref-find-definitions            nil)
     ("s" quiescent-vc-git-grep            nil)
     ("x" quiescent-avy-super-jump         nil)
-    ("i" quiescent-helm-semantic-or-imenu nil)
     ("q" nil                              nil)
     ("g" project-find-file                nil))
   (key-chord-define-global "qc" 'hydra-explore-code/body)
-
-  (defun quiescent-helm-semantic-or-imenu ()
-    "Do `helm-semantic-or-imenu' with arg as 0."
-    (interactive)
-    (call-interactively #'helm-semantic-or-imenu))
 #+END_SRC
 
 ** Window Jump
@@ -2411,87 +2404,14 @@ killdash9 on SO has the answer [[https://stackoverflow.com/questions/9656311/con
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 #+END_SRC
 
-** Helm Mode
-Helm mode used to be called Anything.el because it allowed one to
-perform actions of any kind on any thing.  I imagine that it's name
-changed because it's also a bit like being at the helm of a
-complicated and powerful ship.
+** Icomplete Vertical
+I used i-complete a while ago and it's a great package but it lacked
+some attention.  Now it has a vertical mode and better support for
+matching.  I'm going to try out the fuzzy version of vertical
+iComplete: ~fido-vertical-mode~.
 
-The basic idea of helm is that you are presented with a list of things
-which have originated from some context.  e.g. a list of files in the
-current directory.  Given that list, you may narrow it using multiple
-out of order regular expressions.  Each regular expression reduces the
-number of matches from the previous set.
-
-You can search through the content of the items in the list (for
-example if the items were files then grep the files) as well to
-perform further narrowing.  Once you're happy with your list you can
-select an item or mark multiple items and select an action to act on
-your selection.
-
-I want my helm to load in the current buffer instead of in the other
-buffer (which is the default.) I also want helm to keep track of
-recent files in helm minibuffer.  I found the other options I've
-configured for helm in an [[https://tuhdo.github.io/helm-intro.html][introduction to helm]].
-
-Before we can configure helm we need to load the package.
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref helm :lexical t
-    (defun quiescent-helm-grep-do-git-grep (arg)
-      "Git grep with helm from the root of the project."
-      (interactive "P")
-      (let ((default-directory (locate-dominating-file default-directory ".git")))
-        (helm-grep-do-git-grep arg)))
-
-    (eval-when-compile
-      (require 'cl-macs))
-
-    (use-package helm
-        :straight t
-        :demand t
-        :config (progn
-                  (setq helm-split-window-in-side-p           t
-                        helm-move-to-line-cycle-in-source     t
-                        helm-ff-search-library-in-sexp        t
-                        helm-scroll-amount                    8
-                        helm-ff-file-name-history-use-recentf t
-                        helm-grep-input-idle-delay            0.02
-                        helm-input-idle-delay                 0
-                        helm-grep-git-grep-command            "git --no-pager grep -n%cH --color=always --full-name -e %p -- %f ':!*package-lock.json' ':!*yarn.lock'")
-                  (eval-and-compile
-                    (add-to-list 'load-path "~/.emacs.d/lisp/helm-rg"))
-                  (require 'helm-rg)
-                  (require 'helm-config)
-                  (helm-mode 1)
-                  (define-key helm-grep-mode-map (kbd "C-c C-p") #'wgrep-change-to-wgrep-mode)
-                  (require 'helm-adaptive)
-                  (helm-adaptive-mode t)
-                  (global-set-key (kbd "M-y")       #'helm-show-kill-ring)
-                  (global-set-key (kbd "M-i")       #'helm-semantic-or-imenu)
-                  (global-set-key (kbd "C-x C-f")   #'helm-find-files)
-                  (global-set-key (kbd "C-x b")     #'helm-buffers-list)
-                  (global-set-key (kbd "M-x")       #'helm-M-x)
-                  (if (eq system-type 'windows-nt)
-                      (global-set-key (kbd "C-S-f")     #'helm-rg)
-                      (global-set-key (kbd "C-S-f")     #'quiescent-helm-grep-do-git-grep))
-                  (if (eq system-type 'windows-nt)
-                      (global-set-key (kbd "C-c p s g") #'helm-rg)
-                      (global-set-key (kbd "C-c p s g") #'quiescent-helm-grep-do-git-grep))
-                  (global-set-key (kbd "C-h C-f")   #'helm-recentf))
-        :init (with-eval-after-load "helm"
-                (helm-mode 1)))
-#+END_SRC
-
-*** Helm Dash
-There's a docset repository for a huge number of languages called
-Dash.  It turns out that someone wrote a package in Emacs Lisp that
-reads those doc sets so that you can use them while you code.  I've
-integrated it because I'm tired of flipping over to Firefox to browse
-MDN.
-
-#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref helm-dash :lexical t
-  (use-package helm-dash
-    :straight t)
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref fido-mode :lexical t
+  (fido-vertical-mode t)
 #+end_src
 
 ** Shell
@@ -2892,18 +2812,9 @@ find file.  I think that it'll be useful and I'd like to give it to a
 colleague to help him improve his work flow.
 
 *** Bindings for Project
-In the interim it would seem that projectile is broken with the latest
-Emacs (26) so I'm going to go ahead and bind project find file.
-
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref project-find-file :lexical t
-  (defun quiescent-find-file-in-project ()
-    "Find file in the current project using helm."
-    (interactive)
-    (let ((completing-read-function #'helm--completing-read-default))
-      (project-find-file)))
-
-  (global-set-key (kbd "C-S-P") #'quiescent-find-file-in-project)
-  (global-set-key (kbd "C-c p f") #'quiescent-find-file-in-project)
+  (global-set-key (kbd "C-S-P") #'project-find-file)
+  (global-set-key (kbd "C-c p f") #'project-find-file)
 #+END_SRC
 
 I'd like to find a project file in a split window.  I need both a
@@ -3686,7 +3597,7 @@ These functions serve that purpose.
   <<dockerfile>>
   <<kotlin>>
   <<terraform>>
-  <<emacs-jupyter>>
+  ;; <<emacs-jupyter>>
   <<pyvenv>>
   <<python-completion>>
   <<c-plus-plus>>
@@ -6305,8 +6216,7 @@ and clean UI using icons and I adapted it to my workflow.
               (python t)
               (calc . t)
               (lisp . t)
-              (js . t)
-              (jupyter . t))))
+              (js . t))))
       (setq org-log-into-drawer 'LOGBOOK)
       (org-babel-do-load-languages
        'org-babel-load-languages org-babel-load-languages)))
@@ -7711,32 +7621,12 @@ speed up my interaction with large projects.
       :straight t)
 #+END_SRC
 
-** GCMH
-The Garbage Collector Magic Hack is to try to only do garbage
-collection while the system is idle.  If you can manage this then
-longer running tasks will run with far less garbage collection.  Since
-user interaction is the main axis of computation in Emacs it seems
-reasonable that this will just be a good improvement overall.
-
-I've turned it off because I've encountered very long pauses recently
-and I think that they may be massive GC pauses.
-
-#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref gcmh :lexical t
-  (use-package gcmh
-    :straight t
-    :demand t
-    :config (gcmh-mode 1))
-#+end_src
-
 * The Appearance of Emacs
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref the-appearance-of-emacs :exports none :lexical t
   <<themes>>
   <<prism>>
   <<page-break-lines>>
-  <<prettify>>
-  <<splash-screen>>
   <<mb-depth>>
-  <<agenda-margins>>
   <<xhair>>
 #+END_SRC
 
@@ -7750,40 +7640,39 @@ Peton) and then to Doom-Themes.  Doom Themes are the best designed
 themes I've used.  They have great coverage of Emacs features, a great
 mode line and they're reasonably efficient.
 
+Since I wrote this, Nicolas Rougier (an actual designer) created Nano
+Emacs.  It's elegant and it's based on actual design principles.  I
+loaded it up to test it out and it made my previous Emacs setup look
+dated.
+
+Why is Nano's appearance so much better?  I think that Nano looks
+better because it optimises for comprehension of the data on the page
+rather than cramming things in or making things look flashy.  It
+displays what's necessary using modern typography practices and
+displays things in a more readable way.  I'm going to switch to it and
+see how things go.
+
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref themes :lexical t
-  (use-package doom-themes
-      :straight t
-      :config (progn
-                ;; Global settings (defaults)
-                (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-                      doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-                ;; Enable flashing mode-line on errors
-                (doom-themes-visual-bell-config)
-
-                ;; Enable custom neotree theme (all-the-icons must be installed!)
-                (doom-themes-neotree-config)
-                ;; or for treemacs users
-                (doom-themes-treemacs-config)
-
-                ;; Corrects (and improves) org-mode's native fontification.
-                (doom-themes-org-config)
-
-                (defun quiescent-load-dark-theme ()
-                  "Load my dark theme."
-                  (interactive)
-                  (load-theme 'doom-one t))
-
-                (defun quiescent-load-light-theme ()
-                  "Load my light theme."
-                  (interactive)
-                  (load-theme 'doom-solarized-light t))
-
-                (quiescent-load-dark-theme)))
-
-  (use-package doom-modeline
-      :straight t
-      :config (doom-modeline-mode t))
+  (progn
+    (straight-use-package
+     '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+    (require 'nano-layout)
+    (require 'nano-theme-dark)
+    (require 'nano-faces)
+    (nano-faces)
+    (require 'nano-theme)
+    (nano-theme)
+    (require 'nano-defaults)
+    (require 'nano-session)
+    (require 'nano-modeline)
+    (require 'nano-help)
+    (require 'nano-splash)
+    (when (eq system-type 'darwin)
+      (setq ns-use-native-fullscreen t
+        mac-option-key-is-meta t
+        mac-command-key-is-meta nil
+        mac-option-modifier 'meta
+        mac-use-title-bar nil)))
 #+END_SRC
 
 There's another thing that you can do about nested blocks: you can
@@ -7845,59 +7734,6 @@ I decided to use the package myself.
              (global-page-break-lines-mode 1)))
 #+END_SRC
 
-Another cool thing that I actually added and then forgot about is
-prettify symbols mode.  It allows for common constructs in various
-modes to be swapped out for things which look better when viewing
-them.  For instance when editing an Emacs Lisp buffer it might be
-convenient to view a lambda as the actual Greek character (that's one
-of the defaults which the mode has built in.)
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref prettify :lexical t
-  (use-package prog-mode
-    :init (progn
-            (setq prettify-symbols-unprettify-at-point 'right-edge))
-    :config (progn
-              (defconst quiescent-prog-mode-symbols '()
-                "An alist of substitutions to pretify in prog mode.")
-              (defun quiescent-prettify-prog-mode ()
-                "Pretify general set of symbols in prog mode."
-                (when (null quiescent-starting-up)
-                  (dolist (symbol-mapping quiescent-prog-mode-symbols)
-                    (push symbol-mapping prettify-symbols-alist))))
-              (defun quiescent-activate-pretify-symbols-mode ()
-                "Activate `pretify-symbols-mode'."
-                (when (null quiescent-starting-up)
-                  (prettify-symbols-mode 1)))
-              (defun quiescent-pretify-elisp ()
-                "Pretify symbols in Emacs Lisp mode."
-                (when (null quiescent-starting-up)
-                  (progn
-                    (push '("pcase-lambda" . 955) prettify-symbols-alist)
-                    (push '("defun"        . 402) prettify-symbols-alist)
-                    (push '("defvar"       . 957) prettify-symbols-alist)
-                    (push '("defconst"     . 986) prettify-symbols-alist))))
-              (add-hook 'emacs-lisp-mode-hook #'quiescent-pretify-elisp)
-              (add-hook 'prog-mode-hook #'quiescent-prettify-prog-mode))
-    :hook (((prog-mode text-mode prog-mode) . quiescent-activate-pretify-symbols-mode)))
-
-  (defun quiescent-indent-region-w/o-prettify-before (&rest _)
-    "Indent regions without prettify turned on so that it's not improperly offset."
-    (prettify-symbols-mode -1))
-
-  (defun quiescent-indent-region-w/o-prettify-after (&rest _)
-    "Turn pretify back on after having indented."
-    (prettify-symbols-mode 1))
-
-  (advice-add #'indent-region :before #'quiescent-indent-region-w/o-prettify-before)
-  (advice-add #'indent-region :after #'quiescent-indent-region-w/o-prettify-after)
-#+END_SRC
-
-I want to get straight down to business when I open EMACS!
-
-#+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref splash-screen
-  (setq inhibit-splash-screen t)
-#+END_SRC
-
 ** Mb-depth
 I'm starting to get into recursive editing, especially with icicles;
 which is partially premised on it.  mb-depth gives a visual indication
@@ -7908,43 +7744,6 @@ the rabbit hole you've gone.
   (use-package mb-depth
       :straight t)
 #+END_SRC
-
-** Agenda Margins
-I'm paying a bit more attention to the presentation of my agenda
-because I want it to feel less cluttered.
-
-#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref agenda-margins :lexical t
-  (defvar quiescent-org-agenda-visible-width 128
-    "The width of the visible portion of the org agenda buffer.")
-
-  (defun quiescent-full-window-width (window)
-    "Produce the width of WINDOW including its margins."
-    (let ((margins (window-margins window)))
-      (+ (window-width window)
-         (or (car margins) 0)
-         (or (cdr margins) 0))))
-
-  (defun quiescent-setup-agenda-margins (&rest _)
-    "Compute the margins for the agenda buffer and make it so."
-    (dolist (window (window-list))
-      (when (string-equal "*Org Agenda*" (buffer-name (window-buffer window)))
-        (let ((margin-width (round (max 0 (/ (- (quiescent-full-window-width window)
-                                                quiescent-org-agenda-visible-width) 2)))))
-         (set-window-margins window margin-width margin-width)))))
-
-  (defun quiescent-reset-margins (&rest _)
-    "Reset the margins on all windows to nil."
-    (dolist (window (window-list))
-      (unless (string-equal "*Org Agenda*" (buffer-name (window-buffer window)))
-        (set-window-margins window 0 0))))
-
-  (advice-add #'split-window :before #'quiescent-reset-margins)
-  (advice-add #'split-window :after #'quiescent-setup-agenda-margins)
-
-  (add-hook 'window-configuration-change-hook #'quiescent-setup-agenda-margins)
-  (add-hook 'window-size-change-hook #'quiescent-setup-agenda-margins)
-  (add-hook 'org-agenda-mode-hook #'quiescent-setup-agenda-margins)
-#+end_src
 
 ** Xhair
 Sometimes it's convenient to be able to see the column and row that
