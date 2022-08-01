@@ -2945,10 +2945,8 @@ purpose and I'm going to make a modification to it that it doesn't ask
 for the directory and just uses `vc-dir'.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref vc-git-grep :lexical t
-  (defun quiescent-vc-git-grep (regexp &optional files)
+  (defun quiescent-vc-git-grep (regexp)
     "Search for REGEXP in the current project using grep.
-
-  Ignores files which aren't version controlled.
 
   Optionally you may specify a glob pattern for the typo of file to
   search through."
@@ -2961,10 +2959,9 @@ for the directory and just uses `vc-dir'.
          (list (read-from-minibuffer "Run: " "git grep"
                                      nil nil 'grep-history)
                nil))
-        (t (let* ((regexp (grep-read-regexp))
-                  (files (grep-read-files regexp)))
-             (list regexp files))))))
-    (vc-git-grep regexp files (vc-git-root default-directory)))
+        (t (let* ((regexp (grep-read-regexp)))
+             (list regexp))))))
+    (vc-git-grep regexp "*" (vc-git-root default-directory)))
 
   (global-set-key (kbd "C-c C-r") #'quiescent-vc-git-grep)
 #+END_SRC
