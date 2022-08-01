@@ -80,6 +80,7 @@
  '(js2-external-variable ((t (:foreground "orange2"))))
  '(js2-highlight-vars-face ((t (:underline t))))
  '(js2-highlight-vars-second-face ((t (:underline "white"))))
+ '(org-pomodoro-mode-line ((t (:foreground "#ff6c6b"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "light steel blue"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "cornflower blue"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "pale turquoise"))))

@@ -7656,26 +7656,27 @@ displays things in a more readable way.  I'm going to switch to it and
 see how things go.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref themes :lexical t
-    (progn
-      (straight-use-package
-       '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
-      (require 'nano-layout)
-      (require 'nano-theme-dark)
-      (require 'nano-faces)
-      (nano-faces)
-      (require 'nano-theme)
-      (nano-theme)
-      (require 'nano-defaults)
-      (require 'nano-session)
-      (require 'nano-modeline)
-      (require 'nano-help)
-      (require 'nano-splash)
-      (when (eq system-type 'darwin)
-        (setq ns-use-native-fullscreen t
-          mac-option-key-is-meta t
-          mac-command-key-is-meta nil
-          mac-option-modifier 'meta
-          mac-use-title-bar nil)))
+  (progn
+    (straight-use-package
+     '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+    (require 'nano-layout)
+    (require 'nano-theme-dark)
+    (require 'nano-faces)
+    (nano-faces)
+    (require 'nano-theme)
+    (nano-theme)
+    (require 'nano-defaults)
+    (require 'nano-session)
+    (require 'nano-modeline)
+    (require 'nano-help)
+    (require 'nano-splash)
+    (when (eq system-type 'darwin)
+      (setq ns-use-native-fullscreen t
+        mac-option-key-is-meta t
+        mac-command-key-is-meta nil
+        mac-option-modifier 'meta
+        mac-use-title-bar nil))
+    (menu-bar-mode -1))
 #+END_SRC
 
 There's another thing that you can do about nested blocks: you can
