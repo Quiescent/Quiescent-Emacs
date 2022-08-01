@@ -2412,6 +2412,21 @@ iComplete: ~fido-vertical-mode~.
 
 #+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref fido-mode :lexical t
   (fido-vertical-mode t)
+
+  (defun quiescent-icomplete-up-directory ()
+    "Delete a directory backwards from the end of the prompt."
+    (interactive)
+    (save-excursion)
+    (goto-char (point-max))
+    (backward-char)
+    (when (looking-at "/")
+      (backward-char))
+    (search-backward "/" nil t)
+    (forward-char 1)
+    (when (/= (point) (point-max))
+      (delete-region (point) (point-max))))
+
+  (define-key icomplete-fido-mode-map (kbd "C-^") #'quiescent-icomplete-up-directory)
   (global-set-key (kbd "C-h C-f")   #'recentf-open-files)
   (global-set-key (kbd "C-c p s g") #'quiescent-vc-git-grep)
   (global-set-key (kbd "M-i") #'imenu)
