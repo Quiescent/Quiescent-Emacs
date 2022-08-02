@@ -2654,7 +2654,7 @@ my =eshell.el=.
      (propertize "]──[" 'face `(:foreground "green"))
      (propertize (format-time-string "%H:%M" (current-time)) 'face `(:foreground "yellow"))
      (propertize "]──[" 'face `(:foreground "green"))
-     (propertize (concat (eshell/pwd)) 'face `(:foreground "white"))
+     (propertize (concat (eshell/basename (eshell/pwd))) 'face `(:foreground "white"))
      (propertize "]\n" 'face `(:foreground "green"))
      (propertize "└─>" 'face `(:foreground "green"))
      (propertize (if (= (user-uid) 0) " # " " $ ") 'face `(:foreground "green"))))
@@ -2669,7 +2669,7 @@ my =eshell.el=.
     "A fancy eshell prompt function."
     (let ((header-bg "dark slate grey"))
       (concat
-       (with-face (concat (eshell/pwd) " ") :background header-bg)
+       (with-face (concat (eshell/basename (eshell/pwd)) " ") :background header-bg)
        (with-face (format-time-string "(%Y-%m-%d %H:%M) " (current-time)) :background header-bg :foreground "#888")
        (with-face
         (or (ignore-errors (format "(%s)" (car (vc-git-branches)))) "")
@@ -2688,14 +2688,14 @@ my =eshell.el=.
 
   A combination of one from the wiki and one from reddit."
     (concat
-     (with-face "┌─["                                       :foreground "#b2d7ff")
+     (with-face "┌─["                                      :foreground "#b2d7ff")
      (with-face (user-login-name)                           :foreground "#5180b3")
      (with-face "@"                                         :foreground "light grey")
      (with-face (system-name)                               :foreground "green")
-     (with-face "]──["                                      :foreground "#b2d7ff")
+     (with-face "]──["                                     :foreground "#b2d7ff")
      (with-face (format-time-string "%H:%M" (current-time)) :foreground "light grey")
-     (with-face "]──["                                      :foreground "#b2d7ff")
-     (with-face (eshell/pwd)                                :foreground "light grey")
+     (with-face "]──["                                     :foreground "#b2d7ff")
+     (with-face (eshell/basename (eshell/pwd))              :foreground "light grey")
      (with-face "]──["                                      :foreground "#b2d7ff")
      (with-face (or (car (vc-git-branches)) "unversioned")  :foreground "light grey")
      (with-face "]\n"                                       :foreground "#b2d7ff")
