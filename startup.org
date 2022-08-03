@@ -7296,6 +7296,7 @@ having to log into Google in my web browser all the time.
 * Writing Natural Language
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref writing-natural-language :exports none :lexical t
   <<ia-writer>>
+  <<mixed-pitch>>
   <<auctex>>
   <<editing>>
   <<ispell>>
@@ -7386,6 +7387,21 @@ going to build up on it.
                                   nil
                                   (ia-writer-highlight-current-sentance-on-idle-timer-exirey buffer)))))))
 #+END_SRC
+
+** Fixed Pitch Mode
+Emacs has support for variable-pitch font display.  I've never used
+it, but writers seem to think that it helps them, so I'm going to give
+it a bash.  There's a package that takes care of most of the details,
+I'm going to give it a bash.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref mixed-pitch :lexical t
+  (use-package mixed-pitch
+    :straight t
+    :ensure t
+    :hook
+    ;; If you want it in all text modes:
+    (text-mode . mixed-pitch-mode))
+#+end_src
 
 ** LaTeX
 Prof. Gibbon (AKA comrade Gibbon.) descriptions of electrons as sheep

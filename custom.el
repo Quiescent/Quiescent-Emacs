@@ -92,6 +92,7 @@
  '(rainbow-delimiters-depth-7-face ((t (:foreground "dark slate blue"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "navy"))))
  '(tide-hl-identifier-face ((t (:inherit nil :underline t))))
+ '(variable-pitch ((t (:background "#2E3440" :foreground "#ECEFF4" :weight light :height 140 :family "Noto"))))
  '(visible-mark-face1 ((t (:background "slate gray")))))
 
 (provide 'custom)
