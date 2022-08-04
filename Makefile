@@ -24,6 +24,8 @@ get_external_dependencies:
 	cd $(EMACS_D_DIR) && git submodule update --init lisp/org-brain-export
 	@echo "> Fetching helm-rg"
 	cd $(EMACS_D_DIR) && git submodule update --init lisp/helm-rg
+	@echo "> Fetching screenshot"
+	cd $(EMACS_D_DIR) && git submodule update --init lisp/screenshot
 
 build_external_dependencies:
 	@echo "> Building too-long-lines-mode"
