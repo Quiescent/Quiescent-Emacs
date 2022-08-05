@@ -5599,10 +5599,12 @@ and co. espouse.  Let's see how that works in practice.
     :init (progn
             (defun quiescent-setup-svelte ()
               "Setup svelte if we're in a file with that exten."
-              (when (thread-last (buffer-file-name (current-buffer))
-                                 file-name-extension
-                                 (string-equal "svelte"))
-                (lsp)))
+              (progn
+                (setq-local font-lock-maximum-decoration 1)
+                (when (thread-last (buffer-file-name (current-buffer))
+                                   file-name-extension
+                                   (string-equal "svelte"))
+                  (lsp))))
             (add-hook 'web-mode-hook #'quiescent-setup-svelte)))
 #+end_src
 
