@@ -5604,7 +5604,8 @@ and co. espouse.  Let's see how that works in practice.
                 (when (thread-last (buffer-file-name (current-buffer))
                                    file-name-extension
                                    (string-equal "svelte"))
-                  (lsp))))
+                  (lsp)
+                  (lsp-headerline-breadcrumb-mode -1))))
             (add-hook 'web-mode-hook #'quiescent-setup-svelte)))
 #+end_src
 
