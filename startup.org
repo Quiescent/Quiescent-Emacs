@@ -5642,6 +5642,7 @@ and co. espouse.  Let's see how that works in practice.
   <<excorporate>>
   <<screenshot>>
   <<mu4e>>
+  <<coffee>>
 #+END_SRC
 
 ** GNUs
@@ -7294,6 +7295,44 @@ having to log into Google in my web browser all the time.
           mu4e-index-lazy-check t
           ;; more sensible date format
           mu4e-headers-date-format "%d.%m.%y"))
+#+end_src
+
+** Coffee
+I roast coffee.  I've been selling it to my family at a little more
+than cost because it saves them money and they like it.  I use
+~org-mode~ to keep track of the orders so I thought that it might be a
+good idea to write some code to automate capturing orders etc.
+
+#+begin_src emacs-lisp :tangle no :noweb yes :noweb-ref coffee :exports none :lexical t
+  (defun quiescent-add-coffee-order (date amount description deliver-by)
+    "Add an order made on DATE costing AMOUNT for coffee described by DESCRIPTION.
+
+  The cofee should be delivered by DELIVER-BY."
+    (interactive
+     (list
+      (with-temp-buffer
+        (org-time-stamp nil)
+        (let* ((stamp (buffer-substring (point-min) (point-max)))
+               (parts (split-string stamp "[^0-9]+" t)))
+          (pcase parts
+            (`(,y ,m ,d) (format "%s/%s/%s" d m y)))))
+      (read-number "Cost: ")
+      (read-string "Description: ")
+      (with-temp-buffer
+        (org-time-stamp nil)
+        (let* ((stamp (buffer-substring (point-min) (point-max)))
+               (parts (split-string stamp "[^0-9]+" t)))
+          (pcase parts
+            (`(,y ,m ,d) (format "%s/%s/%s" d m y)))))))
+    (save-window-excursion
+     (find-file "~/Dropbox/work/coffee/orders.org")
+     (goto-char (point-min))
+     (search-forward "#+TBLFM")
+     (beginning-of-line)
+     (forward-line -2)
+     (insert (format "| %s | %s | %s | %s | nil | nil | nil |\n"
+                     date amount description deliver-by))
+     (org-cycle)))
 #+end_src
 
 * Writing Natural Language
