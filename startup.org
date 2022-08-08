@@ -5641,7 +5641,7 @@ and co. espouse.  Let's see how that works in practice.
   <<calctex>>
   <<excorporate>>
   <<screenshot>>
-  <<mu4e>>
+  ;; <<mu4e>>
   <<coffee>>
 #+END_SRC
 
@@ -7727,10 +7727,24 @@ see how things go.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref themes :lexical t
   (progn
+    (use-package mini-frame
+      :ensure t
+      :straight t)
+    (use-package ts
+      :ensure t
+      :straight t)
+    (use-package svg-tag-mode
+      :ensure t
+      :straight t)
+    (use-package smex
+      :ensure t
+      :straight t)
     (straight-use-package
      '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
     (require 'nano-layout)
-    (require 'nano-theme-dark)
+    (if (member "--light" command-line-args)
+        (require 'nano-theme-light)
+      (require 'nano-theme-dark))
     (require 'nano-faces)
     (nano-faces)
     (require 'nano-theme)
