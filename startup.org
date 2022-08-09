@@ -7827,7 +7827,9 @@ see how things go.
                 (kill-buffer buffer))
             ad-do-it))
         (ad-activate 'term-sentinel)))
-    (quiescent-nano-defaults))
+    (quiescent-nano-defaults)
+    ;; Reload custom because nano overwrote stuff that I want from there.
+    (load-file "~/.emacs.d/custom.el"))
 #+END_SRC
 
 There's another thing that you can do about nested blocks: you can
