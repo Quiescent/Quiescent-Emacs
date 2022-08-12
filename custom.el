@@ -81,7 +81,7 @@
  '(js2-highlight-vars-face ((t (:underline t))))
  '(js2-highlight-vars-second-face ((t (:underline "white"))))
  '(org-agenda-clocking ((t (:inherit nano-face-strong))))
- '(org-agenda-done ((t (:inherit nano-face-faded :foreground "#3e4757"))))
+ '(org-agenda-done ((t (:inherit nano-face-faded :foreground "#d0d8dc"))))
  '(org-pomodoro-mode-line ((t (:foreground "#ff6c6b"))))
  '(org-scheduled-previously ((t (:inherit nano-face-strong))))
  '(org-scheduled-today ((t (:inherit nano-face-default))))
