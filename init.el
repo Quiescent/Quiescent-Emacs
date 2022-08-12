@@ -179,7 +179,7 @@
                    (print-length  nil)
                    (startup-forms (save-window-excursion
                                     (with-temp-buffer
-                                      (find-file config-tangled)
+                                      (insert-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
                    (dependencies  (cl-remove-if-not (lambda (form) (member (car form) '(use-package progn))) startup-forms)))
               (save-window-excursion
@@ -200,7 +200,7 @@
                    (print-length  nil)
                    (startup-forms (save-window-excursion
                                     (with-temp-buffer
-                                      (find-file config-tangled)
+                                      (insert-file config-tangled)
                                       (cl-remove-if-not #'listp (car (read-from-string (format "(%s)" (buffer-substring (point-min) (point-max)))))))))
                    (non-deps      (cl-remove-if (lambda (form) (member (car form) (member (car form) '(use-package progn)))) startup-forms)))
               (save-window-excursion
