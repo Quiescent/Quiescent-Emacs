@@ -3523,7 +3523,7 @@ content elsewhere.
            (delete-region (point-min) (point-max))
            (insert grep-contents)
            (read-only-mode 1)
-           (grep-mode 1))))
+           (grep-mode))))
 
      (defun thought-stack-pop ()
        "Pop the current concept from the thought stack.
