@@ -3492,6 +3492,16 @@ content elsewhere.
         for window being the hash-keys of window-points
         do (set-window-point window (gethash window window-points))))
 
+     (defun thought-stack-grep-buffer-contents ()
+       "Get the contents of the buffer called *grep* if it exists.
+
+     If the buffer doesn't exist, produce nil."
+       (let ((grep-buffer (get-buffer "*grep*")))
+         (when grep-buffer
+           (save-window-excursion
+             (switch-to-buffer grep-buffer)
+             (buffer-substring (point-min) (point-max))))))
+
      (defun thought-stack-push (concept)
        "Push CONCEPT onto the thought stack.
 
@@ -3499,8 +3509,21 @@ content elsewhere.
        (interactive "sPush: ")
        (push (list concept
                    (current-window-configuration)
-                   (thought-stack-window-points))
+                   (thought-stack-window-points)
+                   (thought-stack-grep-buffer-contents))
              thought-stack))
+
+     (defun thought-stack-restore-grep-buffer (grep-contents)
+       "If GREP-CONTENTS is non nil, then set grep buffer to it."
+       (when grep-contents
+         (save-window-excursion
+           (switch-to-buffer
+            (get-buffer-create "*grep*"))
+           (read-only-mode -1)
+           (delete-region (point-min) (point-max))
+           (insert grep-contents)
+           (read-only-mode 1)
+           (grep-mode 1))))
 
      (defun thought-stack-pop ()
        "Pop the current concept from the thought stack.
@@ -3513,6 +3536,7 @@ content elsewhere.
              (progn
                (set-window-configuration (cadr thought))
                (thought-stack-restore-window-points (caddr thought))
+               (thought-stack-restore-grep-buffer (cadddr thought))
                (read-key (format "You were doing: %s\nPress any key to continue..." (car thought))))
            (error "No thoughts left"))))
 
