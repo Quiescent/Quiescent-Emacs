@@ -3513,7 +3513,7 @@ content elsewhere.
              (progn
                (set-window-configuration (cadr thought))
                (thought-stack-restore-window-points (caddr thought))
-               (message (format "You were doing: %s" (car thought))))
+               (read-key (format "You were doing: %s\nPress any key to continue..." (car thought))))
            (error "No thoughts left"))))
 
      (defun thought-stack-view ()
