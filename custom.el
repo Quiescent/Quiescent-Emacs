@@ -102,6 +102,7 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "royal blue"))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "dark slate blue"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "navy"))))
+ '(slime-highlight-edits-face ((t (:underline "light gray"))))
  '(tide-hl-identifier-face ((t (:inherit nil :underline t))))
  '(variable-pitch ((t (:family "Roboto"))))
  '(visible-mark-face1 ((t (:background "slate gray")))))
