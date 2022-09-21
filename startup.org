@@ -4829,14 +4829,17 @@ working typescript setup I thought that I'd go ahead and set it up.
   (defun quiescent-setup-tide-mode ()
     "Setup TIDE mode."
     (when (null quiescent-starting-up)
-      (progn
-        (tide-setup)
-        (define-key tide-mode-map (kbd "M-?") 'tide-references)
-        (tide-hl-identifier-mode +1)
-        (setq-local company-backends '(company-tide company-files))
-        (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)
-        (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)
-        (setq xref-backend-functions '(dumb-jump-xref-activate etags--xref-backend)))))
+      (run-at-time
+       2 nil
+       (lambda ()
+         (progn
+           (tide-setup)
+           (define-key tide-mode-map (kbd "M-?") 'tide-references)
+           (tide-hl-identifier-mode +1)
+           (setq-local company-backends '(company-tide company-files))
+           (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)
+           (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)
+           (setq xref-backend-functions '(dumb-jump-xref-activate etags--xref-backend)))))))
 #+END_SRC
 
 ** Rust
