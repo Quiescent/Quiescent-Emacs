@@ -7850,7 +7850,8 @@ see how things go.
                 ad-do-it
                 (kill-buffer buffer))
             ad-do-it))
-        (ad-activate 'term-sentinel)))
+        (ad-activate 'term-sentinel)
+        (setq pop-up-windows t)))
     (quiescent-nano-defaults)
     ;; Reload custom because nano overwrote stuff that I want from there.
     (load-file "~/.emacs.d/custom.el"))
