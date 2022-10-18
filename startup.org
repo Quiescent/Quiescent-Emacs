@@ -6971,6 +6971,7 @@ things a bit easier.  I'll alias them as I go.
       (`(,_ ,month ,day ,_ ,year)
        `(0 0 0 ,(string-to-number day) ,(quiescent-parse-month month) ,(string-to-number year) 0 nil 0))))
 
+  ;; Note: moved to: https://codeberg.org/pidu/git-timemachine.git
   (use-package git-timemachine
     :straight t)
 
