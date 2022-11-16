@@ -4916,7 +4916,8 @@ inspiration for many modes after it.
     (let ((original-window (selected-window)))
       (cl-loop
       for window being the windows
-      when (equal "*slime-description*" (buffer-name (window-buffer window)))
+      when (or (equal "*slime-description*" (buffer-name (window-buffer window)))
+               (equal "*slime-compilation*" (buffer-name (window-buffer window))))
         do (select-window window)
            (call-interactively #'quit-window))
       (select-window original-window)))
