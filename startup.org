@@ -1006,7 +1006,8 @@ same way even with composable turned on!
       (require 'composable)
       (require 'composable-mark)
       (progn (composable-mode)
-             (composable-mark-mode)))
+             (composable-mark-mode))
+      (unbind-key (kbd "C-M-\\") composable-mode-map))
 #+END_SRC
 
 ** Completion Setup
