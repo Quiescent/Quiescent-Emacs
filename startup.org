@@ -4255,9 +4255,11 @@ js2-mode and give that a bash.
   (defun quiescent-indent-js-function ()
     "Indent the javascript function at point."
     (interactive)
-    (save-excursion
-      (mark-defun)
-      (call-interactively #'indent-for-tab-command)))
+    (if (null (flycheck-overlays-at (point)))
+        (save-excursion
+          (mark-defun)
+          (call-interactively #'indent-for-tab-command))
+      (call-interactively #'quiescent-correct-linting-errors-at-point)))
 
   (use-package js2-mode
     :straight t
