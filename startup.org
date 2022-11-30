@@ -4252,6 +4252,13 @@ dojo I'll be giving with two of my colleagues.  I've decided to enable
 js2-mode and give that a bash.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref javascript :exports none :lexical t
+  (defun quiescent-indent-js-function ()
+    "Indent the javascript function at point."
+    (interactive)
+    (save-excursion
+      (mark-defun)
+      (call-interactively #'indent-for-tab-command)))
+
   (use-package js2-mode
     :straight t
     :config (progn
@@ -4259,7 +4266,8 @@ js2-mode and give that a bash.
               (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
               (define-key js2-mode-map (kbd "<f5>") #'quiescent-start-node-with-this-file)
               (define-key js2-mode-map (kbd "<f6>") #'quiescent-start-mocha-with-this-file)
-              (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)))
+              (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)
+              (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)))
 
   (require 'flycheck)
 
