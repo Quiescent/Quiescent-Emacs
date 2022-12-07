@@ -4645,9 +4645,6 @@ the recommendation to the code at point.
                  nil
                  t)
       (replace-match "")))))
-
-  (require 'js2-mode)
-  (define-key js2-mode-map (kbd "M-q") #'quiescent-correct-linting-errors-at-point)
 #+END_SRC
 
 **** JS2 Highlight Vars
