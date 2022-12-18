@@ -508,8 +508,7 @@ Expand to use this feature.
                                 (cond
                                  ((and quotes
                                        (not (member char quiescent-start-or-end-of-string)))
-                                  (push char result)))
-                                (cond
+                                  (push char result))
                                  ((member char quiescent-start-or-end-of-string)
                                   (if (eq char (car quotes))
                                       (push (pop quotes) result)
