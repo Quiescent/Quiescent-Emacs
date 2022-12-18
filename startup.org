@@ -551,6 +551,13 @@ Expand to use this feature.
 
   (advice-add #'hippie-expand :around
               #'quiescent-ensure-even-braces-after-hippie)
+
+  (defun quiescent-setup-lisp-string-quotes ()
+    "Setup the quotes that open and close strings for lisps."
+    (setq-local quiescent-start-or-end-of-string (list ?\")))
+
+  (add-hook 'lisp-mode-hook #'quiescent-setup-lisp-string-quotes)
+  (add-hook 'emacs-lisp-mode-hook #'quiescent-setup-lisp-string-quotes)
 #+END_SRC
 
 ** Avy
