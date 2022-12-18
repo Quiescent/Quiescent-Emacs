@@ -523,8 +523,8 @@ Expand to use this feature.
                                   (progn
                                     (if (not (eq char (quiescent-closing-bracket-for (car brackets))))
                                         (progn
-                                          (dolist (bracket brackets)
-                                            (push (quiescent-closing-bracket-for bracket) result))
+                                          (while brackets
+                                            (push (quiescent-closing-bracket-for (pop brackets)) result))
                                           (cl-return-from outer (apply #'string (nreverse result))))
                                       (progn
                                         (push char result)
