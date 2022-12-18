@@ -467,6 +467,89 @@ Expand to use this feature.
 
 #+BEGIN_SRC emacs-lisp :tangle no :noweb yes :noweb-ref hippie-expand :lexical t
   (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+  (defvar quiescent-opening-brackets
+    (list ?\( ?\[ ?<)
+    "Brackets that must be closed during hippie expand.")
+
+  (defvar quiescent-closing-brackets
+    (list ?\) ?\] ?>)
+    "Brackets that close an opening bracket during hippie expand.")
+
+  (defvar quiescent-start-or-end-of-string
+    (list ?\" ?\' ?\`)
+    "Characters that constitute the start of a string.")
+
+  (require 'cl-lib)
+
+  (defun quiescent-closing-bracket-for (char)
+    "Produce the closing bracket of CHAR.
+
+  Produce nil if CHAR isn't an opening bracket."
+    (if (not (member char quiescent-opening-brackets))
+        nil
+      (nth (cl-position char quiescent-opening-brackets)
+           quiescent-closing-brackets)))
+
+  (defun quiescent-balance-hippie-insertion (s)
+    "Ensure that S is balanced in brackets and string quote chars.
+
+  Ignore any syntax other than strings, just push any open brackets
+  to a stack and ensure they get closed.
+
+  At the first char that double closes, end the string, close the
+  other brackets and produce the result."
+    (let ((result)
+          (brackets)
+          (quotes))
+      (let ((final-result (cl-block outer
+                            (dotimes (i (length s) (apply #'string (nreverse result)))
+                              (let ((char (aref s i)))
+                                (cond
+                                 ((and quotes
+                                       (not (member char quiescent-start-or-end-of-string)))
+                                  (push char result)))
+                                (cond
+                                 ((member char quiescent-start-or-end-of-string)
+                                  (if (eq char (car quotes))
+                                      (push (pop quotes) result)
+                                    (progn
+                                      (push char quotes)
+                                      (push char result))))
+                                 ((member char quiescent-opening-brackets)
+                                  (progn
+                                    (push char brackets)
+                                    (push char result)))
+                                 ((member char quiescent-closing-brackets)
+                                  (progn
+                                    (if (not (eq char (quiescent-closing-bracket-for (car brackets))))
+                                        (progn
+                                          (dolist (bracket brackets)
+                                            (push (quiescent-closing-bracket-for bracket) result))
+                                          (cl-return-from outer (apply #'string (nreverse result))))
+                                      (progn
+                                        (push char result)
+                                        (pop brackets)))))
+                                 (t (push char result))))))))
+        (cl-concatenate 'string final-result
+                        (nreverse quotes)
+                        (mapcar #'quiescent-closing-bracket-for brackets)))))
+
+  (defun quiescent-ensure-even-braces-after-hippie (f args)
+    "Run F (`hippie-expand') then ensure brackets match.
+
+  Pass ARGS to F."
+    (let ((start (point)))
+      (funcall f args)
+      (let* ((end (point))
+             (inserted (buffer-substring start (point)))
+             (balanced (quiescent-balance-hippie-insertion inserted)))
+        (when (not (equal inserted balanced))
+          (kill-region start (point))
+          (insert balanced)))))
+
+  (advice-add #'hippie-expand :around
+              #'quiescent-ensure-even-braces-after-hippie)
 #+END_SRC
 
 ** Avy
