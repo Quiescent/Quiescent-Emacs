@@ -530,9 +530,10 @@ Expand to use this feature.
                                         (push char result)
                                         (pop brackets)))))
                                  (t (push char result))))))))
-        (cl-concatenate 'string final-result
-                        (nreverse quotes)
-                        (mapcar #'quiescent-closing-bracket-for brackets)))))
+        (s-trim-right
+         (cl-concatenate 'string final-result
+                         (nreverse quotes)
+                         (mapcar #'quiescent-closing-bracket-for brackets))))))
 
   (defun quiescent-ensure-even-braces-after-hippie (f args)
     "Run F (`hippie-expand') then ensure brackets match.
