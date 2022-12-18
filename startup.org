@@ -469,11 +469,11 @@ Expand to use this feature.
   (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
   (defvar quiescent-opening-brackets
-    (list ?\( ?\[ ?<)
+    (list ?\( ?\[ ?< ?{)
     "Brackets that must be closed during hippie expand.")
 
   (defvar quiescent-closing-brackets
-    (list ?\) ?\] ?>)
+    (list ?\) ?\] ?> ?})
     "Brackets that close an opening bracket during hippie expand.")
 
   (defvar quiescent-start-or-end-of-string
