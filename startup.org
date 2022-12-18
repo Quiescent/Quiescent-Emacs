@@ -546,7 +546,8 @@ Expand to use this feature.
              (balanced (quiescent-balance-hippie-insertion inserted)))
         (when (not (equal inserted balanced))
           (kill-region start (point))
-          (insert balanced)))))
+          (insert balanced)
+          (setq this-command 'hippie-expand)))))
 
   (advice-add #'hippie-expand :around
               #'quiescent-ensure-even-braces-after-hippie)
