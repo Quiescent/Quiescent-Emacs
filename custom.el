@@ -17,6 +17,7 @@
  '(completion-styles '(flex basic partial-completion emacs22))
  '(demo-it--insert-text-speed :fast)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(eldoc-echo-area-use-multiline-p nil)
  '(enable-recursive-minibuffers t)
  '(eshell-history-size 1024)
  '(global-subword-mode t)
