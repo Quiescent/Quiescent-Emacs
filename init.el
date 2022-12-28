@@ -1071,15 +1071,16 @@ In comint buffers defer to the comint send input command."
       (call-interactively #'comint-send-input)
     (call-interactively #'company-complete-selection)))
 
+(defun quiescent-activate-company-mode ()
+  "Activate company mode."
+  (when (null quiescent-starting-up)
+    (company-mode 1)))
+
 (use-package company
   :straight t
   :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
   :config
   (progn
-    (defun quiescent-activate-company-mode ()
-      "Activate company mode."
-      (when (null quiescent-starting-up)
-        (company-mode 1)))
     (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
     (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
     (define-key company-active-map (kbd "C-.")   #'company-select-next)
@@ -1302,6 +1303,7 @@ Usually because of too much overhead in checking.")
   :config (progn
             (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
             (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
+            (define-key paredit-mode-map (kbd "<RET>") nil)
             (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
             (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
             (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
