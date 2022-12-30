@@ -3635,15 +3635,36 @@ In particular, inode number, number of hard links, and file size."
 (use-package all-the-icons
   :straight t)
 
+(defun quiescent-parent-does-not-mention (phrase)
+  "Produce pos to skip to if no parent of the subtree item mentions PHRASE."
+  (save-excursion
+    (let ((found nil))
+      (while (and (not found)
+                  (condition-case err
+                      (progn
+                        (when (string-match (format "%s" phrase)
+                                            (downcase (buffer-substring-no-properties (point)
+                                                                                      (save-excursion (end-of-line)
+                                                                                                      (point)))))
+                          (setq found t))
+                        (outline-up-heading 1)
+                        t)
+                    (error (setq found (string-match (format "%s" phrase)
+                                                     (downcase (buffer-substring-no-properties (point)
+                                                                                               (save-excursion (end-of-line)
+                                                                                                               (point))))))))))
+      (when (not found)
+        (condition-case err
+            (org-forward-heading-same-level 1)
+          (error (goto-char (point-max))))
+        (point)))))
+
 (use-package org
   :straight t
   :chords (("xc" . quiescent-org-capture))
   :after all-the-icons
   :config
   (progn
-    (let ((agenda-files-file (format "%s/agenda-file-list.el" org-directory)))
-      (when (file-exists-p agenda-files-file)
-        (load-file agenda-files-file)))
     (require 'ox-latex)
     (setq org-refile-targets
           '((nil :maxlevel . 3)
@@ -3715,9 +3736,11 @@ In particular, inode number, number of hard links, and file size."
     (global-set-key (kbd "C-c C-M-b") #'org-previous-block)
     ;; Override the menu agenda files function because I don't use it
     ;; and I think it's buggy.
-    (defun org-install-agenda-files-menu () nil)))
-
-(require 'additional-org-agendas)
+    (defun org-install-agenda-files-menu () nil)
+    (load-file "~/.emacs.d/conf/additional-org-agendas.el")
+    (let ((agenda-files-file (format "%s/agenda-file-list.el" org-directory)))
+      (when (file-exists-p agenda-files-file)
+        (load-file agenda-files-file)))))
 
 (defun quiescent-org-capture (&optional goto keys)
   "Capture a note to org capture.
@@ -4252,6 +4275,9 @@ The cofee should be delivered by DELIVER-BY."
    (composable-mark-mode -1))))
 
 ;; 
+
+;; Reload custom in case anything overwrote it
+(load custom-file)
 
 ;; * DONE!
 
