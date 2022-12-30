@@ -1053,6 +1053,15 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
+;; ** Fido
+
+(fido-vertical-mode t)
+
+(use-package prescient
+  :straight t)
+
+;; 
+
 ;; ** Company
 
 (defun quiescent-company-toggle-frontend ()
@@ -1121,15 +1130,15 @@ In comint buffers defer to the comint send input command."
 
 (add-hook 'text-mode-hook #'quiescent-company-text-mode-hook)
 
-(use-package company-statistics
+(use-package company-prescient
   :straight t
   :config
-  (defun quiescent-activate-company-statistics ()
-    "Activate `company-statistics-mode'."
+  (defun quiescent-activate-company-prescient ()
+    "Activate `company-prescient-mode'."
     (when (and (null quiescent-starting-up)
-               (boundp 'company-statistics-mode))
-      (company-statistics-mode 1)))
-  :init (add-hook 'company-mode-hook #'quiescent-activate-company-statistics))
+               (boundp 'company-prescient-mode))
+      (company-prescient-mode 1)))
+  :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
 
 ;; 
 
@@ -1546,12 +1555,6 @@ which ends up being reflected.")
     (define-key ediff-mode-map "d" 'ediff-copy-both-to-C)))
 
 (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
-
-;; 
-
-;; ** Fido
-
-(fido-vertical-mode t)
 
 ;; 
 
@@ -2779,13 +2782,6 @@ Creates an ielm buffer if one doesn't exist yet."
                    (save-window-excursion
                      (call-interactively #'ielm)
                      (current-buffer)))))))
-
-(defun quiescent-remove-flex ()
-  "Remove the `flex' completion style from completion styles."
-  (when (null quiescent-starting-up)
-    (setq-local completion-styles '(basic partial-completion emacs22))))
-
-(add-hook 'emacs-lisp-mode-hook #'quiescent-remove-flex)
 
 (defun quiescent-eros-mode ()
   "Enable `eros-mode'."
