@@ -3269,6 +3269,13 @@ See `eshell-prompt-regexp'."
   :straight t
   :demand t
   :config (progn
+            (defun quiescent-setup-eshell-completion ()
+              "Setup completion for the Emacs shell."
+              (when (null quiescent-starting-up)
+                (company-mode 1)
+                (esh-autosuggest-mode 1)
+                (setq company-backends '(esh-autosuggest company-capf company-files))
+                (setq completion-at-point-functions '(comint-completion-at-point t))))
             (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
             (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
             (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
