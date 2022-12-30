@@ -2575,6 +2575,9 @@ js2-mode's find definition and then xref when tide fails."
     (setq lsp-rust-analyzer-server-command '("~/.cargo/bin/rust-analyzer"))
     (setq rustic-lsp-client 'eglot)
     (remove-hook 'rustic-mode-hook #'flycheck-mode)
+    (remove-hook 'rustic-mode-hook #'flymake-mode-off)
+    (add-hook 'rustic-mode-hook #'quiescent-enable-flymake-mode)
+    (add-hook 'rustic-mode-hook #'quiescent-disable-flycheck)
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
 
