@@ -14,7 +14,7 @@
  '(auto-save-no-message t)
  '(avy-keys '(49 50 51 52 53 54 55 56 57 48))
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
- '(completion-styles '(flex basic partial-completion emacs22))
+ '(completion-styles '(prescient))
  '(demo-it--insert-text-speed :fast)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(eldoc-echo-area-use-multiline-p nil)
