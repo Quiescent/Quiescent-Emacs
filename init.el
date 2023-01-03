@@ -3330,6 +3330,13 @@ See `eshell-prompt-regexp'."
 
 ;; 
 
+;; ** EAT (Emulato A Terminal)
+
+(use-package eat
+  :straight t)
+
+;; 
+
 ;; ** GNUs
 
 (defun quiescent-gnus-summary-toggle-header ()
