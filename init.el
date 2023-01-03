@@ -2015,6 +2015,69 @@ the thought."
 
 ;; 
 
+;; ** Hilight Block
+
+(define-minor-mode highlight-block-mode
+  "Highlight the containing block.
+
+Should also highlight containing blocks when the buffer isn't focused."
+  :init-value nil
+  :lighter    nil
+  :global     t
+  :group      'highlight-block
+  (if highlight-block-mode
+      (setq highlight-block-idle-highlighter
+            (run-with-idle-timer 0.1 t #'highlight-block-highlight-all-windows))
+    (progn
+      (mapc #'delete-overlay highlight-block-overlays)
+      (setq highlight-block-overlays nil)
+      (cancel-timer highlight-block-idle-highlighter)
+      (setq highlight-block-idle-highlighter))))
+
+(defvar highlight-block-idle-highlighter nil
+  "The timer used to keep highlighting the current block(s).")
+
+(defvar highlight-block-overlays nil
+  "A list of overlays in all windows.")
+
+(defun highlight-block-face ()
+  "Produce the colour to highlight a block in."
+  "#EEEEEE"
+  ;; Can't get this to produce a suitable colour.
+  ;; (apply #'color-rgb-to-hex
+  ;;        (nconc (apply #'color-hsl-to-rgb
+  ;;                      (apply #'color-darken-hsl
+  ;;                             (nconc (apply #'color-rgb-to-hsl
+  ;;                                           (mapcar (lambda (x) (/ x 65535.0))
+  ;;                                                   (color-values (face-attribute 'default
+  ;;                                                                                 :background))))
+  ;;                                    (list 25))))
+  ;;               (list 2)))
+  )
+
+(defun highlight-block-highlight-current-block ()
+  "Highlight the block that the point is in."
+  (save-excursion
+    (ignore-errors (backward-up-list))
+    (let* ((start (point))
+           (end (progn (forward-sexp) (point)))
+           (overlay (make-overlay start end)))
+      (overlay-put overlay 'face `(:background ,(highlight-block-face)))
+      (push overlay highlight-block-overlays))))
+
+(defun highlight-block-highlight-all-windows ()
+  "Highlight all blocks in all visible windows."
+  (progn
+   (mapc #'delete-overlay highlight-block-overlays)
+   (setq highlight-block-overlays nil)
+   (save-window-excursion
+    (cl-loop
+     for window being the windows
+     do (select-window window)
+     do (highlight-block-highlight-current-block)))))
+
+;; 
+
 ;; * Languages
 
 ;; ** Json Mode
