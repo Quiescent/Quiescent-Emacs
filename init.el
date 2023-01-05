@@ -2138,6 +2138,34 @@ arguments actually mean."
 (use-package json-mode
   :straight t)
 
+(require 'subr-x)
+
+(defun quiescent-sort-json-array-by (start end field)
+  "Sort the JSON array contained in the region [START, END] by a FIELD name."
+  (interactive "r\nsField to sort by: ")
+  (replace-region-contents
+   start
+   end
+   (lambda () (let ((json-to-sort (buffer-substring-no-properties start end)))
+                (with-temp-buffer
+                  (shell-command
+                   (cl-concatenate 'string
+                                   "node --eval \"let x = JSON.parse('"
+                                   (thread-last (string-replace "\""
+                                                                "\\\""
+                                                                json-to-sort)
+                                                (string-replace "\'"
+                                                                "\\\'")
+                                                (string-replace "\n"
+                                                                ""))
+                                   "'); x.sort(function (a, b) { let av = a['"
+                                   field
+                                   "']; let bv = b['"
+                                   field
+                                   "']; if (av < bv) return -1; if (av > bv) return 1; return 0; }); console.log(JSON.stringify(x, null, 2));\"")
+                   (current-buffer))
+                  (buffer-substring-no-properties (point-min) (point-max)))))))
+
 ;; 
 
 ;; ** Julia Mode
