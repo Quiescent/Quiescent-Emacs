@@ -2027,7 +2027,7 @@ Should also highlight containing blocks when the buffer isn't focused."
   :group      'highlight-block
   (if highlight-block-mode
       (setq highlight-block-idle-highlighter
-            (run-with-idle-timer 0.1 t #'highlight-block-highlight-all-windows))
+            (run-with-idle-timer 0.5 t #'highlight-block-highlight-all-windows))
     (progn
       (mapc #'delete-overlay highlight-block-overlays)
       (setq highlight-block-overlays nil)
