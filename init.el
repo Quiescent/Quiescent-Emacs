@@ -2078,6 +2078,59 @@ Should also highlight containing blocks when the buffer isn't focused."
 
 ;; 
 
+;; ** Query Replace Multiple Matches
+;;
+;; Source: https://tony-zorman.com/posts/query-replace/2022-08-06-query-replace-many.html
+
+(defun slot/get-queries (&optional pairs)
+  "Get multiple `query-replace' pairs from the user.
+PAIRS is a list of replacement pairs of the form (FROM . TO)."
+  (-let* (((from to delim arg)
+           (query-replace-read-args
+            (s-join " "
+                    (-non-nil
+                     (list "Query replace many"
+                           (cond ((eq current-prefix-arg '-) "backward")
+                                 (current-prefix-arg         "word"))
+                           (when (use-region-p) "in region"))))
+            nil))                       ; no regexp-flag
+          (from-to (cons (regexp-quote from)
+                         (s-replace "\\" "\\\\" to))))
+    ;; HACK: Since the default suggestion of replace.el will be
+    ;; the last one we've entered, an empty string will give us
+    ;; exactly that.  Instead of trying to fight against this,
+    ;; use it in order to signal an exit.
+    (if (-contains? pairs from-to)
+        (list pairs delim arg)
+      (slot/get-queries (push from-to pairs)))))
+
+(defun slot/query-replace-many
+    (pairs &optional delimited start end backward region-noncontiguous-p)
+  "Like `query-replace', but query for several replacements.
+Query for replacement pairs until the users enters an empty
+string (but see `slot/get-queries').
+
+Refer to `query-replace' and `perform-replace' for what the other
+arguments actually mean."
+  (interactive
+   (let ((common (slot/get-queries)))
+     (list (nth 0 common) (nth 1 common)
+           (if (use-region-p) (region-beginning))
+           (if (use-region-p) (region-end))
+           (nth 2 common)
+           (if (use-region-p) (region-noncontiguous-p)))))
+  (perform-replace
+   (concat "\\(?:" (mapconcat #'car pairs "\\|") "\\)") ; build query
+   (cons (lambda (pairs _count)
+           (cl-loop for (from . to) in pairs
+                    when (string-match from (match-string 0))
+                    return to))
+         pairs)
+   :query :regexp
+   delimited nil nil start end backward region-noncontiguous-p))
+
+;; 
+
 ;; * Languages
 
 ;; ** Json Mode
