@@ -4484,3 +4484,4 @@ The cofee should be delivered by DELIVER-BY."
 ;; * DONE!
 
 (setq quiescent-starting-up nil)
+(put 'narrow-to-region 'disabled nil)
