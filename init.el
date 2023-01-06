@@ -2725,6 +2725,15 @@ js2-mode's find definition and then xref when tide fails."
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
 
+(defun quiescent-indent-defun ()
+  "Indent the defun that point is in."
+  (interactive)
+  (save-excursion
+    (mark-defun)
+    (indent-region (region-beginning) (region-end))))
+
+(define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun)
+
 (defun rustic-mode--find-project-root (directory)
   "Produce the root of Rust project containing DIRECTORY."
   (let ((rustic-root (locate-dominating-file directory "cargo.toml")))
