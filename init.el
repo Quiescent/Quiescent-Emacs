@@ -2725,14 +2725,20 @@ js2-mode's find definition and then xref when tide fails."
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
 
-(defun quiescent-indent-defun ()
-  "Indent the defun that point is in."
+(defun quiescent-indent-defun-or-fill-paragraph ()
+  "Indent the defun that point is in.
+
+If the point is inside a comment then fill paragraph on the
+comment."
   (interactive)
   (save-excursion
-    (mark-defun)
-    (indent-region (region-beginning) (region-end))))
+    (if (nth 4 (syntax-ppss))
+        (fill-paragraph)
+      (progn
+        (mark-defun)
+        (indent-region (region-beginning) (region-end))))))
 
-(define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun)
+(define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun-or-fill-paragraph)
 
 (defun rustic-mode--find-project-root (directory)
   "Produce the root of Rust project containing DIRECTORY."
