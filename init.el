@@ -40,6 +40,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; Early in the file to avoid version conflicts
+(straight-use-package 'org)
+
+(defalias 'compat-executable-find #'executable-find)
+
 ;; Load system specific configuration
 (add-to-list 'load-path "~/.emacs.d/conf")
 (require 'system-vars)
@@ -4473,23 +4478,23 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; ** PDF Tools
 
-(defvar install-pdf-tools
-  '(use-package pdf-tools
-     :straight t
-     :hook (pdf-view-mode . quiescent-disable-composable-mode)
-     :demand t
-     :config (progn
-               (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
-               (pdf-tools-install))))
+;; (defvar install-pdf-tools
+;;   '(use-package pdf-tools
+;;      :straight t
+;;      :hook (pdf-view-mode . quiescent-disable-composable-mode)
+;;      :demand t
+;;      :config (progn
+;;                (define-key pdf-view-mode-map (kbd "M-w") #'pdf-view-kill-ring-save)
+;;                (pdf-tools-install))))
 
-(eval install-pdf-tools)
+;; (eval install-pdf-tools)
 
-(defun quiescent-disable-composable-mode ()
-  "Disable composable mode."
-  (when (null quiescent-starting-up)
-    (progn
-   (composable-mode -1)
-   (composable-mark-mode -1))))
+;; (defun quiescent-disable-composable-mode ()
+;;   "Disable composable mode."
+;;   (when (null quiescent-starting-up)
+;;     (progn
+;;    (composable-mode -1)
+;;    (composable-mark-mode -1))))
 
 ;; 
 
