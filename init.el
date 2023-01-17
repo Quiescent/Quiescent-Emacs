@@ -43,7 +43,9 @@
 ;; Early in the file to avoid version conflicts
 (straight-use-package 'org)
 
+(defalias 'compat-assoc-delete-all #'assoc-delete-all)
 (defalias 'compat-executable-find #'executable-find)
+(defalias 'compat-dired-get-marked-files #'dired-get-marked-files)
 
 ;; Load system specific configuration
 (add-to-list 'load-path "~/.emacs.d/conf")
