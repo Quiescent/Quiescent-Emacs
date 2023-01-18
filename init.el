@@ -474,6 +474,10 @@ i.e. the reverse of fill paragraph."
 ;; ** General Editing Conf
 
 (setq-default indent-tabs-mode nil)
+(defun quiescent-disable-indent-tabs-mode ()
+  "Disable `indent-tabs-mode'."
+  (setq indent-tabs-mode nil))
+(add-hook 'prog-mode-hook #'quiescent-disable-indent-tabs-mode)
 (setq tab-width 4)
 (column-number-mode 1)
 (put 'upcase-region   'disabled nil)
