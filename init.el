@@ -2650,12 +2650,41 @@ Nil if root is supplied as DIR."
   (interactive)
   (let ((dependencies (make-hash-table)))
     (cl-labels ((to-dot (dependencies)
-                  ())
+                  (switch-to-buffer-other-window
+                   (get-buffer-create "*dependencies*"))
+                  (delete-region (point-min) (point-max))
+                  (insert "digraph dependencies {\n")
+                  (dolist (key (hash-table-keys dependencies))
+                    (dolist (value (gethash key dependencies))
+                      (insert (format "  %s -> %s;\n" key value))))
+                  (insert "}"))
+                (strip-path (dependency)
+                  (let ((last-slash-pos (cl-position ?\/ dependency :from-end t)))
+                    (substring dependency (if last-slash-pos
+                                              (1+ last-slash-pos)
+                                            0))))
+                (current-file-dependencies ()
+                  (when (re-search-forward "import .* from '\\(.*\\)'" nil t)
+                    (cons (thread-last (match-string 1)
+                                       strip-path
+                                       read-from-string
+                                       car)
+                          (current-file-dependencies))))
                 (recur (files)
                   (if (null files)
-                      (to-dot dependencies))))
-      (recur (directory-files default-directory)
-             nil))))
+                      (to-dot dependencies)
+                    (let ((file (car files)))
+                      (with-temp-buffer
+                        (insert-file file)
+                        (setf (gethash (thread-last (file-name-base file)
+                                                    read-from-string
+                                                    car)
+                                       dependencies)
+                              (current-file-dependencies)))
+                      (recur (cdr files))))))
+      (thread-last (directory-files default-directory)
+                   (cl-remove-if #'file-directory-p)
+                   recur))))
 
 ;; 
 
