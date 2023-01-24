@@ -2645,6 +2645,18 @@ Nil if root is supplied as DIR."
 
 (define-key js2-mode-map (kbd "M-r") #'quiescent-js2-raise-variable)
 
+(defun quiescent-js-dependency-graph-for-directory ()
+  "Compute the dependency graph between JS modules in DEFAULT-DIRECTORY."
+  (interactive)
+  (let ((dependencies (make-hash-table)))
+    (cl-labels ((to-dot (dependencies)
+                  ())
+                (recur (files)
+                  (if (null files)
+                      (to-dot dependencies))))
+      (recur (directory-files default-directory)
+             nil))))
+
 ;; 
 
 ;; ** Tide Mode
