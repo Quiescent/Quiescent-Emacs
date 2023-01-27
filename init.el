@@ -2648,7 +2648,8 @@ Nil if root is supplied as DIR."
 (defun quiescent-js-dependency-graph-for-directory ()
   "Compute the dependency graph between JS modules in DEFAULT-DIRECTORY."
   (interactive)
-  (let ((dependencies (make-hash-table)))
+  (let ((dependencies (make-hash-table))
+        (only-this-directory (y-or-n-p "Only this directory?")))
     (cl-labels ((to-dot (dependencies)
                   (switch-to-buffer-other-window
                    (get-buffer-create "*dependencies*"))
@@ -2658,18 +2659,25 @@ Nil if root is supplied as DIR."
                     (dolist (value (gethash key dependencies))
                       (insert (format "  %s -> %s;\n" key value))))
                   (insert "}"))
+                (last-slash-pos (dependency)
+                  (cl-position ?\/ dependency :from-end t))
                 (strip-path (dependency)
-                  (let ((last-slash-pos (cl-position ?\/ dependency :from-end t)))
+                  (let ((last-slash-pos (last-slash-pos dependency)))
                     (substring dependency (if last-slash-pos
                                               (1+ last-slash-pos)
                                             0))))
                 (current-file-dependencies ()
-                  (when (re-search-forward "import .* from '\\(.*\\)'" nil t)
-                    (cons (thread-last (match-string 1)
-                                       strip-path
-                                       read-from-string
-                                       car)
-                          (current-file-dependencies))))
+                  (when (re-search-forward "}.* from '\\(.*\\)'" nil t)
+                    (let ((next-match (thread-last (match-string 1)
+                                                   strip-path
+                                                   read-from-string
+                                                   car)))
+                      (if (or (and only-this-directory
+                                   (eq 1 (last-slash-pos (match-string 1))))
+                              (not only-this-directory))
+                          (cons next-match
+                                (current-file-dependencies))
+                        (current-file-dependencies)))))
                 (recur (files)
                   (if (null files)
                       (to-dot dependencies)
@@ -2685,6 +2693,68 @@ Nil if root is supplied as DIR."
       (thread-last (directory-files default-directory)
                    (cl-remove-if #'file-directory-p)
                    recur))))
+
+(defun quiescent-js-selector-dependency-graph ()
+  "Produce a graph of the dependencies between selectors in the current buffer."
+  (interactive)
+  (cl-labels ((to-dot (dependencies)
+                (switch-to-buffer-other-window
+                 (get-buffer-create "*dependencies*"))
+                (delete-region (point-min) (point-max))
+                (insert "digraph dependencies {\n")
+                (dolist (entry dependencies)
+                  (dolist (value (cdr entry))
+                    (insert (format "  %s -> %s;\n" (car entry) value))))
+                (insert "}"))
+              (selector-dependencies ()
+                (progn
+                  (forward-sexp)
+                  (when (looking-at-p ",")
+                    (cons (thing-at-point 'symbol)
+                          (selector-dependencies)))))
+              (recur ()
+                (let ((hit (when (re-search-forward "const [a-zA-Z]+ = createSelector(" nil t)
+                             (progn
+                               (search-backward "const")
+                               (forward-word 2)
+                               (prog1 (thing-at-point 'symbol)
+                                 (search-forward "createSelector("))))))
+                  (when hit
+                    (cons (cons hit (selector-dependencies))
+                          (recur))))))
+    (save-excursion
+      (goto-char (point-min))
+      (thread-last (recur)
+                   to-dot))))
+
+(defun quiescent-parse-digraph ()
+  "Parse the dot digraph in the current buffer."
+  (let ((graph (make-hash-table :test #'equal)))
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "-> " nil t)
+        (push (thing-at-point 'symbol)
+              (gethash (save-excursion (back-to-indentation)
+                                       (thing-at-point 'symbol))
+                       graph))))
+    graph))
+
+(defun quiescent-dot-descendants-of (root)
+  "Produce the subgraph of the dot graph in the current buffer rooted at ROOT."
+  (interactive "sRoot: ")
+  (let ((graph (quiescent-parse-digraph)))
+    (cl-labels ((to-dot (node)
+                  (dolist (destination (gethash node graph))
+                    (insert (format "  %s -> %s;\n" node destination))
+                    (to-dot destination))))
+      (switch-to-buffer-other-window
+       (get-buffer-create "*dependencies*"))
+      (delete-region (point-min) (point-max))
+      (insert (format "digraph %s {\n" root))
+      (to-dot root)
+      (insert "}")
+      (goto-char (point-min))
+      (delete-duplicate-lines (point-min) (point-max)))))
 
 ;; 
 
