@@ -1444,7 +1444,7 @@ produce the formatted text as output."
 
 (defvar temp-view-region-match-alist
   '(("\\(<div>\\)\\|\\(<body>\\)\\(<head>\\)" . HTML)
-    ("<[a-z]+>.*</[a-z]+>" . XML)
+    ("<[a-z]+.*>.*</[a-z]+>" . XML)
     ("{.*\\(\\(\n\\)\\|\\(.*\\)\\).*\\(\\(\"[a-z0-9]+\"\\)\\|\\([a-z0-9]+\\)\\):" . JSON))
   "An alist of regular expressions to match text to a type of text.
 
