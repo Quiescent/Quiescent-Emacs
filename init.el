@@ -2847,6 +2847,12 @@ js2-mode's find definition and then xref when tide fails."
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
 
+(defun quiescent-enable-rustic-mode ()
+  "Enable rustic mode."
+  (rustic-mode))
+
+(add-hook 'rust-ts-mode-hook #'quiescent-enable-rustic-mode)
+
 (defun quiescent-indent-defun-or-fill-paragraph ()
   "Indent the defun that point is in.
 
