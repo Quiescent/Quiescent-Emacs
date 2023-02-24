@@ -1073,84 +1073,267 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
+;; ** Q-Complete
+;;
+;; This is my attempt at the completion style that I've always wanted
+;; and company only gets close to.
+
+(defvar q-complete-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    keymap)
+  "Keymap for `q-complete'.")
+
+(define-minor-mode q-complete-mode ()
+  "Unintrusive, inline completion."
+  :init-value nil
+  :lighter nil
+  :global nil
+  (if q-complete-mode
+      (add-hook 'post-command-hook #'q-complete-maybe-offer-completion)
+    (remove-hook 'post-command-hook #'q-complete-maybe-offer-completion)))
+
+(add-hook 'prog-mode-hook #'q-complete-mode)
+
+(defvar q-complete-saved-cursor nil
+  "The style of cursor before we meddled with it.")
+
+(defun q-complete-maybe-offer-completion ()
+  "Indicate whether there are completions."
+  (progn
+    (when q-complete-saved-cursor
+      (setq cursor-type q-complete-saved-cursor))
+    (define-key q-complete-mode-map (kbd "<tab>") nil)
+    (when (and (not (eq last-command 'quit))
+               (run-hook-wrapped 'completion-at-point-functions
+                                 #'completion--capf-wrapper 'all))
+      (setq q-complete-saved-cursor cursor-type
+            cursor-type (cons 'hbar 2))
+      (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))))
+
+(defun q-complete-transient-quit ()
+  "Exit transient completion when the user does anything."
+  (interactive)
+  (progn
+    (setq q-complete-original-start nil
+          q-complete-transient-original-text nil
+          q-complete-transient-candidates nil
+          q-complete-transient-start-point nil
+          q-complete-transient-end-point nil
+          q-complete-transient-candidate-index nil)
+    (q-complete-transient-mode -1)
+    (q-complete-mode 1)))
+
+(defun q-complete-transient-insert-and-quit ()
+  "Insert the last key that was pressed and exit `q-complete-transient-mode'."
+  (interactive)
+  (progn
+    (setq unread-command-events (list last-input-event))
+    (q-complete-transient-quit)))
+
+(defvar q-complete-transient-mode-map
+  (let ((map (make-keymap)))
+    (set-char-table-range (nth 1 map) t #'q-complete-transient-insert-and-quit)
+    (define-key map (kbd "q") #'q-complete-transient-abort)
+    (define-key map (kbd "<tab>") #'q-complete-transient-next-candidate)
+    (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
+    map)
+  "Keymap used by `q-complete-transient-mode'.")
+
+(define-minor-mode q-complete-transient-mode ()
+  "A mode that's invoked during completion to scroll through options."
+  :init-value nil
+  :ligther nil
+  :global nil)
+
+(defvar q-complete-transient-original-text nil
+  "The text that was originally to be completed.")
+
+(defvar q-complete-original-start nil
+  "The position we invoked `q-complete' from.")
+
+(defvar q-complete-transient-candidates nil
+  "A list of completion candidates for this transient session.")
+
+(defvar q-complete-transient-start-point nil
+  "The position in the buffer where the thing we're completing starts.")
+
+(defvar q-complete-transient-end-point nil
+  "The position in the buffer where the thing we're completing ends.")
+
+(defvar q-complete-transient-candidate-index nil
+  "The index of the currently selected candidate.")
+
+(defun q-complete ()
+  "Enter `q-complete-transient-mode' for the text around point."
+  (interactive)
+  (let* ((text   (thing-at-point 'symbol))
+         (bounds (bounds-of-thing-at-point 'symbol))
+         (text-start (if bounds (car bounds) (point)))
+         (text-end   (if bounds (cdr bounds) (point)))
+         (pos    (if bounds (cl-search (buffer-substring text-start
+                                                         (point))
+                                       text)
+                   text-start))
+         ;; From minibuffer.el
+         (capf-results (and bounds
+                            (run-hook-wrapped 'completion-at-point-functions
+                                              #'completion--capf-wrapper 'all)))
+         (meta (and bounds
+                    (completion-metadata text (nth 3 capf-results) #'identity)))
+         (all-completions (and bounds
+                               (completion-all-completions
+                                text
+                                (nth 3 capf-results)
+                                #'identity
+                                pos
+                                meta)))
+         (sort-function (and bounds
+                             (cdr (assq 'display-sort-function meta)))))
+    (when (> (length text) 0)
+      (when sort-function
+        (setq all-completions
+              (funcall sort-function all-candidates)))
+      (q-complete-mode -1)
+      (q-complete-transient-mode t)
+      (setq q-complete-original-start (point)
+            q-complete-transient-original-text text
+            q-complete-transient-candidates all-completions
+            q-complete-transient-start-point text-start
+            q-complete-transient-end-point text-end
+            ;; We currently don't have a completion selected
+            q-complete-transient-candidate-index -1)
+      ;; Select the first completion
+      (q-complete-transient-next-candidate))))
+
+(defun q-complete-transient-abort ()
+  "Restore the original string and position from before completion and quit."
+  (interactive)
+  (progn
+    (when (and q-complete-transient-start-point q-complete-transient-end-point)
+      (kill-region q-complete-transient-start-point
+                  q-complete-transient-end-point))
+    (when (and q-complete-transient-start-point q-complete-transient-original-text)
+      (goto-char q-complete-transient-start-point)
+      (insert q-complete-transient-original-text))
+    (q-complete-transient-quit)))
+
+(defun q-complete-transient-next-candidate ()
+  "Replace the completion text with the next candidate."
+  (interactive)
+  (progn
+    (setf q-complete-transient-candidate-index
+          (1+ q-complete-transient-candidate-index))
+    (when (not (consp (nthcdr q-complete-transient-candidate-index
+                              q-complete-transient-candidates)))
+      (setq q-complete-transient-candidate-index 0))
+    (let ((post-command-hook nil))
+      (kill-region q-complete-transient-start-point
+                   q-complete-transient-end-point)
+      (goto-char q-complete-transient-start-point)
+      (let ((candidate (nth q-complete-transient-candidate-index
+                            q-complete-transient-candidates)))
+        (setq q-complete-transient-end-point
+              (+ q-complete-transient-start-point
+                 (length candidate)))
+        (insert candidate)))))
+
+(defun q-complete-transient-previous-candidate ()
+  "Replace the completion text with the next candidate."
+  (interactive)
+  (progn
+    (setf q-complete-transient-candidate-index
+          (max 0 (1- q-complete-transient-candidate-index)))
+    (let ((post-command-hook nil))
+      (kill-region q-complete-transient-start-point
+                   q-complete-transient-end-point)
+      (goto-char q-complete-transient-start-point)
+      (let ((candidate (nth q-complete-transient-candidate-index
+                            q-complete-transient-candidates)))
+        (setq q-complete-transient-end-point
+              (+ q-complete-transient-start-point
+                 (length candidate)))
+        (insert candidate)))))
+
+;; 
+
 ;; ** Company
 
-(defun quiescent-company-toggle-frontend ()
-  "Switch to completing with a dropdown."
-  (interactive)
-  (if (equal company-frontends '(company-pseudo-tooltip-frontend))
-      (setq company-frontends '(company-preview-frontend))
-    (setq company-frontends '(company-pseudo-tooltip-frontend))))
+;; (defun quiescent-company-toggle-frontend ()
+;;   "Switch to completing with a dropdown."
+;;   (interactive)
+;;   (if (equal company-frontends '(company-pseudo-tooltip-frontend))
+;;       (setq company-frontends '(company-preview-frontend))
+;;     (setq company-frontends '(company-pseudo-tooltip-frontend))))
 
-(defun quiescent-company-complete-selection ()
-  "Complete the current selection, unless we're in comint buffers.
+;; (defun quiescent-company-complete-selection ()
+;;   "Complete the current selection, unless we're in comint buffers.
 
-In comint buffers defer to the comint send input command."
-  (interactive)
-  (if (derived-mode-p 'comint-mode)
-      (call-interactively #'comint-send-input)
-    (call-interactively #'company-complete-selection)))
+;; In comint buffers defer to the comint send input command."
+;;   (interactive)
+;;   (if (derived-mode-p 'comint-mode)
+;;       (call-interactively #'comint-send-input)
+;;     (call-interactively #'company-complete-selection)))
 
-(defun quiescent-activate-company-mode ()
-  "Activate company mode."
-  (when (null quiescent-starting-up)
-    (company-mode 1)))
+;; (defun quiescent-activate-company-mode ()
+;;   "Activate company mode."
+;;   (when (null quiescent-starting-up)
+;;     (company-mode 1)))
 
-(use-package company
-  :straight t
-  :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
-  :config
-  (progn
-    (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
-    (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
-    (define-key company-active-map (kbd "C-.")   #'company-select-next)
-    (define-key company-active-map (kbd "M-.")   #'company-select-next)
-    (define-key company-active-map (kbd "<tab>") #'company-select-next)
-    (define-key company-active-map (kbd "C-,")   #'company-select-previous)
-    (define-key company-active-map (kbd "M-,")   #'company-select-previous)
-    (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-    (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
-    (define-key company-active-map (kbd "C-m")   nil)
-    (define-key company-active-map (kbd "C-n")   nil)
-    (define-key company-active-map (kbd "C-p")   nil)
-    (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
-    (global-set-key (kbd "C-'") #'company-complete-selection)
-    (global-set-key (kbd "C-.") #'company-complete)
-    (global-set-key (kbd "C-,") #'company-complete)
-    (advice-add #'company-ispell :around #'quiescent-supress-message-around)
-    (setq company-idle-delay 0)
-    (setq company-tooltip-idle-delay 5)
-    (setq company-tooltip-limit 0)
-    (setq company-require-match nil)
-    (setq company-frontends '(company-preview-frontend))))
+;; (use-package company
+;;   :straight t
+;;   :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
+;;   :config
+;;   (progn
+;;     (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
+;;     (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
+;;     (define-key company-active-map (kbd "C-.")   #'company-select-next)
+;;     (define-key company-active-map (kbd "M-.")   #'company-select-next)
+;;     (define-key company-active-map (kbd "<tab>") #'company-select-next)
+;;     (define-key company-active-map (kbd "C-,")   #'company-select-previous)
+;;     (define-key company-active-map (kbd "M-,")   #'company-select-previous)
+;;     (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
+;;     (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
+;;     (define-key company-active-map (kbd "C-m")   nil)
+;;     (define-key company-active-map (kbd "C-n")   nil)
+;;     (define-key company-active-map (kbd "C-p")   nil)
+;;     (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
+;;     (global-set-key (kbd "C-'") #'company-complete-selection)
+;;     (global-set-key (kbd "C-.") #'company-complete)
+;;     (global-set-key (kbd "C-,") #'company-complete)
+;;     (advice-add #'company-ispell :around #'quiescent-supress-message-around)
+;;     (setq company-idle-delay 0)
+;;     (setq company-tooltip-idle-delay 5)
+;;     (setq company-tooltip-limit 0)
+;;     (setq company-require-match nil)
+;;     (setq company-frontends '(company-preview-frontend))))
 
-(defun quiescent-remove-semantic-backend ()
-  "Remove the company backend for semantic."
-  (remove-function 'company-backends #'company-semantic))
+;; (defun quiescent-remove-semantic-backend ()
+;;   "Remove the company backend for semantic."
+;;   (remove-function 'company-backends #'company-semantic))
 
-(add-hook 'python-mode-hook #'quiescent-remove-semantic-backend)
+;; (add-hook 'python-mode-hook #'quiescent-remove-semantic-backend)
 
-(defun quiescent-supress-message-around (f &rest args)
-  "Supress messages when executing F with ARGS."
-  (let ((inhibit-message t))
-    (funcall f args)))
+;; (defun quiescent-supress-message-around (f &rest args)
+;;   "Supress messages when executing F with ARGS."
+;;   (let ((inhibit-message t))
+;;     (funcall f args)))
 
-(defun quiescent-company-text-mode-hook ()
-  "Keep only the backends I want in `text-mode'."
-  (when (null quiescent-starting-up)
-    (setq-local company-backends '(company-bbdb company-ispell company-dabbrev))))
+;; (defun quiescent-company-text-mode-hook ()
+;;   "Keep only the backends I want in `text-mode'."
+;;   (when (null quiescent-starting-up)
+;;     (setq-local company-backends '(company-bbdb company-ispell company-dabbrev))))
 
-(add-hook 'text-mode-hook #'quiescent-company-text-mode-hook)
+;; (add-hook 'text-mode-hook #'quiescent-company-text-mode-hook)
 
-(use-package company-prescient
-  :straight t
-  :config
-  (defun quiescent-activate-company-prescient ()
-    "Activate `company-prescient-mode'."
-    (when (and (null quiescent-starting-up)
-               (boundp 'company-prescient-mode))
-      (company-prescient-mode 1)))
-  :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
+;; (use-package company-prescient
+;;   :straight t
+;;   :config
+;;   (defun quiescent-activate-company-prescient ()
+;;     "Activate `company-prescient-mode'."
+;;     (when (and (null quiescent-starting-up)
+;;                (boundp 'company-prescient-mode))
+;;       (company-prescient-mode 1)))
+;;   :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
 
 ;; 
 
@@ -1303,12 +1486,12 @@ Usually because of too much overhead in checking.")
       (yas-abort-snippet)
     (company-abort)))
 
-(with-eval-after-load "company-mode"
-  (with-eval-after-load "yasnippet"
-    (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
-    (define-key yas-minor-mode-map (kbd "TAB") nil)
-    (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
-    (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)))
+;; (with-eval-after-load "company-mode"
+;;   (with-eval-after-load "yasnippet"
+;;     (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
+;;     (define-key yas-minor-mode-map (kbd "TAB") nil)
+;;     (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
+;;     (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)))
 
 ;; 
 
@@ -2212,7 +2395,6 @@ arguments actually mean."
 (defun quiescent-setup-c++-completion ()
   "Setup completion for c++ mode."
   (when (null quiescent-starting-up)
-    (company-mode 1)
     (setq-local company-backends '(company-capf company-dabbrev))
     (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
 
@@ -2221,7 +2403,6 @@ arguments actually mean."
 (defun quiescent-setup-c-completion ()
   "Setup completion for `c-mode'."
   (when (null quiescent-starting-up)
-    (company-mode 1)
     (setq-local company-backends '(company-capf company-dabbrev))
     (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
 
@@ -2889,7 +3070,6 @@ comment."
 (defun quiescent-setup-slime-completion ()
   "Setup company for slime."
   (when (null quiescent-starting-up)
-    (company-mode 1)
     (setq-local company-backends '(company-capf company-slime))
     (setq-local completion-at-point-functions '(quiescent-slime-completion-at-point))))
 
@@ -3014,12 +3194,7 @@ Source: https://github.com/fukamachi/qlot"
   (when (null quiescent-starting-up)
     (cider-mode 1)
     (eldoc-mode 1)
-    (company-mode 1)))
-
-(defun quiescent-setup-cider-repl-hooks ()
-  "Setup hooks for the clojure repl."
-  (when (null quiescent-starting-up)
-    (company-mode 1)))
+    ))
 
 (use-package cider
   :straight t
@@ -3569,53 +3744,53 @@ See `eshell-prompt-regexp'."
 
 (require 'em-hist)
 
-(defun prefix-intersection (xs ys)
-  "Produce the intersection of XS with YS where x is in YS if x is a prefix of an element in YS."
-  (let (result)
-    (dolist (x xs result)
-      (dolist (y ys result)
-        (when (s-starts-with-p x y t)
-          (push x result))))))
+;; (defun prefix-intersection (xs ys)
+;;   "Produce the intersection of XS with YS where x is in YS if x is a prefix of an element in YS."
+;;   (let (result)
+;;     (dolist (x xs result)
+;;       (dolist (y ys result)
+;;         (when (s-starts-with-p x y t)
+;;           (push x result))))))
 
-(defun esh-autosuggest-candidates (prefix)
-  "Select all history candidates with the prefix PREFIX."
-  (let* ((history
-          (mapcar #'split-string
-                  (delete-dups
-                   (mapcar (lambda (str)
-                             (string-trim (substring-no-properties str)))
-                           (ring-elements eshell-history-ring)))))
-         (prefix-elements (split-string prefix))
-         (prefix-elements-length (length prefix-elements)))
-    (mapcar (lambda (tokens) (mapconcat #'identity tokens " "))
-            (cl-remove-if (lambda (history-element)
-                            (not (eq (length (prefix-intersection prefix-elements
-                                                                  history-element))
-                                     prefix-elements-length)))
-                          history))))
+;; (defun esh-autosuggest-candidates (prefix)
+;;   "Select all history candidates with the prefix PREFIX."
+;;   (let* ((history
+;;           (mapcar #'split-string
+;;                   (delete-dups
+;;                    (mapcar (lambda (str)
+;;                              (string-trim (substring-no-properties str)))
+;;                            (ring-elements eshell-history-ring)))))
+;;          (prefix-elements (split-string prefix))
+;;          (prefix-elements-length (length prefix-elements)))
+;;     (mapcar (lambda (tokens) (mapconcat #'identity tokens " "))
+;;             (cl-remove-if (lambda (history-element)
+;;                             (not (eq (length (prefix-intersection prefix-elements
+;;                                                                   history-element))
+;;                                      prefix-elements-length)))
+;;                           history))))
 
-(use-package esh-autosuggest
-  :straight t
-  :demand t
-  :config (progn
-            (defun quiescent-setup-eshell-completion ()
-              "Setup completion for the Emacs shell."
-              (when (null quiescent-starting-up)
-                (company-mode 1)
-                (esh-autosuggest-mode 1)
-                (setq company-backends '(;;esh-autosuggest
-                                         company-capf company-files))
-                (setq completion-at-point-functions '(comint-completion-at-point t))))
-            (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
-            (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
-            (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
-            (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
-            (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
-            (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-            (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)
-            (with-eval-after-load "esh-mode"
-              (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common)))
-  :hook ((eshell-mode . quiescent-setup-eshell-completion)))
+;; (use-package esh-autosuggest
+;;   :straight t
+;;   :demand t
+;;   :config (progn
+;;             (defun quiescent-setup-eshell-completion ()
+;;               "Setup completion for the Emacs shell."
+;;               (when (null quiescent-starting-up)
+;;                 (company-mode 1)
+;;                 (esh-autosuggest-mode 1)
+;;                 (setq company-backends '(;;esh-autosuggest
+;;                                          company-capf company-files))
+;;                 (setq completion-at-point-functions '(comint-completion-at-point t))))
+;;             (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
+;;             (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
+;;             (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
+;;             (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
+;;             (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
+;;             (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
+;;             (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)
+;;             (with-eval-after-load "esh-mode"
+;;               (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common)))
+;;   :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 
 ;; 
 
