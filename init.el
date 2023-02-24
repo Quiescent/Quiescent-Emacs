@@ -1103,7 +1103,6 @@ In comint buffers defer to the comint send input command."
   (progn
     (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
     (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
-    (define-key company-active-map (kbd "SPC")   #'company-complete-selection)
     (define-key company-active-map (kbd "C-.")   #'company-select-next)
     (define-key company-active-map (kbd "M-.")   #'company-select-next)
     (define-key company-active-map (kbd "<tab>") #'company-select-next)
