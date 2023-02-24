@@ -1190,9 +1190,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
          (sort-function (and bounds
                              (cdr (assq 'display-sort-function meta)))))
     (when (> (length text) 0)
-      (when sort-function
-        (setq all-completions
-              (funcall sort-function all-candidates)))
+      ;; (when sort-function
+      ;;   (setq all-completions
+      ;;         (funcall sort-function all-completions)))
       (q-complete-mode -1)
       (q-complete-transient-mode t)
       (setq q-complete-original-start (point)
