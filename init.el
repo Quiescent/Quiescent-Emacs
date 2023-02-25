@@ -1131,6 +1131,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (remove-hook 'post-command-hook #'q-complete-maybe-offer-completion)))
 
 (add-hook 'prog-mode-hook #'q-complete-mode)
+(add-hook 'shell-mode-hook #'q-complete-mode)
 
 (defvar q-complete-saved-cursor nil
   "The style of cursor before we meddled with it.")
