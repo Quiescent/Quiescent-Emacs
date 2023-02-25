@@ -1211,8 +1211,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defun q-complete ()
   "Enter `q-complete-transient-mode' for the text around point."
   (interactive)
-  (let* ((text   (thing-at-point 'symbol))
-         (bounds (bounds-of-thing-at-point 'symbol))
+  (let* ((thing-spec 'symbol)
+         (text   (thing-at-point thing-spec))
+         (bounds (bounds-of-thing-at-point thing-spec))
          (text-start (if bounds (car bounds) (point)))
          (text-end   (if bounds (cdr bounds) (point))))
     (when (and (> (length text) 0) bounds)
