@@ -1127,6 +1127,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   "Insert the last key that was pressed and exit `q-complete-transient-mode'."
   (interactive)
   (progn
+    ;; Use prescient to remember that we completed to this one
+    (prescient-remember (nth q-complete-transient-candidate-index
+                             q-complete-transient-candidates))
     (setq unread-command-events (list last-input-event))
     (q-complete-transient-quit)))
 
@@ -1163,47 +1166,42 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defvar q-complete-transient-candidate-index nil
   "The index of the currently selected candidate.")
 
+(require 'prescient)
+
+(prescient-persist-mode 1)
+
 (defun q-complete ()
   "Enter `q-complete-transient-mode' for the text around point."
   (interactive)
   (let* ((text   (thing-at-point 'symbol))
          (bounds (bounds-of-thing-at-point 'symbol))
          (text-start (if bounds (car bounds) (point)))
-         (text-end   (if bounds (cdr bounds) (point)))
-         (pos    (if bounds (cl-search (buffer-substring text-start
-                                                         (point))
-                                       text)
-                   text-start))
-         ;; From minibuffer.el
-         (capf-results (and bounds
-                            (run-hook-wrapped 'completion-at-point-functions
-                                              #'completion--capf-wrapper 'all)))
-         (meta (and bounds
-                    (completion-metadata text (nth 3 capf-results) #'identity)))
-         (all-completions (and bounds
-                               (completion-all-completions
-                                text
-                                (nth 3 capf-results)
-                                #'identity
-                                pos
-                                meta)))
-         (sort-function (and bounds
-                             (cdr (assq 'display-sort-function meta)))))
-    (when (> (length text) 0)
-      ;; (when sort-function
-      ;;   (setq all-completions
-      ;;         (funcall sort-function all-completions)))
-      (q-complete-mode -1)
-      (q-complete-transient-mode t)
-      (setq q-complete-original-start (point)
-            q-complete-transient-original-text text
-            q-complete-transient-candidates all-completions
-            q-complete-transient-start-point text-start
-            q-complete-transient-end-point text-end
-            ;; We currently don't have a completion selected
-            q-complete-transient-candidate-index -1)
-      ;; Select the first completion
-      (q-complete-transient-next-candidate))))
+         (text-end   (if bounds (cdr bounds) (point))))
+    (when (and (> (length text) 0) bounds)
+      (let* ((pos    (cl-search (buffer-substring text-start
+                                                  (point))
+                                text))
+             ;; From minibuffer.el
+             (capf-results (run-hook-wrapped 'completion-at-point-functions
+                                             #'completion--capf-wrapper 'all))
+             (all-completions (completion-all-completions
+                               text
+                               (thread-last (nth 3 capf-results)
+                                            (prescient-filter text)
+                                            prescient-completion-sort)
+                               #'identity
+                               pos)))
+        (q-complete-mode -1)
+        (q-complete-transient-mode t)
+        (setq q-complete-original-start (point)
+              q-complete-transient-original-text text
+              q-complete-transient-candidates all-completions
+              q-complete-transient-start-point text-start
+              q-complete-transient-end-point text-end
+              ;; We currently don't have a completion selected
+              q-complete-transient-candidate-index -1)
+        ;; Select the first completion
+        (q-complete-transient-next-candidate)))))
 
 (defun q-complete-transient-abort ()
   "Restore the original string and position from before completion and quit."
