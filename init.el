@@ -365,6 +365,44 @@
 
 ;; 
 
+;; ** Visual Bell
+
+;; From Phil, posted on https://pragmaticemacs.wordpress.com/2017/10/15/using-a-visible-bell-in-emacs/
+;;
+;; Date accessed: 17/02/2023
+;;
+;; The visible bell is usually fine, but still horrid in certain terminals.
+;; We can make a nicer version.
+(defun quiescent-invert-nano-header ()
+  "Invert the nano header line face."
+  (progn
+    (invert-face 'nano-face-header-default)
+    (invert-face 'nano-face-header-strong)))
+
+(defun my-visible-bell ()
+  "A friendlier visual bell effect."
+  (quiescent-invert-nano-header)
+  (run-with-timer 0.1 nil #'quiescent-invert-nano-header))
+
+(define-minor-mode my-visible-bell-mode
+   "Use `my-visible-bell’ as the `ring-bell-function’." 
+  :global t
+  (let ((this 'my-visible-bell-mode))
+    (if my-visible-bell-mode
+        (progn
+          (put this 'visible-bell-backup visible-bell)
+          (put this 'ring-bell-function-backup ring-bell-function)
+          (setq visible-bell nil
+                ring-bell-function #'my-visible-bell))
+      ;; Restore the original values when disabling.
+      (setq visible-bell (get this 'visible-bell-backup)
+            ring-bell-function (get this 'ring-bell-function-backup)))))
+
+(setq visible-bell t)
+(my-visible-bell-mode 1)
+
+;; 
+
 ;; ** Compilation mode
 
 (defun endless/colorize-compilation ()
