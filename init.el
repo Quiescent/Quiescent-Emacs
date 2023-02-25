@@ -1230,17 +1230,18 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                                             prescient-completion-sort)
                                #'identity
                                pos)))
-        (q-complete-mode -1)
-        (q-complete-transient-mode t)
-        (setq q-complete-original-start (point)
-              q-complete-transient-original-text text
-              q-complete-transient-candidates all-completions
-              q-complete-transient-start-point text-start
-              q-complete-transient-end-point text-end
-              ;; We currently don't have a completion selected
-              q-complete-transient-candidate-index -1)
-        ;; Select the first completion
-        (q-complete-transient-next-candidate)))))
+        (when (not (null (nth 0 all-completions)))
+          (q-complete-mode -1)
+          (q-complete-transient-mode t)
+          (setq q-complete-original-start (point)
+                q-complete-transient-original-text text
+                q-complete-transient-candidates all-completions
+                q-complete-transient-start-point text-start
+                q-complete-transient-end-point text-end
+                ;; We currently don't have a completion selected
+                q-complete-transient-candidate-index -1)
+          ;; Select the first completion
+          (q-complete-transient-next-candidate))))))
 
 (defun q-complete-transient-abort ()
   "Restore the original string and position from before completion and quit."
