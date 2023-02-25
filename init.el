@@ -1255,6 +1255,46 @@ current buffer through time (i.e. undo/redo while you scroll.)"
       (insert q-complete-transient-original-text))
     (q-complete-transient-quit)))
 
+(defun q-complete--insert-completion ()
+  "Insert the current completion at point and update trackers."
+  (let ((post-command-hook nil))
+    (kill-region q-complete-transient-start-point
+                 q-complete-transient-end-point)
+    (goto-char q-complete-transient-start-point)
+    (let ((candidate (nth q-complete-transient-candidate-index
+                          q-complete-transient-candidates)))
+      (setq q-complete-transient-end-point
+            (+ q-complete-transient-start-point
+               (length candidate)))
+      (insert candidate))))
+
+(defvar q-complete-isearch-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "C-s") #'q-complete-transient-isearch-forward)
+    (define-key keymap (kbd "C-r") #'q-complete-transient-isearch-backward)
+    keymap)
+  "Keymap for `q-complete-isearch-mode'.")
+
+(define-minor-mode q-complete-isearch-mode ()
+  "A mode that searches through the current q-complete candidates."
+  :init-value nil
+  :lighter nil
+  :global nil)
+
+(defun q-complete-transient-isearch-forward ()
+  "Search forward from the current index.
+
+Exit `q-complete' on RET.
+Drop back to tabbing through hits on `quit'."
+  transient-isearch)
+
+(defun q-complete-transient-isearch-backward ()
+  "Search forward from the current index.
+
+Exit `q-complete' on RET.
+Drop back to tabbing through hits on `quit'."
+  )
+
 (defun q-complete-transient-next-candidate ()
   "Replace the completion text with the next candidate."
   (interactive)
@@ -1264,16 +1304,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (when (not (consp (nthcdr q-complete-transient-candidate-index
                               q-complete-transient-candidates)))
       (setq q-complete-transient-candidate-index 0))
-    (let ((post-command-hook nil))
-      (kill-region q-complete-transient-start-point
-                   q-complete-transient-end-point)
-      (goto-char q-complete-transient-start-point)
-      (let ((candidate (nth q-complete-transient-candidate-index
-                            q-complete-transient-candidates)))
-        (setq q-complete-transient-end-point
-              (+ q-complete-transient-start-point
-                 (length candidate)))
-        (insert candidate)))))
+    (q-complete--insert-completion)))
 
 (defun q-complete-transient-previous-candidate ()
   "Replace the completion text with the next candidate."
@@ -1281,16 +1312,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (progn
     (setf q-complete-transient-candidate-index
           (max 0 (1- q-complete-transient-candidate-index)))
-    (let ((post-command-hook nil))
-      (kill-region q-complete-transient-start-point
-                   q-complete-transient-end-point)
-      (goto-char q-complete-transient-start-point)
-      (let ((candidate (nth q-complete-transient-candidate-index
-                            q-complete-transient-candidates)))
-        (setq q-complete-transient-end-point
-              (+ q-complete-transient-start-point
-                 (length candidate)))
-        (insert candidate)))))
+    (q-complete--insert-completion)))
 
 ;; 
 
