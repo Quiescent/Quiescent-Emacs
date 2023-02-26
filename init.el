@@ -1383,10 +1383,12 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
         (setq pointer (cdr pointer))
         (cl-incf q-complete-transient-candidate-index))
       (if (not (consp pointer))
-          (message "%s" (concat (apply #'propertize
-                                       "Overwrapped search: "
-                                       minibuffer-prompt-properties)
-                                q-complete-isearch-text))
+          (progn
+            (funcall ring-bell-function)
+            (message "%s" (concat (apply #'propertize
+                                         "Overwrapped search: "
+                                         minibuffer-prompt-properties)
+                                  q-complete-isearch-text)))
         (progn
           (q-complete--insert-completion)
           (q-complete-isearch-message))))))
@@ -1419,10 +1421,12 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
                                         q-complete-transient-candidates))))
       (cl-decf q-complete-transient-candidate-index))
     (if (= 0 q-complete-transient-candidate-index)
-        (message "%s" (concat (apply #'propertize
-                                     "Overwrapped search: "
-                                     minibuffer-prompt-properties)
-                              q-complete-isearch-text))
+        (progn
+          (funcall ring-bell-function)
+          (message "%s" (concat (apply #'propertize
+                                       "Overwrapped search: "
+                                       minibuffer-prompt-properties)
+                                q-complete-isearch-text)))
       (progn
         (q-complete--insert-completion)
         (q-complete-isearch-message)))))
