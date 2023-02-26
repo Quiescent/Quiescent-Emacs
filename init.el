@@ -1307,6 +1307,18 @@ current buffer through time (i.e. undo/redo while you scroll.)"
         (q-complete-isearch-forward t)
       (q-complete-isearch-backward t))))
 
+(defun q-complete-isearch-backspace ()
+  "Backspace the last searched character."
+  (interactive)
+  (progn
+    (setq q-complete-isearch-text
+          (substring q-complete-isearch-text
+                     0
+                     (1- (length q-complete-isearch-text))))
+    (if (eq q-complete-isearch-direction 'forward)
+        (q-complete-isearch-forward t)
+      (q-complete-isearch-backward t))))
+
 (defun q-complete-isearch-abort ()
   "Abort `q-complete-isearch' and drop to transient completion.
 
@@ -1335,15 +1347,16 @@ See `isearch-pre-command-hook' for inspiration of this approach."
 
 (defvar q-complete-isearch-mode-map
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap (kbd "C-s") #'q-complete-isearch-forward)
-    (define-key keymap (kbd "C-r") #'q-complete-isearch-backward)
-    (define-key keymap (kbd "C-g") #'q-complete-isearch-abort)
     ;; We don't want to include space here because that should
     ;; terminate completion.
     (let ((c (1+ ?\s)))
       (while (< c 256)
         (define-key keymap (vector c) #'q-complete-isearch-insert)
         (cl-incf c)))
+    (define-key keymap (kbd "C-s") #'q-complete-isearch-forward)
+    (define-key keymap (kbd "C-r") #'q-complete-isearch-backward)
+    (define-key keymap (kbd "C-g") #'q-complete-isearch-abort)
+    (define-key keymap (kbd "<backspace>") #'q-complete-isearch-backspace)
     keymap)
   "Keymap for `q-complete-isearch-mode'.")
 
