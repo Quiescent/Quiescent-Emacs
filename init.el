@@ -1322,23 +1322,25 @@ both `q-complete-transient-mode' and `q-complete-isearch-mode'.
 
 See `isearch-pre-command-hook' for inspiration of this approach."
   (cond
-   ((equal (kbd "<tab>") (this-single-command-keys))
+   ((member (this-single-command-keys) (list (kbd "<tab>")
+                                             [32] ; Space
+                                             ))
     (q-complete-isearch-mode -1))
    ((and (not (eq 'self-insert-command
                   (lookup-key global-map (this-single-command-keys))))
          (not (commandp (lookup-key q-complete-isearch-mode-map
                                     (this-single-command-keys)
                                     nil))))
-    (progn
-      (q-complete-isearch-mode -1)
-      (q-complete-transient-quit)))))
+    (q-complete-isearch-mode -1))))
 
 (defvar q-complete-isearch-mode-map
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap (kbd "C-s") #'q-complete-isearch-forward)
     (define-key keymap (kbd "C-r") #'q-complete-isearch-backward)
     (define-key keymap (kbd "C-g") #'q-complete-isearch-abort)
-    (let ((c ?\s))
+    ;; We don't want to include space here because that should
+    ;; terminate completion.
+    (let ((c (1+ ?\s)))
       (while (< c 256)
         (define-key keymap (vector c) #'q-complete-isearch-insert)
         (cl-incf c)))
