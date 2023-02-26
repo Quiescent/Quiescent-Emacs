@@ -1137,17 +1137,19 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 (defun q-complete-maybe-offer-completion ()
   "Indicate whether there are completions."
-  (progn
-    (when q-complete-saved-cursor
-      (setq cursor-type q-complete-saved-cursor
-            q-complete-saved-cursor nil))
-    (define-key q-complete-mode-map (kbd "<tab>") nil)
-    (when (and (not (eq last-command 'quit))
-               (run-hook-wrapped 'completion-at-point-functions
-                                 #'completion--capf-wrapper 'all))
-      (setq q-complete-saved-cursor cursor-type
-            cursor-type (cons 'hbar 2))
-      (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))))
+  (if (and (not (eq last-command 'quit))
+           (run-hook-wrapped 'completion-at-point-functions
+                             #'completion--capf-wrapper 'all))
+      (progn
+        (when (not q-complete-saved-cursor)
+          (setq q-complete-saved-cursor cursor-type))
+        (setq cursor-type (cons 'hbar 2))
+        (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))
+    (progn
+      (when q-complete-saved-cursor
+        (setq cursor-type q-complete-saved-cursor
+              q-complete-saved-cursor nil))
+      (define-key q-complete-mode-map (kbd "<tab>") nil))))
 
 (defun q-complete-transient-quit ()
   "Exit transient completion when the user does anything."
