@@ -1139,7 +1139,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   "Indicate whether there are completions."
   (progn
     (when q-complete-saved-cursor
-      (setq cursor-type q-complete-saved-cursor))
+      (setq cursor-type q-complete-saved-cursor
+            q-complete-saved-cursor nil))
     (define-key q-complete-mode-map (kbd "<tab>") nil)
     (when (and (not (eq last-command 'quit))
                (run-hook-wrapped 'completion-at-point-functions
