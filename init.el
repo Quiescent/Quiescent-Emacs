@@ -1135,6 +1135,21 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   :lighter nil
   :global nil)
 
+(defvar q-complete-saved-cursor nil
+  "The style of cursor before we meddled with it.")
+
+(defun q-complete--restore-cursor ()
+  "If there's a saved cursor, restore it."
+  (when q-complete-saved-cursor
+    (setq cursor-type q-complete-saved-cursor
+          q-complete-saved-cursor nil)))
+
+(defun q-complete--set-cursor ()
+  "Set the cursor to a bar to indicate we're completing."
+  (when (null q-complete-saved-cursor)
+    (setq q-complete-saved-cursor cursor-type
+          cursor-type (cons 'hbar 2))))
+
 (defun q-complete-transient-quit ()
   "Exit transient completion when the user does anything."
   (interactive)
@@ -1171,7 +1186,10 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   "A mode that's invoked during completion to scroll through options."
   :init-value nil
   :ligther nil
-  :global nil)
+  :global nil
+  (if q-complete-transient-mode
+      (q-complete--set-cursor)
+    (q-complete--restore-cursor)))
 
 (defvar q-complete-transient-original-text nil
   "The text that was originally to be completed.")
