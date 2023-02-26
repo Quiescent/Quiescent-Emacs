@@ -1135,20 +1135,37 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defvar q-complete-saved-cursor nil
   "The style of cursor before we meddled with it.")
 
+(defvar-local q-complete--offer-completion-timer nil
+  "A timer to delay offering completions.")
+
+(defun q-complete--restore-cursor ()
+  "If there's a saved cursor, restore it."
+  (when q-complete-saved-cursor
+    (setq cursor-type q-complete-saved-cursor
+          q-complete-saved-cursor nil)))
+
 (defun q-complete-maybe-offer-completion ()
   "Indicate whether there are completions."
-  (if (and (not (eq last-command 'quit))
-           (q-complete--all-completions))
-      (progn
-        (when (not q-complete-saved-cursor)
-          (setq q-complete-saved-cursor cursor-type))
-        (setq cursor-type (cons 'hbar 2))
-        (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))
-    (progn
-      (when q-complete-saved-cursor
-        (setq cursor-type q-complete-saved-cursor
-              q-complete-saved-cursor nil))
-      (define-key q-complete-mode-map (kbd "<tab>") nil))))
+  (progn
+    (when q-complete--offer-completion-timer
+      (cancel-timer q-complete--offer-completion-timer)
+      (q-complete--restore-cursor))
+    (when (not (input-pending-p))
+      (setq q-complete--offer-completion-timer
+            (run-at-time
+             "500 milisecs"
+             nil
+             (lambda ()
+               (if (and (not (eq last-command 'quit))
+                        (q-complete--all-completions))
+                   (progn
+                     (when (not q-complete-saved-cursor)
+                       (setq q-complete-saved-cursor cursor-type))
+                     (setq cursor-type (cons 'hbar 2))
+                     (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))
+                 (progn
+                   (q-complete--restore-cursor)
+                   (define-key q-complete-mode-map (kbd "<tab>") nil)))))))))
 
 (defun q-complete-transient-quit ()
   "Exit transient completion when the user does anything."
