@@ -1138,8 +1138,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defun q-complete-maybe-offer-completion ()
   "Indicate whether there are completions."
   (if (and (not (eq last-command 'quit))
-           (run-hook-wrapped 'completion-at-point-functions
-                             #'completion--capf-wrapper 'all))
+           (q-complete--all-completions))
       (progn
         (when (not q-complete-saved-cursor)
           (setq q-complete-saved-cursor cursor-type))
@@ -1211,9 +1210,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 (prescient-persist-mode 1)
 
-(defun q-complete ()
-  "Enter `q-complete-transient-mode' for the text around point."
-  (interactive)
+(defun q-complete--all-completions ()
+  "Produce a table of all the completions at point."
   (let* ((thing-spec 'symbol)
          (text   (thing-at-point thing-spec))
          (bounds (bounds-of-thing-at-point thing-spec))
@@ -1234,17 +1232,25 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                                #'identity
                                pos)))
         (when (not (null (nth 0 all-completions)))
-          (q-complete-mode -1)
-          (q-complete-transient-mode t)
-          (setq q-complete-original-start (point)
-                q-complete-transient-original-text text
-                q-complete-transient-candidates all-completions
-                q-complete-transient-start-point text-start
-                q-complete-transient-end-point text-end
-                ;; We currently don't have a completion selected
-                q-complete-transient-candidate-index -1)
-          ;; Select the first completion
-          (q-complete-transient-next-candidate))))))
+          (list all-completions text-start text-end text))))))
+
+(defun q-complete ()
+  "Enter `q-complete-transient-mode' for the text around point."
+  (interactive)
+  (pcase (q-complete--all-completions)
+    (`(,all-completions ,text-start ,text-end ,text)
+     (when (not (null (nth 0 all-completions)))
+       (q-complete-mode -1)
+       (q-complete-transient-mode t)
+       (setq q-complete-original-start (point)
+             q-complete-transient-original-text text
+             q-complete-transient-candidates all-completions
+             q-complete-transient-start-point text-start
+             q-complete-transient-end-point text-end
+             ;; We currently don't have a completion selected
+             q-complete-transient-candidate-index -1)
+       ;; Select the first completion
+       (q-complete-transient-next-candidate)))))
 
 (defun q-complete-transient-abort ()
   "Restore the original string and position from before completion and quit."
