@@ -1116,8 +1116,16 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 ;; This is my attempt at the completion style that I've always wanted
 ;; and company only gets close to.
 
+(defun q-complete-or-indent ()
+  "If there are completions, `q-complete' otherwise indent."
+  (interactive)
+  (if (q-complete--all-completions)
+      (q-complete)
+    (funcall-interactively #'indent-for-tab-command)))
+
 (defvar q-complete-mode-map
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "<tab>") #'q-complete-or-indent)
     keymap)
   "Keymap for `q-complete'.")
 
@@ -1125,47 +1133,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   "Unintrusive, inline completion."
   :init-value nil
   :lighter nil
-  :global nil
-  (if q-complete-mode
-      (add-hook 'post-command-hook #'q-complete-maybe-offer-completion)
-    (remove-hook 'post-command-hook #'q-complete-maybe-offer-completion)))
-
-(add-hook 'prog-mode-hook #'q-complete-mode)
-
-(defvar q-complete-saved-cursor nil
-  "The style of cursor before we meddled with it.")
-
-(defvar-local q-complete--offer-completion-timer nil
-  "A timer to delay offering completions.")
-
-(defun q-complete--restore-cursor ()
-  "If there's a saved cursor, restore it."
-  (when q-complete-saved-cursor
-    (setq cursor-type q-complete-saved-cursor
-          q-complete-saved-cursor nil)))
-
-(defun q-complete-maybe-offer-completion ()
-  "Indicate whether there are completions."
-  (progn
-    (when q-complete--offer-completion-timer
-      (cancel-timer q-complete--offer-completion-timer)
-      (q-complete--restore-cursor))
-    (when (not (input-pending-p))
-      (setq q-complete--offer-completion-timer
-            (run-at-time
-             "500 milisecs"
-             nil
-             (lambda ()
-               (if (and (not (eq last-command 'quit))
-                        (q-complete--all-completions))
-                   (progn
-                     (when (not q-complete-saved-cursor)
-                       (setq q-complete-saved-cursor cursor-type))
-                     (setq cursor-type (cons 'hbar 2))
-                     (define-key q-complete-mode-map (kbd "<tab>") #'q-complete))
-                 (progn
-                   (q-complete--restore-cursor)
-                   (define-key q-complete-mode-map (kbd "<tab>") nil)))))))))
+  :global nil)
 
 (defun q-complete-transient-quit ()
   "Exit transient completion when the user does anything."
