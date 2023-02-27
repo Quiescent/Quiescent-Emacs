@@ -1163,6 +1163,20 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (q-complete-transient-mode -1)
     (q-complete-mode 1)))
 
+(defun q-complete--tide-completions (prefix)
+  (let ((file-location
+         `(:file ,(tide-buffer-file-name)
+                 :line ,(tide-line-number-at-pos) :offset ,(- (tide-current-offset) (length prefix))
+                 :includeExternalModuleExports ,tide-completion-enable-autoimport-suggestions
+                 :includeInsertTextCompletions t)))
+    (when (and (not (tide-in-string-p)) (not (tide-member-completion-p prefix)))
+      (setq file-location (-concat file-location `(:prefix ,prefix))))
+    (mapcar (lambda (hit) (plist-get hit :name))
+            (plist-get (tide-send-command-sync
+                        "completions"
+                        file-location)
+                       :body))))
+
 (defun q-complete-transient-insert-and-quit ()
   "Insert the last key that was pressed and exit `q-complete-transient-mode'."
   (interactive)
@@ -1216,7 +1230,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 (prescient-persist-mode 1)
 
-(defun q-complete--all-completions ()
+(defun q-complete--all-completions-tide ()
   "Produce a table of all the completions at point."
   (let* ((thing-spec 'symbol)
          (text   (or (thing-at-point thing-spec) ""))
@@ -1224,19 +1238,33 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                      (cons (point) (point))))
          (text-start (car bounds))
          (text-end   (cdr bounds)))
-    (let* ((pos (cl-search (buffer-substring text-start (point)) text))
-           ;; From minibuffer.el
-           (capf-results (run-hook-wrapped 'completion-at-point-functions
-                                           #'completion--capf-wrapper 'all))
-           (all-completions (completion-all-completions
-                             text
-                             (thread-last (nth 3 capf-results)
-                                          (prescient-filter text)
-                                          prescient-completion-sort)
-                             #'identity
-                             pos)))
-      (when (not (null (nth 0 all-completions)))
+    (let* ((all-completions (q-complete--tide-completions text)))
+      (when (not (null all-completions))
         (list all-completions text-start text-end text)))))
+
+(defun q-complete--all-completions ()
+  "Produce a table of all the completions at point."
+  (if tide-mode
+      (q-complete--all-completions-tide)
+    (let* ((thing-spec 'symbol)
+           (text   (or (thing-at-point thing-spec) ""))
+           (bounds (or (bounds-of-thing-at-point thing-spec)
+                       (cons (point) (point))))
+           (text-start (car bounds))
+           (text-end   (cdr bounds)))
+      (let* ((pos (cl-search (buffer-substring text-start (point)) text))
+             ;; From minibuffer.el
+             (capf-results (run-hook-wrapped 'completion-at-point-functions
+                                             #'completion--capf-wrapper 'all))
+             (all-completions (completion-all-completions
+                               text
+                               (thread-last (nth 3 capf-results)
+                                            (prescient-filter text)
+                                            prescient-completion-sort)
+                               #'identity
+                               pos)))
+        (when (not (null (nth 0 all-completions)))
+          (list all-completions text-start text-end text))))))
 
 (defun q-complete ()
   "Enter `q-complete-transient-mode' for the text around point."
