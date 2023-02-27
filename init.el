@@ -1470,82 +1470,55 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 ;; ** Company
 
-;; (defun quiescent-company-toggle-frontend ()
-;;   "Switch to completing with a dropdown."
-;;   (interactive)
-;;   (if (equal company-frontends '(company-pseudo-tooltip-frontend))
-;;       (setq company-frontends '(company-preview-frontend))
-;;     (setq company-frontends '(company-pseudo-tooltip-frontend))))
+(defun quiescent-company-toggle-frontend ()
+  "Switch to completing with a dropdown."
+  (interactive)
+  (if (equal company-frontends '(company-pseudo-tooltip-frontend))
+      (setq company-frontends '(company-preview-frontend))
+    (setq company-frontends '(company-pseudo-tooltip-frontend))))
 
-;; (defun quiescent-company-complete-selection ()
-;;   "Complete the current selection, unless we're in comint buffers.
+(defun quiescent-activate-company-mode ()
+  "Activate company mode."
+  (when (null quiescent-starting-up)
+    (company-mode 1)))
 
-;; In comint buffers defer to the comint send input command."
-;;   (interactive)
-;;   (if (derived-mode-p 'comint-mode)
-;;       (call-interactively #'comint-send-input)
-;;     (call-interactively #'company-complete-selection)))
+(use-package company
+  :straight t
+  :hook (((js2-mode) . quiescent-activate-company-mode))
+  :config
+  (progn
+    (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
+    (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
+    (define-key company-active-map (kbd "C-.")   #'company-select-next)
+    (define-key company-active-map (kbd "M-.")   #'company-select-next)
+    (define-key company-active-map (kbd "<tab>") #'company-select-next)
+    (define-key company-active-map (kbd "C-,")   #'company-select-previous)
+    (define-key company-active-map (kbd "M-,")   #'company-select-previous)
+    (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
+    (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
+    (define-key company-active-map (kbd "C-m")   nil)
+    (define-key company-active-map (kbd "C-n")   nil)
+    (define-key company-active-map (kbd "C-p")   nil)
+    (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
+    (global-set-key (kbd "C-'") #'company-complete-selection)
+    (global-set-key (kbd "C-.") #'company-complete)
+    (global-set-key (kbd "C-,") #'company-complete)
+    (advice-add #'company-ispell :around #'quiescent-supress-message-around)
+    (setq company-idle-delay 0)
+    (setq company-tooltip-idle-delay 5)
+    (setq company-tooltip-limit 0)
+    (setq company-require-match nil)
+    (setq company-frontends '(company-preview-frontend))))
 
-;; (defun quiescent-activate-company-mode ()
-;;   "Activate company mode."
-;;   (when (null quiescent-starting-up)
-;;     (company-mode 1)))
-
-;; (use-package company
-;;   :straight t
-;;   :hook (((prog-mode text-mode comint-mode) . quiescent-activate-company-mode))
-;;   :config
-;;   (progn
-;;     (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
-;;     (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
-;;     (define-key company-active-map (kbd "C-.")   #'company-select-next)
-;;     (define-key company-active-map (kbd "M-.")   #'company-select-next)
-;;     (define-key company-active-map (kbd "<tab>") #'company-select-next)
-;;     (define-key company-active-map (kbd "C-,")   #'company-select-previous)
-;;     (define-key company-active-map (kbd "M-,")   #'company-select-previous)
-;;     (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-;;     (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
-;;     (define-key company-active-map (kbd "C-m")   nil)
-;;     (define-key company-active-map (kbd "C-n")   nil)
-;;     (define-key company-active-map (kbd "C-p")   nil)
-;;     (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
-;;     (global-set-key (kbd "C-'") #'company-complete-selection)
-;;     (global-set-key (kbd "C-.") #'company-complete)
-;;     (global-set-key (kbd "C-,") #'company-complete)
-;;     (advice-add #'company-ispell :around #'quiescent-supress-message-around)
-;;     (setq company-idle-delay 0)
-;;     (setq company-tooltip-idle-delay 5)
-;;     (setq company-tooltip-limit 0)
-;;     (setq company-require-match nil)
-;;     (setq company-frontends '(company-preview-frontend))))
-
-;; (defun quiescent-remove-semantic-backend ()
-;;   "Remove the company backend for semantic."
-;;   (remove-function 'company-backends #'company-semantic))
-
-;; (add-hook 'python-mode-hook #'quiescent-remove-semantic-backend)
-
-;; (defun quiescent-supress-message-around (f &rest args)
-;;   "Supress messages when executing F with ARGS."
-;;   (let ((inhibit-message t))
-;;     (funcall f args)))
-
-;; (defun quiescent-company-text-mode-hook ()
-;;   "Keep only the backends I want in `text-mode'."
-;;   (when (null quiescent-starting-up)
-;;     (setq-local company-backends '(company-bbdb company-ispell company-dabbrev))))
-
-;; (add-hook 'text-mode-hook #'quiescent-company-text-mode-hook)
-
-;; (use-package company-prescient
-;;   :straight t
-;;   :config
-;;   (defun quiescent-activate-company-prescient ()
-;;     "Activate `company-prescient-mode'."
-;;     (when (and (null quiescent-starting-up)
-;;                (boundp 'company-prescient-mode))
-;;       (company-prescient-mode 1)))
-;;   :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
+(use-package company-prescient
+  :straight t
+  :config
+  (defun quiescent-activate-company-prescient ()
+    "Activate `company-prescient-mode'."
+    (when (and (null quiescent-starting-up)
+               (boundp 'company-prescient-mode))
+      (company-prescient-mode 1)))
+  :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
 
 ;; 
 
