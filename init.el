@@ -1135,6 +1135,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   :lighter nil
   :global nil)
 
+(add-hook 'prog-mode-hook #'q-complete-mode)
+
 (defvar q-complete-saved-cursor nil
   "The style of cursor before we meddled with it.")
 
