@@ -1498,60 +1498,6 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 ;; 
 
-;; ** Company
-
-(defun quiescent-company-toggle-frontend ()
-  "Switch to completing with a dropdown."
-  (interactive)
-  (if (equal company-frontends '(company-pseudo-tooltip-frontend))
-      (setq company-frontends '(company-preview-frontend))
-    (setq company-frontends '(company-pseudo-tooltip-frontend))))
-
-(defun quiescent-activate-company-mode ()
-  "Activate company mode."
-  (when (null quiescent-starting-up)
-    (company-mode 1)))
-
-(use-package company
-  :straight t
-  :hook (((js2-mode) . quiescent-activate-company-mode))
-  :config
-  (progn
-    (define-key company-active-map (kbd "C-'")   #'company-complete-selection)
-    (define-key company-active-map (kbd "M-'")   #'company-complete-selection)
-    (define-key company-active-map (kbd "C-.")   #'company-select-next)
-    (define-key company-active-map (kbd "M-.")   #'company-select-next)
-    (define-key company-active-map (kbd "<tab>") #'company-select-next)
-    (define-key company-active-map (kbd "C-,")   #'company-select-previous)
-    (define-key company-active-map (kbd "M-,")   #'company-select-previous)
-    (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-    (define-key company-active-map (kbd "M-SPC") #'quiescent-company-toggle-frontend)
-    (define-key company-active-map (kbd "C-m")   nil)
-    (define-key company-active-map (kbd "C-n")   nil)
-    (define-key company-active-map (kbd "C-p")   nil)
-    (define-key comint-mode-map (kbd "<tab>") #'company-complete-common)
-    (global-set-key (kbd "C-'") #'company-complete-selection)
-    (global-set-key (kbd "C-.") #'company-complete)
-    (global-set-key (kbd "C-,") #'company-complete)
-    (advice-add #'company-ispell :around #'quiescent-supress-message-around)
-    (setq company-idle-delay 0)
-    (setq company-tooltip-idle-delay 5)
-    (setq company-tooltip-limit 0)
-    (setq company-require-match nil)
-    (setq company-frontends '(company-preview-frontend))))
-
-(use-package company-prescient
-  :straight t
-  :config
-  (defun quiescent-activate-company-prescient ()
-    "Activate `company-prescient-mode'."
-    (when (and (null quiescent-starting-up)
-               (boundp 'company-prescient-mode))
-      (company-prescient-mode 1)))
-  :init (add-hook 'company-mode-hook #'quiescent-activate-company-prescient))
-
-;; 
-
 ;; Compilation Mode
 
 (require 'compile)
@@ -1660,53 +1606,6 @@ Usually because of too much overhead in checking.")
   :init (progn
           (yas-global-mode 1)
           (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "->") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas-fallback-behavior 'return-nil))
-    (yas-expand)))
-
-(defun tab-complete-or-next-field ()
-  (interactive)
-  (if (or (not yas-minor-mode)
-          (null (do-yas-expand)))
-      (if company-candidates
-          (company-complete-selection)
-        (if (check-expansion)
-            (progn
-              (company-manual-begin)
-              (if (null company-candidates)
-                  (progn
-                    (company-abort)
-                    (yas-next-field))))
-          (yas-next-field)))))
-
-(defun expand-snippet-or-complete-selection ()
-  (interactive)
-  (if (or (not yas-minor-mode)
-          (null (do-yas-expand))
-          (company-abort))
-      (company-complete-common)))
-
-(defun abort-company-or-yas ()
-  (interactive)
-  (if (null company-candidates)
-      (yas-abort-snippet)
-    (company-abort)))
-
-;; (with-eval-after-load "company-mode"
-;;   (with-eval-after-load "yasnippet"
-;;     (define-key company-active-map [tab] 'expand-snippet-or-complete-selection)
-;;     (define-key yas-minor-mode-map (kbd "TAB") nil)
-;;     (define-key yas-keymap (kbd "TAB") 'tab-complete-or-next-field)
-;;     (define-key yas-keymap (kbd "C-g") 'abort-company-or-yas)))
 
 ;; 
 
@@ -3958,54 +3857,6 @@ See `eshell-prompt-regexp'."
       (re-search-forward eshell-prompt-regexp nil t nil))))
 
 (require 'em-hist)
-
-;; (defun prefix-intersection (xs ys)
-;;   "Produce the intersection of XS with YS where x is in YS if x is a prefix of an element in YS."
-;;   (let (result)
-;;     (dolist (x xs result)
-;;       (dolist (y ys result)
-;;         (when (s-starts-with-p x y t)
-;;           (push x result))))))
-
-;; (defun esh-autosuggest-candidates (prefix)
-;;   "Select all history candidates with the prefix PREFIX."
-;;   (let* ((history
-;;           (mapcar #'split-string
-;;                   (delete-dups
-;;                    (mapcar (lambda (str)
-;;                              (string-trim (substring-no-properties str)))
-;;                            (ring-elements eshell-history-ring)))))
-;;          (prefix-elements (split-string prefix))
-;;          (prefix-elements-length (length prefix-elements)))
-;;     (mapcar (lambda (tokens) (mapconcat #'identity tokens " "))
-;;             (cl-remove-if (lambda (history-element)
-;;                             (not (eq (length (prefix-intersection prefix-elements
-;;                                                                   history-element))
-;;                                      prefix-elements-length)))
-;;                           history))))
-
-;; (use-package esh-autosuggest
-;;   :straight t
-;;   :demand t
-;;   :config (progn
-;;             (defun quiescent-setup-eshell-completion ()
-;;               "Setup completion for the Emacs shell."
-;;               (when (null quiescent-starting-up)
-;;                 (company-mode 1)
-;;                 (esh-autosuggest-mode 1)
-;;                 (setq company-backends '(;;esh-autosuggest
-;;                                          company-capf company-files))
-;;                 (setq completion-at-point-functions '(comint-completion-at-point t))))
-;;             (define-key esh-autosuggest-active-map (kbd "s-'") #'company-complete)
-;;             (define-key esh-autosuggest-active-map (kbd "C-'") #'company-complete-selection)
-;;             (define-key esh-autosuggest-active-map (kbd "M-'") #'company-complete-selection)
-;;             (define-key esh-autosuggest-active-map (kbd "C-.") #'company-select-next)
-;;             (define-key esh-autosuggest-active-map (kbd "M-.") #'company-select-next)
-;;             (define-key esh-autosuggest-active-map (kbd "C-,") #'company-select-previous)
-;;             (define-key esh-autosuggest-active-map (kbd "M-,") #'company-select-previous)
-;;             (with-eval-after-load "esh-mode"
-;;               (define-key eshell-mode-map (kbd "<tab>") #'company-complete-common)))
-;;   :hook ((eshell-mode . quiescent-setup-eshell-completion)))
 
 ;; 
 
