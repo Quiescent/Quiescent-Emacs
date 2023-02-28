@@ -1429,6 +1429,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
         (cl-incf q-complete-transient-candidate-index))
       (if (not (consp pointer))
           (progn
+            (setq q-complete-transient-candidate-index 0)
             (funcall ring-bell-function)
             (message "%s" (concat (apply #'propertize
                                          "Overwrapped search: "
@@ -1467,6 +1468,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
       (cl-decf q-complete-transient-candidate-index))
     (if (= 0 q-complete-transient-candidate-index)
         (progn
+          (q-complete--move-to-last-hit)
           (funcall ring-bell-function)
           (message "%s" (concat (apply #'propertize
                                        "Overwrapped search: "
