@@ -1173,11 +1173,14 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                  :includeInsertTextCompletions t)))
     (when (and (not (tide-in-string-p)) (not (tide-member-completion-p prefix)))
       (setq file-location (-concat file-location `(:prefix ,prefix))))
-    (mapcar (lambda (hit) (plist-get hit :name))
-            (plist-get (tide-send-command-sync
-                        "completions"
-                        file-location)
-                       :body))))
+    (cl-sort (mapcar (lambda (hit) (plist-get hit :name))
+                     (plist-get (tide-send-command-sync
+                                 "completions"
+                                 file-location)
+                                :body))
+             #'<
+             :key (lambda (element) (or (string-match prefix element)
+                                        (length prefix))))))
 
 (defun q-complete-transient-insert-and-quit ()
   "Insert the last key that was pressed and exit `q-complete-transient-mode'."
