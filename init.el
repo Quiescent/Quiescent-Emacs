@@ -1244,11 +1244,20 @@ current buffer through time (i.e. undo/redo while you scroll.)"
       (when (not (null all-completions))
         (list all-completions text-start text-end text)))))
 
-(defun q-complete--all-completions-tern ()
-  "Produce the completions at point using tern."
+(defun q-complete--all-completions-tern (&optional dont-repeat)
+  "Produce the completions at point using tern.
+
+If DONT-REPEAT is non-nil, don't try the function and recurse."
   (pcase (tern-completion-at-point)
     (`(,text-start ,text-end ,hits)
-     (list hits text-start text-end (buffer-substring text-start text-end)))))
+     (list hits text-start text-end (buffer-substring text-start text-end)))
+    (t
+     (when (null dont-repeat)
+       (let ((window-config (current-window-configuration)))
+        (funcall (tern-completion-at-point))
+        (sleep-for 0 50)
+        (q-complete--all-completions-tern t)
+        (set-window-configuration window-config))))))
 
 (defun q-complete--all-completions ()
   "Produce a table of all the completions at point."
