@@ -1244,29 +1244,36 @@ current buffer through time (i.e. undo/redo while you scroll.)"
       (when (not (null all-completions))
         (list all-completions text-start text-end text)))))
 
+(defun q-complete--all-completions-tern ()
+  "Produce the completions at point using tern."
+  (pcase (tern-completion-at-point)
+    (`(,text-start ,text-end ,hits)
+     (list hits text-start text-end (buffer-substring text-start text-end)))))
+
 (defun q-complete--all-completions ()
   "Produce a table of all the completions at point."
-  (if tide-mode
-      (q-complete--all-completions-tide)
-    (let* ((thing-spec 'symbol)
-           (text   (or (thing-at-point thing-spec) ""))
-           (bounds (or (bounds-of-thing-at-point thing-spec)
-                       (cons (point) (point))))
-           (text-start (car bounds))
-           (text-end   (cdr bounds)))
-      (let* ((pos (cl-search (buffer-substring text-start (point)) text))
-             ;; From minibuffer.el
-             (capf-results (run-hook-wrapped 'completion-at-point-functions
-                                             #'completion--capf-wrapper 'all))
-             (all-completions (completion-all-completions
-                               text
-                               (thread-last (nth 3 capf-results)
-                                            (prescient-filter text)
-                                            prescient-completion-sort)
-                               #'identity
-                               pos)))
-        (when (not (null (nth 0 all-completions)))
-          (list all-completions text-start text-end text))))))
+  (cond
+   (tide-mode (q-complete--all-completions-tide))
+   (tern-mode (q-complete--all-completions-tern))
+   (t (let* ((thing-spec 'symbol)
+             (text   (or (thing-at-point thing-spec) ""))
+             (bounds (or (bounds-of-thing-at-point thing-spec)
+                         (cons (point) (point))))
+             (text-start (car bounds))
+             (text-end   (cdr bounds)))
+        (let* ((pos (cl-search (buffer-substring text-start (point)) text))
+               ;; From minibuffer.el
+               (capf-results (run-hook-wrapped 'completion-at-point-functions
+                                               #'completion--capf-wrapper 'all))
+               (all-completions (completion-all-completions
+                                 text
+                                 (thread-last (nth 3 capf-results)
+                                              (prescient-filter text)
+                                              prescient-completion-sort)
+                                 #'identity
+                                 pos)))
+          (when (not (null (nth 0 all-completions)))
+            (list all-completions text-start text-end text)))))))
 
 (defun q-complete ()
   "Enter `q-complete-transient-mode' for the text around point."
@@ -3058,63 +3065,76 @@ Nil if root is supplied as DIR."
 
 ;; ** Tide Mode
 
-(use-package tide
-  :straight t
-  :config
-  (progn
-    (defun quiescent-reboot-tide-on-error (f response)
-      "Advice around F (`tide-dispatch-response') to detect missing RESPONSE.
+;; (use-package tide
+;;   :straight t
+;;   :config
+;;   (progn
+;;     (defun quiescent-reboot-tide-on-error (f response)
+;;       "Advice around F (`tide-dispatch-response') to detect missing RESPONSE.
 
-Restarts the tide server when it finds it."
-      (let ((message (plist-get response :message)))
-        (if (and message (string-match "Could not find source file" message))
-            (tide-restart-server)
-          (funcall f response))))
-    (advice-add 'tide-dispatch-response :around #'quiescent-reboot-tide-on-error))
-  :init
-  (progn
-    (add-hook 'js2-mode-hook        #'quiescent-setup-tide-mode)
-    (add-hook 'js2-jsx-mode-hook    #'quiescent-setup-tide-mode)
-    (add-hook 'typescript-mode-hook #'quiescent-setup-tide-mode)))
+;; Restarts the tide server when it finds it."
+;;       (let ((message (plist-get response :message)))
+;;         (if (and message (string-match "Could not find source file" message))
+;;             (tide-restart-server)
+;;           (funcall f response))))
+;;     (advice-add 'tide-dispatch-response :around #'quiescent-reboot-tide-on-error))
+;;   :init
+;;   (progn
+;;     (add-hook 'js2-mode-hook        #'quiescent-setup-tide-mode)
+;;     (add-hook 'js2-jsx-mode-hook    #'quiescent-setup-tide-mode)
+;;     (add-hook 'typescript-mode-hook #'quiescent-setup-tide-mode)))
 
-(defun quiescent-tide-jump-to-definition (&optional arg)
-  "Jump to the definition of the symbol at point.
+;; (defun quiescent-tide-jump-to-definition (&optional arg)
+;;   "Jump to the definition of the symbol at point.
 
-If pointed at an abstract member-declaration, will proceed to look for
-implementations.  When invoked with a prefix arg, jump to the type definition.
+;; If pointed at an abstract member-declaration, will proceed to look for
+;; implementations.  When invoked with a prefix arg, jump to the type definition.
 
-Copied from tide's sources with the addition of calling
-js2-mode's find definition and then xref when tide fails."
-  (interactive "P")
-  (let ((cb (lambda (response)
-              (if (and (tide-response-success-p response)
-                       (null (plist-get response :message)))
-                  (condition-case err
-                      (js2-jump-to-definition)
-                    (error (xref-find-definitions (thing-at-point 'symbol))))
-                (tide-on-response-success response
-                    (-when-let (filespan (car (plist-get response :body)))
-                      ;; if we're still at the same location...
-                      ;; maybe we're a abstract member which has implementations?
-                      (if (and (not arg)
-                               (tide-filespan-is-current-location-p filespan))
-                          (tide-jump-to-implementation)
-                        (tide-jump-to-filespan filespan tide-jump-to-definition-reuse-window))))))))
-    (if arg
-        (tide-command:typeDefinition cb)
-      (tide-command:definition cb))))
+;; Copied from tide's sources with the addition of calling
+;; js2-mode's find definition and then xref when tide fails."
+;;   (interactive "P")
+;;   (let ((cb (lambda (response)
+;;               (if (and (tide-response-success-p response)
+;;                        (null (plist-get response :message)))
+;;                   (condition-case err
+;;                       (js2-jump-to-definition)
+;;                     (error (xref-find-definitions (thing-at-point 'symbol))))
+;;                 (tide-on-response-success response
+;;                     (-when-let (filespan (car (plist-get response :body)))
+;;                       ;; if we're still at the same location...
+;;                       ;; maybe we're a abstract member which has implementations?
+;;                       (if (and (not arg)
+;;                                (tide-filespan-is-current-location-p filespan))
+;;                           (tide-jump-to-implementation)
+;;                         (tide-jump-to-filespan filespan tide-jump-to-definition-reuse-window))))))))
+;;     (if arg
+;;         (tide-command:typeDefinition cb)
+;;       (tide-command:definition cb))))
 
-(defun quiescent-setup-tide-mode ()
-  "Setup TIDE mode."
-  (when (null quiescent-starting-up)
-    (progn
-      (tide-setup)
-      (define-key tide-mode-map (kbd "M-?") 'tide-references)
-      (tide-hl-identifier-mode +1)
-      (setq-local company-backends '(company-tide company-files))
-      (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)
-      (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)
-      (setq xref-backend-functions '(dumb-jump-xref-activate etags--xref-backend)))))
+;; (defun quiescent-setup-tide-mode ()
+;;   "Setup TIDE mode."
+;;   (when (null quiescent-starting-up)
+;;     (progn
+;;       (tide-setup)
+;;       (define-key tide-mode-map (kbd "M-?") 'tide-references)
+;;       (tide-hl-identifier-mode +1)
+;;       (setq-local company-backends '(company-tide company-files))
+;;       (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)
+;;       (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)
+;;       (setq xref-backend-functions '(dumb-jump-xref-activate etags--xref-backend)))))
+
+;; 
+
+;; Tern Mode
+
+(add-to-list 'load-path "~/frm-src/tern/emacs/")
+(autoload 'tern-mode "tern.el" nil t)
+
+(defun quiescent-enable-tern-mode ()
+  "Enabled tern mode."
+  (tern-mode t))
+
+(add-hook 'js-mode-hook #'quiescent-enable-tern-mode)
 
 ;; 
 
