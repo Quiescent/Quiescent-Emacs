@@ -1262,8 +1262,8 @@ If DONT-REPEAT is non-nil, don't try the function and recurse."
 (defun q-complete--all-completions ()
   "Produce a table of all the completions at point."
   (cond
-   (tide-mode (q-complete--all-completions-tide))
-   (tern-mode (q-complete--all-completions-tern))
+   ((and (boundp 'tide-mode) tide-mode) (q-complete--all-completions-tide))
+   ((and (boundp 'tern-mode) tern-mode) (q-complete--all-completions-tern))
    (t (let* ((thing-spec 'symbol)
              (text   (or (thing-at-point thing-spec) ""))
              (bounds (or (bounds-of-thing-at-point thing-spec)
