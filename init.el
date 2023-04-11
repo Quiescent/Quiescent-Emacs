@@ -1479,20 +1479,23 @@ See `isearch-pre-command-hook' for inspiration of this approach."
 (defun q-complete--highlight-search-hit ()
   "Highlight the part of the completion that matches the search."
   (progn
-    (let* ((start (+ q-complete-transient-start-point
-                     (cl-search q-complete-isearch-text
-                                (buffer-substring q-complete-transient-start-point
-                                                  q-complete-transient-end-point))))
-           (end (+ start (length q-complete-isearch-text))))
-      (if (null q-complete-highlight-search-hit-overlay)
-          (progn
-            (setq q-complete-highlight-search-hit-overlay
-                  (make-overlay start end))
-            (overlay-put q-complete-highlight-search-hit-overlay
-                         'face 'highlight))
-        (move-overlay q-complete-highlight-search-hit-overlay
-                      start
-                      end)))))
+    (when q-complete-isearch-text
+      (let* ((hit-start (cl-search q-complete-isearch-text
+                                   (buffer-substring q-complete-transient-start-point
+                                                     q-complete-transient-end-point)))
+             (start (+ q-complete-transient-start-point
+                       (or hit-start 0)))
+             (end (+ start (length q-complete-isearch-text))))
+        (when hit-start
+          (if (null q-complete-highlight-search-hit-overlay)
+              (progn
+                (setq q-complete-highlight-search-hit-overlay
+                      (make-overlay start end))
+                (overlay-put q-complete-highlight-search-hit-overlay
+                             'face 'highlight))
+            (move-overlay q-complete-highlight-search-hit-overlay
+                          start
+                          end)))))))
 
 (defun q-complete-isearch-forward (&optional no-advance)
   "Search forward from the current index.
