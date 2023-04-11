@@ -1166,6 +1166,14 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (q-complete-transient-mode -1)
     (q-complete-mode 1)))
 
+(defvar q-complete-recent-completions nil
+  "A list of the completions that were recently selected.")
+
+(defun q-complete-remember (hit)
+  "Add HIT to the front of the list of recent completions."
+  (setq q-complete-recent-completions
+        (cons hit (cl-remove hit q-complete-recent-completions :test #'string-equal))))
+
 (defun q-complete--tide-completions (prefix)
   (let ((file-location
          `(:file ,(tide-buffer-file-name)
@@ -1187,7 +1195,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     ;; Use prescient to remember that we completed to this one
     (let ((hit (nth q-complete-transient-candidate-index
                     q-complete-transient-candidates)))
-      (when hit (prescient-remember hit)))
+      (when hit
+        (prescient-remember hit)
+        (q-complete-remember hit)))
     (setq unread-command-events (list last-input-event))
     (q-complete-transient-quit)))
 
@@ -1197,7 +1207,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (progn
     (let ((hit (nth q-complete-transient-candidate-index
                     q-complete-transient-candidates)))
-      (when hit (prescient-remember hit)))
+      (when hit
+        (prescient-remember hit)
+        (q-complete-remember hit)))
     (q-complete-transient-quit)
     (call-interactively #'set-mark-command)))
 
@@ -1207,7 +1219,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (progn
     (let ((hit (nth q-complete-transient-candidate-index
                     q-complete-transient-candidates)))
-      (when hit (prescient-remember hit)))
+      (when hit
+        (prescient-remember hit)
+        (q-complete-remember hit)))
     (q-complete-transient-quit)
     (call-interactively #'mark-sexp)))
 
@@ -1278,7 +1292,10 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 If DONT-REPEAT is non-nil, don't try the function and recurse."
   (pcase (tern-completion-at-point)
     (`(,text-start ,text-end ,hits)
-     (list hits text-start text-end (buffer-substring text-start text-end)))
+     (list (prescient-sort hits)
+           text-start
+           text-end
+           (buffer-substring text-start text-end)))
     (t
      (when (null dont-repeat)
        (let ((window-config (current-window-configuration)))
