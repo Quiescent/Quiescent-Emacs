@@ -1201,11 +1201,22 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (q-complete-transient-quit)
     (call-interactively #'set-mark-command)))
 
+(defun q-complete-transient-abort-then-mark-sexp ()
+  "Quit `q-complete-transient-mode' and mark next sexp."
+  (interactive)
+  (progn
+    (let ((hit (nth q-complete-transient-candidate-index
+                    q-complete-transient-candidates)))
+      (when hit (prescient-remember hit)))
+    (q-complete-transient-quit)
+    (call-interactively #'mark-sexp)))
+
 (defvar q-complete-transient-mode-map
   (let ((map (make-keymap)))
     (set-char-table-range (nth 1 map) t #'q-complete-transient-insert-and-quit)
+    (define-key map (kbd "ESC") nil)
     (define-key map (kbd "C-SPC") #'q-complete-transient-abort-then-mark)
-    ;; (define-key map (kbd "C-M-SPC") #'q-complete-transient-abort-then-mark)
+    (define-key map (kbd "C-M-SPC") #'q-complete-transient-abort-then-mark-sexp)
     (define-key map (kbd "q") #'q-complete-transient-abort)
     (define-key map (kbd "<tab>") #'q-complete-transient-next-candidate)
     (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
