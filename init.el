@@ -1119,7 +1119,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defun q-complete-or-indent ()
   "If there are completions, `q-complete' otherwise indent."
   (interactive)
-  (if (q-complete--all-completions)
+  (if (and (not (region-active-p))
+           (q-complete--all-completions))
       (q-complete)
     (funcall-interactively #'indent-for-tab-command)))
 
