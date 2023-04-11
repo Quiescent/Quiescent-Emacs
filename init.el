@@ -1326,6 +1326,10 @@ If DONT-REPEAT is non-nil, don't try the function and recurse."
       (insert q-complete-transient-original-text))
     (q-complete-transient-quit)))
 
+(defun q-complete--highlight-prefix ()
+  "Highilght the part of the completion that matches the prefix."
+  )
+
 (defun q-complete--insert-completion ()
   "Insert the current completion at point and update trackers."
   (let ((post-command-hook nil))
@@ -1382,6 +1386,9 @@ If DONT-REPEAT is non-nil, don't try the function and recurse."
 
 Keeps the index where it moved to during the search session."
   (interactive)
+  (when q-complete-highlight-search-hit-overlay
+    (delete-overlay q-complete-highlight-search-hit-overlay)
+    (setq q-complete-highlight-search-hit-overlay nil))
   (q-complete-isearch-mode -1))
 
 (defun q-complete-isearch-pre-command-hook ()
@@ -1395,13 +1402,13 @@ See `isearch-pre-command-hook' for inspiration of this approach."
    ((member (this-single-command-keys) (list (kbd "<tab>")
                                              [32] ; Space
                                              ))
-    (q-complete-isearch-mode -1))
+    (q-complete-isearch-abort))
    ((and (not (eq 'self-insert-command
                   (lookup-key global-map (this-single-command-keys))))
          (not (commandp (lookup-key q-complete-isearch-mode-map
                                     (this-single-command-keys)
                                     nil))))
-    (q-complete-isearch-mode -1))))
+    (q-complete-isearch-abort))))
 
 (defvar q-complete-isearch-mode-map
   (let ((keymap (make-sparse-keymap)))
@@ -1432,6 +1439,27 @@ See `isearch-pre-command-hook' for inspiration of this approach."
 
 (defvar q-complete-isearch-direction 'forward
   "The direction to search through candidates.")
+
+(defvar q-complete-highlight-search-hit-overlay nil
+  "An overlay that marks the part of the buffer that matches the search term.")
+
+(defun q-complete--highlight-search-hit ()
+  "Highlight the part of the completion that matches the search."
+  (progn
+    (let* ((start (+ q-complete-transient-start-point
+                     (cl-search q-complete-isearch-text
+                                (buffer-substring q-complete-transient-start-point
+                                                  q-complete-transient-end-point))))
+           (end (+ start (length q-complete-isearch-text))))
+      (if (null q-complete-highlight-search-hit-overlay)
+          (progn
+            (setq q-complete-highlight-search-hit-overlay
+                  (make-overlay start end))
+            (overlay-put q-complete-highlight-search-hit-overlay
+                         'face 'highlight))
+        (move-overlay q-complete-highlight-search-hit-overlay
+                      start
+                      end)))))
 
 (defun q-complete-isearch-forward (&optional no-advance)
   "Search forward from the current index.
@@ -1465,6 +1493,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
                                   q-complete-isearch-text)))
         (progn
           (q-complete--insert-completion)
+          (q-complete--highlight-search-hit)
           (q-complete-isearch-message))))))
 
 (defun q-complete--move-to-last-hit ()
@@ -1504,6 +1533,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
                                 q-complete-isearch-text)))
       (progn
         (q-complete--insert-completion)
+        (q-complete--highlight-search-hit)
         (q-complete-isearch-message)))))
 
 (defun q-complete-transient-next-candidate ()
