@@ -698,7 +698,7 @@ other brackets and produce the result."
   "Run F (`hippie-expand') then ensure brackets match.
 
 Pass ARGS to F."
-  (let ((start (point)))
+  (let ((start (or he-string-beg (point))))
     (funcall f args)
     (let* ((end (point))
            (inserted (buffer-substring start (point)))
