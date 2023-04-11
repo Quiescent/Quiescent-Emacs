@@ -1199,13 +1199,13 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                     q-complete-transient-candidates)))
       (when hit (prescient-remember hit)))
     (q-complete-transient-quit)
-    (call-interactively #'self-mark-command)))
+    (call-interactively #'set-mark-command)))
 
 (defvar q-complete-transient-mode-map
   (let ((map (make-keymap)))
     (set-char-table-range (nth 1 map) t #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "C-<space>") #'q-complete-transient-abort-then-mark)
-    (define-key map (kbd "C-M-<space>") #'q-complete-transient-abort-then-mark)
+    (define-key map (kbd "C-SPC") #'q-complete-transient-abort-then-mark)
+    ;; (define-key map (kbd "C-M-SPC") #'q-complete-transient-abort-then-mark)
     (define-key map (kbd "q") #'q-complete-transient-abort)
     (define-key map (kbd "<tab>") #'q-complete-transient-next-candidate)
     (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
