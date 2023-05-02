@@ -2872,6 +2872,8 @@ Nil if root is supplied as DIR."
 
 (advice-add #'js2-jump-to-definition :after #'quiescent-pluse-ignoring-args)
 
+(advice-add #'js2-jump-to-definition :before #'quiescent-xref-push-marker-stack)
+
 (defun quiescent-xref-jump-when-point-doesnt-move (jump-fun &rest args)
   "Execute JUMP-FUN with ARGS, jump with xref if it didn't move."
   (let ((start (point)))
@@ -3221,6 +3223,9 @@ Nil if root is supplied as DIR."
   "Enabled tern mode."
   (tern-mode t))
 
+(define-key tern-mode-keymap (kbd "M-.") #'js2-jump-to-definition)
+(define-key tern-mode-keymap (kbd "M-,") #'xref-go-back)
+
 (add-hook 'js-mode-hook #'quiescent-enable-tern-mode)
 
 ;; 
@@ -3354,7 +3359,7 @@ Based on `slime-expand-abbreviations-and-complete' from
 
 (defun quiescent-xref-push-marker-stack (&rest _)
   "Push the current point onto the xref marker stack."
-  (xref-push-marker-stack))
+  (xref-push-marker-stack (point)))
 
 (defun quiescent-slime-edit-definition (name)
   "Find the definition of NAME, falling back to xref when we fail."
