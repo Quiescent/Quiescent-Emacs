@@ -3223,8 +3223,9 @@ Nil if root is supplied as DIR."
   "Enabled tern mode."
   (tern-mode t))
 
-(define-key tern-mode-keymap (kbd "M-.") #'js2-jump-to-definition)
-(define-key tern-mode-keymap (kbd "M-,") #'xref-go-back)
+(with-eval-after-load 'tern
+  (define-key tern-mode-keymap (kbd "M-.") #'js2-jump-to-definition)
+  (define-key tern-mode-keymap (kbd "M-,") #'xref-go-back))
 
 (add-hook 'js-mode-hook #'quiescent-enable-tern-mode)
 
