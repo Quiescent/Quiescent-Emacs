@@ -4773,6 +4773,15 @@ first created to remember those values."
 
 ;; 
 
+;; ** Git Related Navigation
+
+;; Source: https://macroexpand.net/pages/git-related.html
+
+(use-package git-related
+  :load-path "~/.emacs.d/lisp")
+
+;; 
+
 ;; ** Git Time Machine
 
 ;; Note: moved to: https://codeberg.org/pidu/git-timemachine.git
