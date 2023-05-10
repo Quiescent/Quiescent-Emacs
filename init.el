@@ -3829,7 +3829,16 @@ See URL `https://www.npmjs.com/package/jscs'."
   :straight t
   :hook ((js2-mode . ggtags-mode)
          (rjsx-mode . ggtags-mode))
-  :config (define-key ggtags-mode-map (kbd "M-.") #'ggtags-find-other-symbol))
+  :config (define-key ggtags-mode-map (kbd "M-.") #'quiescent-xref-find-then-ggtags-find-other-symbol))
+
+(defun quiescent-xref-find-then-ggtags-find-other-symbol (&optional arg)
+  "Use xref to find the definition at point with failover.
+
+Give ARG to ggtags."
+  (interactive (list (ggtags-read-tag 'symbol current-prefix-arg)))
+  (condition-case err
+      (funcall-interactively #'js2-jump-to-definition)
+    (error (ggtags-find-other-symbol arg))))
 
 ;; * Applications
 
