@@ -3823,6 +3823,14 @@ See URL `https://www.npmjs.com/package/jscs'."
 
 ;; 
 
+;; ** GGTags
+
+(use-package ggtags
+  :straight t
+  :hook ((js2-mode . ggtags-mode)
+         (rjsx-mode . ggtags-mode))
+  :config (define-key ggtags-mode-map (kbd "M-.") #'ggtags-find-other-symbol))
+
 ;; * Applications
 
 ;; ** Shell
