@@ -2881,7 +2881,8 @@ Nil if root is supplied as DIR."
     (when (eql start (point))
       (xref-find-definitions (thing-at-point 'symbol)))))
 
-(advice-add #'js2-jump-to-definition :around #'quiescent-xref-jump-when-point-doesnt-move)
+;; I use global nowadays
+;; (advice-add #'js2-jump-to-definition :around #'quiescent-xref-jump-when-point-doesnt-move)
 
 (defvar quiescent-javascript-eslint-fix-modes '(js2-mode web-mode js-jsx-mode rjsx-mode)
   "The modes which should have eslint --fix run on their files.")
