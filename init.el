@@ -3831,8 +3831,7 @@ See URL `https://www.npmjs.com/package/jscs'."
   :hook ((js2-mode . ggtags-mode)
          (rjsx-mode . ggtags-mode))
   :config (progn
-            (define-key ggtags-mode-map (kbd "M-.") #'quiescent-js2-jump-then-ggtags-find-other-symbol)
-            (define-key ggtags-mode-map (kbd "M->") nil)))
+            (define-key ggtags-mode-map (kbd "M-.") #'quiescent-js2-jump-then-ggtags-find-other-symbol)))
 
 (defun quiescent-js2-jump-then-ggtags-find-other-symbol (&optional arg)
   "Use xref to find the definition at point with failover.
