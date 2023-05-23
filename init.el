@@ -301,9 +301,9 @@
           uniquify-ignore-buffers-re "^\\*")
     (unless
         (or (eq system-type 'windows-nt)
-            (not (file-exists-p "/bin/zsh")))
-      (setq-default shell-file-name "/bin/zsh")
-      (setq explicit-shell-file-name "/bin/zsh"))
+            (not (file-exists-p "/bin/bash")))
+      (setq-default shell-file-name "/bin/bash")
+      (setq explicit-shell-file-name "/bin/bash"))
     (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
       (if (memq (process-status proc) '(signal exit))
           (let ((buffer (process-buffer proc)))
