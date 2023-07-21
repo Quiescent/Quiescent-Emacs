@@ -3797,7 +3797,8 @@ See URL `https://www.npmjs.com/package/jscs'."
           (map-delete eglot-server-programs 'rustic-mode))
     (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer")))
     (add-hook 'scala-mode-hook #'eglot-ensure)
-    (add-hook 'rust-mode-hook  #'eglot-ensure)))
+    (add-hook 'rust-mode-hook  #'eglot-ensure)
+    (define-key eglot-mode-map (kbd "M-RET") #'eglot-code-actions)))
 
 ;; ** LSP
 
