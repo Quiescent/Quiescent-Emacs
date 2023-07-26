@@ -557,6 +557,24 @@ Maintains the point in the current window."
 
 ;; 
 
+;; ** Swapping windows
+
+(defun quiescent-swap-windows ()
+  "Swap the two most recently displayed windows."
+  (interactive)
+  (let* ((windows (window-list (window-frame)))
+         (window-1 (car windows))
+         (buffer-1 (window-buffer window-1))
+         (window-2 (cadr windows))
+         (buffer-2 (window-buffer window-2)))
+    (when window-2
+      (set-window-buffer window-1 buffer-2)
+      (set-window-buffer window-2 buffer-1))))
+
+(global-set-key (kbd "s-s") #'quiescent-swap-windows)
+
+;; 
+
 ;; ** Treating Buffer Lines as Sets
 
 (defvar *buffer-disjunction-results-buffer-name* "*disjunction-results*"
