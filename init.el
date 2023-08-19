@@ -2494,13 +2494,13 @@ Should also highlight containing blocks when the buffer isn't focused."
 (defun highlight-block-highlight-all-windows ()
   "Highlight all blocks in all visible windows."
   (progn
-   (mapc #'delete-overlay highlight-block-overlays)
-   (setq highlight-block-overlays nil)
-   (save-window-excursion
-    (cl-loop
-     for window being the windows
-     do (select-window window)
-     do (highlight-block-highlight-current-block)))))
+    (mapc #'delete-overlay highlight-block-overlays)
+    (setq highlight-block-overlays nil)
+    (save-window-excursion
+      (cl-loop
+       for window being the windows
+       do (select-window window)
+       do (highlight-block-highlight-current-block)))))
 
 ;; 
 
