@@ -1501,9 +1501,9 @@ See `isearch-pre-command-hook' for inspiration of this approach."
   "Highlight the part of the completion that matches the search."
   (progn
     (when q-complete-isearch-text
-      (let* ((hit-start (cl-search q-complete-isearch-text
-                                   (buffer-substring q-complete-transient-start-point
-                                                     q-complete-transient-end-point)))
+      (let* ((hit-start (cl-search (downcase q-complete-isearch-text)
+                                   (downcase (buffer-substring q-complete-transient-start-point
+                                                               q-complete-transient-end-point))))
              (start (+ q-complete-transient-start-point
                        (or hit-start 0)))
              (end (+ start (length q-complete-isearch-text))))
