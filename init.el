@@ -56,7 +56,10 @@
   (require 'system-conf))
 
 (use-package key-chord
-  :straight t)
+  :straight t
+  :custom
+  (key-chord-two-keys-delay 0.05)
+  (key-chord-safety-interval-forward 0.1))
 
 (use-package use-package-chords
   :straight t)
