@@ -1615,6 +1615,36 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 ;; 
 
+;; Transient Mark Mode Commands
+
+(defvar quiescent-transient-command-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "w") #'copy-region-as-kill)
+    (define-key map (kbd "k") #'kill-region)
+    (define-key map (kbd "r") #'reverse-region)
+    map)
+  "Keymap used by `q-complete-transient-mode'.")
+
+(define-minor-mode quiescent-transient-command-mode ()
+  "A mode that activates when the mark is active to enable one to do things to the region."
+  :init-value nil
+  :lighter nil
+  :global nil)
+
+(defun quiescent--toggle-transient-command-mode (&optional _arg)
+  "Activate or deactivate `quiescent-transient-command-mode'."
+  (quiescent-transient-command-mode (if mark-active 1 -1)))
+
+(defun quiescent--toggle-transient-command-mode-from-mark-sexp (_arg _allow-extend)
+  "Activate `quiescent-transient-command-mode' after marking an sexp."
+  (quiescent-transient-command-mode 1))
+
+(advice-add #'mark-sexp :after #'quiescent--toggle-transient-command-mode-from-mark-sexp)
+(advice-add #'set-mark-command :after #'quiescent--toggle-transient-command-mode)
+(advice-add #'deactivate-mark :after #'quiescent--toggle-transient-command-mode)
+
+;; 
+
 ;; Compilation Mode
 
 (require 'compile)
