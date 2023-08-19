@@ -3172,6 +3172,26 @@ Nil if root is supplied as DIR."
       (goto-char (point-min))
       (delete-duplicate-lines (point-min) (point-max)))))
 
+(defun quiescent-eval-js-string (start end)
+  "Evaluate the string in the region [START, END].
+
+Replaces the buffer string in that region."
+  (interactive "r")
+  (save-excursion
+    (goto-char start)
+    (insert "console.log(")
+    (let ((end (+ end (length "console.log("))))
+      (goto-char end)
+      (insert ")")
+      (let ((end (1+ end)))
+        (shell-command-on-region start end "node" "*eval-js-output*")
+        (let ((output (save-window-excursion
+                        (switch-to-buffer "*eval-js-output*")
+                        (buffer-substring (point-min) (point-max)))))
+          (delete-region start end)
+          (goto-char start)
+          (insert output))))))
+
 ;; 
 
 ;; ** Tide Mode
