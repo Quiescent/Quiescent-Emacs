@@ -1734,7 +1734,8 @@ Usually because of too much overhead in checking.")
             (setq show-paren-style 'parenthesis)
             (show-paren-mode +1)
             (setq show-paren-when-point-inside-paren t)
-            (setq show-paren-when-point-in-periphery t)))
+            (setq show-paren-when-point-in-periphery t)
+            (setq show-paren-context-when-offscreen 'overlay)))
 
 ;; 
 
