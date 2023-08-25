@@ -5062,6 +5062,17 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
+;; 
+
+;; ** Sqlite mode
+
+(use-package sqlite-mode
+  :config
+  (progn
+    (define-key sqlite-mode-map (kbd "D") #'sqlite-mode-delete)))
+
+;; 
+
 ;; ** PDF Tools
 
 ;; (defvar install-pdf-tools
