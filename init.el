@@ -59,7 +59,7 @@
   :straight t
   :custom
   (key-chord-two-keys-delay 0.05)
-  (key-chord-safety-interval-forward 0.1))
+  (key-chord-safety-interval-forward 0.05))
 
 (use-package use-package-chords
   :straight t)
