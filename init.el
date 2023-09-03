@@ -3919,6 +3919,14 @@ Give ARG to ggtags."
           (ggtags-find-other-symbol arg)))
     (error (ggtags-find-other-symbol arg))))
 
+;; 
+
+;; ** XREF
+
+(add-hook 'xref-after-update-hook #'outline-minor-mode)
+
+;; 
+
 ;; * Applications
 
 ;; ** Shell
