@@ -1825,7 +1825,10 @@ Usually because of too much overhead in checking.")
         terraform-mode-hook
         c-mode-hook
         csharp-mode-hook
-        svelte-mode-hook))
+        svelte-mode-hook
+        ts-mode-hook
+        tsx-ts-mode-hook
+        typescript-ts-base-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 (setq-local parse-sexp-ignore-comments t)
