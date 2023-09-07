@@ -3303,7 +3303,8 @@ Replaces the buffer string in that region."
 
 (with-eval-after-load 'tern
   (define-key tern-mode-keymap (kbd "M-.") #'js2-jump-to-definition)
-  (define-key tern-mode-keymap (kbd "M-,") #'xref-go-back))
+  (define-key tern-mode-keymap (kbd "M-,") #'xref-go-back)
+  (define-key tern-mode-keymap (kbd "C-c C-r") #'rjsx-rename-tag-at-point))
 
 (add-hook 'js-mode-hook #'quiescent-enable-tern-mode)
 
