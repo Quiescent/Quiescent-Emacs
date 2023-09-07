@@ -1148,6 +1148,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defvar q-complete-mode-map
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap (kbd "<tab>") #'q-complete-or-indent)
+    ;; Put indent on backtab since tab is occupied
+    (define-key keymap (kbd "C-<tab>") #'indent-for-tab-command)
     keymap)
   "Keymap for `q-complete'.")
 
