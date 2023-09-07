@@ -2918,7 +2918,27 @@ Nil if root is supplied as DIR."
             (define-key js2-mode-map (kbd "<f5>") #'quiescent-start-node-with-this-file)
             (define-key js2-mode-map (kbd "<f6>") #'quiescent-start-mocha-with-this-file)
             (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)
-            (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)))
+            (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)
+            (define-key js2-mode-map (kbd "M-f") #'quiescent-js2-forward-sexp)
+            (define-key js2-mode-map (kbd "M-b") #'quiescent-js2-backward-sexp)))
+
+(defun quiescent-js2-forward-sexp (&optional arg interactive)
+  "Go `forward-sexp' accounting for comments in `js2-mode'.
+
+Pass ARG and INTERACTIVE to forward sexp."
+  (if (nth 4 (syntax-ppss))
+      (let ((superword-mode t))
+        (forward-sexp arg interactive))
+    (forward-sexp)))
+
+(defun quiescent-js2-backward-sexp (&optional arg interactive)
+  "Go `backward-sexp' accounting for comments in `js2-mode'.
+
+Pass ARG and INTERACTIVE to backward sexp."
+  (if (nth 4 (syntax-ppss))
+      (let ((superword-mode t))
+        (backward-sexp arg interactive))
+    (backward-sexp)))
 
 (use-package js2-refactor
   :straight t)
