@@ -2922,24 +2922,24 @@ Nil if root is supplied as DIR."
             (define-key js2-mode-map (kbd "M-f") #'quiescent-js2-forward-word)
             (define-key js2-mode-map (kbd "M-b") #'quiescent-js2-backward-word)))
 
-(defun quiescent-js2-forward-word (&optional arg interactive)
+(defun quiescent-js2-forward-word (&optional arg)
   "Go `forward-word' accounting for comments in `js2-mode'.
 
-Pass ARG and INTERACTIVE to forward sexp."
+Pass ARG to `forward-word'."
   (interactive)
   (if (nth 4 (syntax-ppss))
       (let ((superword-mode t))
-        (forward-word arg interactive))
+        (forward-word arg))
     (forward-word)))
 
-(defun quiescent-js2-backward-word (&optional arg interactive)
+(defun quiescent-js2-backward-word (&optional arg)
   "Go `backward-word' accounting for comments in `js2-mode'.
 
-Pass ARG and INTERACTIVE to backward sexp."
+Pass ARG to `backward-word'."
   (interactive)
   (if (nth 4 (syntax-ppss))
       (let ((superword-mode t))
-        (backward-word arg interactive))
+        (backward-word arg))
     (backward-word)))
 
 (use-package js2-refactor
