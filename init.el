@@ -765,7 +765,7 @@ Pass ARGS to F."
   (save-excursion
     (save-window-excursion
       (avy-goto-word-or-subword-1)
-      (mark-sexp)
+      (call-interactively #'mark-sexp)
       (kill-ring-save (region-beginning) (region-end))))
   (yank))
 
@@ -777,7 +777,7 @@ Goes backward up list and then copies the sexp."
     (save-window-excursion
       (avy-goto-word-or-subword-1)
       (backward-up-list)
-      (mark-sexp)
+      (call-interactively #'mark-sexp)
       (kill-ring-save (region-beginning) (region-end))))
   (yank))
 
