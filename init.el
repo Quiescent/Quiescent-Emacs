@@ -1635,11 +1635,13 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 (defun quiescent--toggle-transient-command-mode (&optional _arg)
   "Activate or deactivate `quiescent-transient-command-mode'."
-  (quiescent-transient-command-mode (if mark-active 1 -1)))
+  (when (not (eq major-mode 'magit-status-mode))
+    (quiescent-transient-command-mode (if mark-active 1 -1))))
 
 (defun quiescent--toggle-transient-command-mode-from-mark-sexp (_arg _allow-extend)
   "Activate `quiescent-transient-command-mode' after marking an sexp."
-  (quiescent-transient-command-mode 1))
+  (when (not (eq major-mode 'magit-status-mode))
+    (quiescent-transient-command-mode 1)))
 
 (advice-add #'mark-sexp :after #'quiescent--toggle-transient-command-mode-from-mark-sexp)
 (advice-add #'set-mark-command :after #'quiescent--toggle-transient-command-mode)
