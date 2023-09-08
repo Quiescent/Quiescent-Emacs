@@ -3357,7 +3357,14 @@ Replaces the buffer string in that region."
     (add-hook 'rustic-mode-hook #'quiescent-enable-flymake-mode)
     (add-hook 'rustic-mode-hook #'quiescent-disable-flycheck)
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
-    (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)))
+    (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)
+    (add-hook 'before-save-hook #'quiescent-rustic-format-buffer)))
+
+(defun quiescent-rustic-format-buffer ()
+  "If this is a `rustic-mode' buffer, and it's managed by eglot, format it."
+  (when (and (eq major-mode 'rustic-mode)
+             (eglot-managed-p))
+    (eglot-format-buffer)))
 
 (defun quiescent-enable-rustic-mode ()
   "Enable rustic mode."
