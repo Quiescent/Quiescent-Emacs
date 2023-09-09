@@ -3990,6 +3990,8 @@ Then switch directory to where we called it from"
 
 (global-set-key (kbd "<f5>") #'quiescent-unique-shell)
 
+(add-hook 'shell-mode-hook #'shell-highlight-undef-mode)
+
 ;; ** Eshell
 
 (require 'em-prompt)
