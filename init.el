@@ -5142,6 +5142,12 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
+;; ** Calc
+
+(setq calc-kill-line-numbering nil)
+
+;; 
+
 ;; Reload custom in case anything overwrote it
 (load custom-file)
 
