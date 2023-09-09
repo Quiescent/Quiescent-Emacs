@@ -5148,6 +5148,12 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
+;; ** Proced
+
+(setq proced-enable-color-flag t)
+
+;; 
+
 ;; Reload custom in case anything overwrote it
 (load custom-file)
 
