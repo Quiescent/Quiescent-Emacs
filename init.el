@@ -1224,6 +1224,19 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (setq unread-command-events (list last-input-event))
     (q-complete-transient-quit)))
 
+
+(defun q-complete-transient-accept-and-quit ()
+  "Accept/record the last candidate and exit `q-complete-transient-mode'."
+  (interactive)
+  (progn
+    ;; Use prescient to remember that we completed to this one
+    (let ((hit (nth q-complete-transient-candidate-index
+                    q-complete-transient-candidates)))
+      (when hit
+        (prescient-remember hit)
+        (q-complete-remember hit)))
+    (q-complete-transient-quit)))
+
 (defun q-complete-transient-abort-then-mark ()
   "Quit `q-complete-transient-mode' and activate the mark."
   (interactive)
@@ -1263,6 +1276,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
     (define-key map (kbd "C-s") #'q-complete-isearch)
     (define-key map (kbd "C-r") #'q-complete-isearch)
+    (define-key map (kbd "RET") #'q-complete-transient-accept-and-quit)
     map)
   "Keymap used by `q-complete-transient-mode'.")
 
@@ -1478,6 +1492,7 @@ See `isearch-pre-command-hook' for inspiration of this approach."
     (define-key keymap (kbd "C-r") #'q-complete-isearch-backward)
     (define-key keymap (kbd "C-g") #'q-complete-isearch-abort)
     (define-key keymap (kbd "<backspace>") #'q-complete-isearch-backspace)
+    (define-key keymap (kbd "<tab>") #'q-complete-transient-accept-and-quit)
     keymap)
   "Keymap for `q-complete-isearch-mode'.")
 
@@ -1625,7 +1640,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
     (define-key map (kbd "k") #'kill-region)
     (define-key map (kbd "r") #'reverse-region)
     map)
-  "Keymap used by `q-complete-transient-mode'.")
+  "Keymap used by `quiescent-transient-command-mode'.")
 
 (define-minor-mode quiescent-transient-command-mode ()
   "A mode that activates when the mark is active to enable one to do things to the region."
