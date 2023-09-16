@@ -1271,6 +1271,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (define-key map (kbd "C-M-b") #'q-complete-transient-insert-and-quit)
     (define-key map (kbd "C-M-u") #'q-complete-transient-insert-and-quit)
     (define-key map (kbd "C-M-d") #'q-complete-transient-insert-and-quit)
+    (define-key map (kbd "M-f") #'q-complete-transient-insert-and-quit)
+    (define-key map (kbd "M-b") #'q-complete-transient-insert-and-quit)
     (define-key map (kbd "q") #'q-complete-transient-abort)
     (define-key map (kbd "<tab>") #'q-complete-transient-next-candidate)
     (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
