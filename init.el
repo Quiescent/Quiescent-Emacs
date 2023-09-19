@@ -1650,6 +1650,11 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
   :lighter nil
   :global nil)
 
+(defun quiescent--activate-transient-command-mode (&optional _arg)
+  "Activate `quiescent-transient-command-mode'."
+  (when (not (eq major-mode 'magit-status-mode))
+    (quiescent-transient-command-mode 1)))
+
 (defun quiescent--toggle-transient-command-mode (&optional _arg)
   "Activate or deactivate `quiescent-transient-command-mode'."
   (when (not (eq major-mode 'magit-status-mode))
@@ -1663,6 +1668,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 (advice-add #'mark-sexp :after #'quiescent--toggle-transient-command-mode-from-mark-sexp)
 (advice-add #'set-mark-command :after #'quiescent--toggle-transient-command-mode)
 (advice-add #'deactivate-mark :after #'quiescent--toggle-transient-command-mode)
+(advice-add #'exchange-point-and-mark :after #'quiescent--activate-transient-command-mode)
 
 ;; 
 
