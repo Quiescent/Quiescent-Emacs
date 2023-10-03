@@ -58,7 +58,7 @@
 (use-package key-chord
   :straight t
   :custom
-  (key-chord-two-keys-delay 0.05)
+  (key-chord-two-keys-delay 0.25)
   (key-chord-safety-interval-forward 0.05))
 
 (use-package use-package-chords
