@@ -3493,7 +3493,7 @@ Based on `slime-expand-abbreviations-and-complete' from
 
 (defun quiescent-xref-push-marker-stack (&rest _)
   "Push the current point onto the xref marker stack."
-  (xref-push-marker-stack (point)))
+  (xref-push-marker-stack))
 
 (defun quiescent-slime-edit-definition (name)
   "Find the definition of NAME, falling back to xref when we fail."
