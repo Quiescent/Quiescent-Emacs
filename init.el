@@ -3987,6 +3987,12 @@ Give ARG to ggtags."
 
 ;; 
 
+;; ** Outline Minor Mode
+
+(define-key outline-minor-mode-map (kbd "s-@") #'outline-cycle-buffer)
+
+;; 
+
 ;; * Applications
 
 ;; ** Shell
