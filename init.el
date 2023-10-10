@@ -1842,7 +1842,8 @@ Usually because of too much overhead in checking.")
         svelte-mode-hook
         ts-mode-hook
         tsx-ts-mode-hook
-        typescript-ts-base-mode-hook))
+        typescript-ts-base-mode-hook
+        sql-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 (setq-local parse-sexp-ignore-comments t)
