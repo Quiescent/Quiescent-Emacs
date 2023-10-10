@@ -1843,9 +1843,11 @@ Usually because of too much overhead in checking.")
         ts-mode-hook
         tsx-ts-mode-hook
         typescript-ts-base-mode-hook
-        sql-mode-hook))
+        sql-mode-hook
+        org-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
+(make-variable-buffer-local 'electric-pair-pairs)
 (setq-local parse-sexp-ignore-comments t)
 
 ;; 
@@ -4606,6 +4608,12 @@ In particular, inode number, number of hard links, and file size."
     (let ((agenda-files-file (format "%s/agenda-file-list.el" org-directory)))
       (when (file-exists-p agenda-files-file)
         (load-file agenda-files-file)))))
+
+(defun quiescent-add-tilde-to-electric-pairs ()
+  "Add tilde to the list of electric pair pairs."
+  (add-to-list 'electric-pair-pairs (cons ?~ ?~)))
+
+(add-hook 'org-mode-hook #'quiescent-add-tilde-to-electric-pairs)
 
 (defun quiescent-org-capture (&optional goto keys)
   "Capture a note to org capture.
