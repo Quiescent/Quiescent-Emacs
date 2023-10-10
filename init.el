@@ -974,17 +974,6 @@ to make the advice work."
       (isearch-backward nil t)
       (when original-isearch-string (isearch-yank-string original-isearch-string)))))
 
-(defun quiescent-turn-off-key-chord-mode (&rest _)
-  "Turn off `key-chord-mode'."
-  (key-chord-mode -1))
-
-(defun quiescent-turn-on-key-chord-mode (&rest _)
-  "Turn on `key-chord-mode'."
-  (key-chord-mode 1))
-
-(advice-add #'isearch-mode :before #'quiescent-turn-off-key-chord-mode)
-(advice-add #'isearch-done :after #'quiescent-turn-on-key-chord-mode)
-
 (define-key isearch-mode-map (kbd "M-<") #'quiescent-first-search-hit)
 (define-key isearch-mode-map (kbd "M->") #'quiescent-last-search-hit)
 
