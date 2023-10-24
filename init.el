@@ -55,15 +55,6 @@
 (when (file-exists-p "~/.emacs.d/conf/system-conf.el")
   (require 'system-conf))
 
-(use-package key-chord
-  :straight t
-  :custom
-  (key-chord-two-keys-delay 0.25)
-  (key-chord-safety-interval-forward 0.05))
-
-(use-package use-package-chords
-  :straight t)
-
 (defvar quiescent-toggle-buffer-backwards t
   "Whether we should go forwards or backwards when we next toggle buffers.")
 
@@ -444,10 +435,10 @@
 (global-set-key (kbd "s-o")   #'other-frame)
 (global-set-key (kbd "s-q")   #'quiescent-close-help)
 
-(key-chord-define-global "x0" #'delete-window)
-(key-chord-define-global "x1" #'delete-other-windows)
-(key-chord-define-global "x2" #'split-window-below)
-(key-chord-define-global "x3" #'split-window-right)
+(global-set-key (kbd "s-)") #'delete-window)
+(global-set-key (kbd "s-!") #'delete-other-windows)
+(global-set-key (kbd "s-@") #'split-window-below)
+(global-set-key (kbd "s-#") #'split-window-right)
 
 ;; 
 
@@ -926,9 +917,7 @@ to make the advice work."
       ("s" quiescent-vc-git-grep            nil)
       ("x" quiescent-avy-super-jump         nil)
       ("q" nil                              nil)
-      ("g" project-find-file                nil))
-    (key-chord-define-global "qc" 'hydra-explore-code/body)
-    ))
+      ("g" project-find-file                nil))))
 
 ;; 
 
@@ -936,13 +925,11 @@ to make the advice work."
 
 (use-package window-jump
   :straight t
-  :init (when (and (boundp 'key-chord-mode)
-                   (not key-chord-mode))
-          (key-chord-mode 1)
-          (bind-chord ",u" #'window-jump-up)
-          (bind-chord ",d" #'window-jump-down)
-          (bind-chord ",l" #'window-jump-left)
-          (bind-chord ",r" #'window-jump-right)))
+  :init (progn
+          (global-set-key (kbd "s-u") #'window-jump-up)
+          (global-set-key (kbd "s-d") #'window-jump-down)
+          (global-set-key (kbd "s-l") #'window-jump-left)
+          (global-set-key (kbd "s-r") #'window-jump-right)))
 
 ;; 
 
@@ -1665,8 +1652,6 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 (require 'compile)
 
-(key-chord-define-global "xr" 'recompile)
-
 ;; TODO more carefully consider which modes need flycheck
 (use-package flycheck
   :straight t
@@ -2115,8 +2100,8 @@ search through."
 (use-package goto-chg
   :straight t
   :config (progn
-            (bind-chord "'," 'goto-last-change)
-            (bind-chord ",." 'goto-last-change-reverse)))
+            (global-set-key (kbd "s-'") #'goto-last-change)
+            (global-set-key (kbd "s-,") #'goto-last-change-reverse)))
 
 ;; 
 
@@ -2252,8 +2237,6 @@ outside of one."
 
 ;; ** KMacro
 
-(global-set-key (kbd "s-(") #'kmacro-start-macro-or-insert-counter)
-(global-set-key (kbd "s-)") #'kmacro-end-or-call-macro)
 (global-set-key (kbd "C-c r") 'replace-string)
 
 ;; ** Aligned Movement
@@ -4052,7 +4035,7 @@ Then switch directory to where we called it from"
     (eshell-smart-initialize)))
 
 (use-package em-smart
-  :chords ((",s" . quiescent-eshell))
+  :init (global-set-key (kbd "C-, C-s") #'quiescent-eshell)
   :config (progn
             (setq eshell-where-to-jump 'begin)
             (setq eshell-review-quick-commands nil)
@@ -4543,7 +4526,7 @@ In particular, inode number, number of hard links, and file size."
 
 (use-package org
   :straight t
-  :chords (("xc" . quiescent-org-capture))
+  :init (global-set-key (kbd "C-c C-t") #'quiescent-org-capture)
   :after all-the-icons
   :config
   (progn
