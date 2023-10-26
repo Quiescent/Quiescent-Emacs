@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debug-query
+# key: dq
+# --
+diesel::debug_query(&${1:query}).to_string()$0
