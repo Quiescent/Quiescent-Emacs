@@ -2,4 +2,5 @@
 # name: debug-query
 # key: dq
 # --
-diesel::debug_query(&${1:query})$0
+use diesel::sqlite::Sqlite;
+diesel::debug_query<Sqlite, _>(&${1:query})$0
