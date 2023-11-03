@@ -11,6 +11,7 @@
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex")
  '(alert-default-style 'fringe-message)
+ '(auto-revert-verbose nil)
  '(auto-save-no-message t)
  '(avy-keys '(49 50 51 52 53 54 55 56 57 48))
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
