@@ -1577,7 +1577,282 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
 
 ;; 
 
-;; Transient Mark Mode Commands
+;; ** Completion at Point Extensions
+
+(defun quiescent-completion--in-region (start end collection &optional predicate)
+  "Default function to use for `completion-in-region-function'.
+Its arguments and return value are as specified for `completion-in-region'.
+Also respects the obsolete wrapper hook `completion-in-region-functions'.
+\(See `with-wrapper-hook' for details about wrapper hooks.)"
+  (subr--with-wrapper-hook-no-warnings
+      ;; FIXME: Maybe we should use this hook to provide a "display
+      ;; completions" operation as well.
+      completion-in-region-functions (start end collection predicate)
+    (let ((minibuffer-completion-table collection)
+          (minibuffer-completion-predicate predicate))
+      ;; HACK: if the text we are completing is already in a field, we
+      ;; want the completion field to take priority (e.g. Bug#6830).
+      (when completion-in-region-mode-predicate
+        (setq completion-in-region--data
+	      `(,(if (markerp start) start (copy-marker start))
+                ,(copy-marker end t) ,collection ,predicate))
+        (completion-in-region-mode 1))
+      (quiescent-completion--in-region-1 start end))))
+
+(defun quiescent-completion--in-region-1 (beg end)
+  ;; If the previous command was not this,
+  ;; mark the completion buffer obsolete.
+  (setq this-command 'completion-at-point)
+  (unless (eq 'completion-at-point last-command)
+    (completion--flush-all-sorted-completions)
+    (setq minibuffer-scroll-window nil))
+
+  (cond
+   ;; If there's a fresh completion window with a live buffer,
+   ;; and this command is repeated, scroll that window.
+   ((and (window-live-p minibuffer-scroll-window)
+         (eq t (frame-visible-p (window-frame minibuffer-scroll-window))))
+    (let ((window minibuffer-scroll-window))
+      (with-current-buffer (window-buffer window)
+        (cond
+         ;; Here this is possible only when second-tab, but instead of
+         ;; scrolling the completion list window, switch to it below,
+         ;; outside of `with-current-buffer'.
+         ((eq completion-auto-select 'second-tab))
+         ;; Reverse tab
+         ((equal (this-command-keys) [backtab])
+          (if (pos-visible-in-window-p (point-min) window)
+              ;; If beginning is in view, scroll up to the end.
+              (set-window-point window (point-max))
+            ;; Else scroll down one screen.
+            (with-selected-window window (scroll-down))))
+         ;; Normal tab
+         (t
+          (if (pos-visible-in-window-p (point-max) window)
+              ;; If end is in view, scroll up to the end.
+              (set-window-start window (point-min) nil)
+            ;; Else scroll down one screen.
+            (with-selected-window window (scroll-up))))))
+      (when (eq completion-auto-select 'second-tab)
+        (switch-to-completions))
+      nil))
+   ;; If we're cycling, keep on cycling.
+   ((and completion-cycling completion-all-sorted-completions)
+    (quiescent-minibuffer-force-complete beg end)
+    t)
+   (t (prog1 (pcase (quiescent-completion--do-completion beg end)
+               (#b000 nil)
+               (_     t))
+        (when (and (eq completion-auto-select t)
+                   (window-live-p minibuffer-scroll-window)
+                   (eq t (frame-visible-p (window-frame minibuffer-scroll-window))))
+          ;; When the completion list window was displayed, select it.
+          (switch-to-completions))))))
+
+(defun quiescent-completion--do-completion (beg end &optional
+                                                try-completion-function expect-exact)
+  "Do the completion and return a summary of what happened.
+M = completion was performed, the text was Modified.
+C = there were available Completions.
+E = after completion we now have an Exact match.
+
+ MCE
+ 000  0 no possible completion
+ 001  1 was already an exact and unique completion
+ 010  2 no completion happened
+ 011  3 was already an exact completion
+ 100  4 ??? impossible
+ 101  5 ??? impossible
+ 110  6 some completion happened
+ 111  7 completed to an exact completion
+
+TRY-COMPLETION-FUNCTION is a function to use in place of `try-completion'.
+EXPECT-EXACT, if non-nil, means that there is no need to tell the user
+when the buffer's text is already an exact match."
+  (let* ((string (buffer-substring beg end))
+         (md (completion--field-metadata beg))
+         (comp (funcall (or try-completion-function
+                            #'completion-try-completion)
+                        string
+                        minibuffer-completion-table
+                        minibuffer-completion-predicate
+                        (- (point) beg)
+                        md)))
+    (cond
+     ((null comp)
+      (minibuffer-hide-completions)
+      (unless completion-fail-discreetly
+	    (ding)
+	    (completion--message "No match"))
+      (minibuffer--bitset nil nil nil))
+     ((eq t comp)
+      (minibuffer-hide-completions)
+      (goto-char end)
+      (completion--done string 'finished
+                        (unless expect-exact "Sole completion"))
+      (minibuffer--bitset nil nil t))   ;Exact and unique match.
+     (t
+      ;; `completed' should be t if some completion was done, which doesn't
+      ;; include simply changing the case of the entered string.  However,
+      ;; for appearance, the string is rewritten if the case changes.
+      (let* ((comp-pos (cdr comp))
+             (completion (car comp))
+             (completed (not (string-equal-ignore-case completion string)))
+             (unchanged (string-equal completion string)))
+        (if unchanged
+	        (goto-char end)
+          ;; Insert in minibuffer the chars we got.
+          (completion--replace beg end completion)
+          (setq end (+ beg (length completion))))
+	    ;; Move point to its completion-mandated destination.
+	    (forward-char (- comp-pos (length completion)))
+
+        (if (not (or unchanged completed))
+            ;; The case of the string changed, but that's all.  We're not sure
+            ;; whether this is a unique completion or not, so try again using
+            ;; the real case (this shouldn't recurse again, because the next
+            ;; time try-completion will return either t or the exact string).
+            (quiescent-completion--do-completion beg end
+                                                 try-completion-function expect-exact)
+
+          ;; It did find a match.  Do we match some possibility exactly now?
+          (let* ((exact (test-completion completion
+                                         minibuffer-completion-table
+                                         minibuffer-completion-predicate))
+                 (threshold (completion--cycle-threshold md))
+                 (comps
+                  ;; Check to see if we want to do cycling.  We do it
+                  ;; here, after having performed the normal completion,
+                  ;; so as to take advantage of the difference between
+                  ;; try-completion and all-completions, for things
+                  ;; like completion-ignored-extensions.
+                  (when (and threshold
+                             ;; Check that the completion didn't make
+                             ;; us jump to a different boundary.
+                             (or (not completed)
+                                 (< (car (completion-boundaries
+                                          (substring completion 0 comp-pos)
+                                          minibuffer-completion-table
+                                          minibuffer-completion-predicate
+                                          ""))
+                                    comp-pos)))
+                    (completion-all-sorted-completions beg end))))
+            (completion--flush-all-sorted-completions)
+            (cond
+             ((and (consp (cdr comps)) ;; There's something to cycle.
+                   (not (ignore-errors
+                          ;; This signal an (intended) error if comps is too
+                          ;; short or if completion-cycle-threshold is t.
+                          (consp (nthcdr threshold comps)))))
+              ;; Not more than completion-cycle-threshold remaining
+              ;; completions: let's cycle.
+              (setq completed t exact t)
+              (completion--cache-all-sorted-completions beg end comps)
+              (quiescent-minibuffer-force-complete beg end))
+             (completed
+              (cond
+               ((pcase completion-auto-help
+                  ('visible (get-buffer-window "*Completions*" 0))
+                  ('always t))
+                (minibuffer-completion-help beg end))
+               (t (minibuffer-hide-completions)
+                  (when exact
+                    ;; If completion did not put point at end of field,
+                    ;; it's a sign that completion is not finished.
+                    (completion--done completion
+                                      (if (< comp-pos (length completion))
+                                          'exact 'unknown))))))
+             ;; Show the completion table, if requested.
+             ((not exact)
+	          (if (pcase completion-auto-help
+                    ('lazy (eq this-command last-command))
+                    (_ completion-auto-help))
+                  (minibuffer-completion-help beg end)
+                (completion--message "Next char not unique")))
+             ;; If the last exact completion and this one were the same, it
+             ;; means we've already given a "Complete, but not unique" message
+             ;; and the user's hit TAB again, so now we give him help.
+             (t
+              (if (and (eq this-command last-command) completion-auto-help)
+                  (minibuffer-completion-help beg end))
+              (completion--done completion 'exact
+                                (unless (or expect-exact
+                                            (and completion-auto-select
+                                                 (eq this-command last-command)
+                                                 completion-auto-help))
+                                  "Complete, but not unique"))))
+
+            (minibuffer--bitset completed t exact))))))))
+
+(defun quiescent-minibuffer-force-complete (&optional start end dont-cycle)
+  "Complete the minibuffer to an exact match.
+Repeated uses step through the possible completions.
+DONT-CYCLE tells the function not to setup cycling."
+  (interactive)
+  (setq minibuffer-scroll-window nil)
+  ;; FIXME: Need to deal with the extra-size issue here as well.
+  ;; FIXME: ~/src/emacs/t<M-TAB>/lisp/minibuffer.el completes to
+  ;; ~/src/emacs/trunk/ and throws away lisp/minibuffer.el.
+  (let* ((start (copy-marker (or start (minibuffer--completion-prompt-end))))
+         (end (or end (point-max)))
+         ;; (md (completion--field-metadata start))
+         (all (completion-all-sorted-completions start end))
+         (base (+ start (or (cdr (last all)) 0))))
+    (cond
+     ((not (consp all))
+      (completion--message
+       (if all "No more completions" "No completions")))
+     ((not (consp (cdr all)))
+      (let ((done (equal (car all) (buffer-substring-no-properties base end))))
+        (unless done (completion--replace base end (car all)))
+        (completion--done (buffer-substring-no-properties start (point))
+                          'finished (when done "Sole completion"))))
+     (t
+      (completion--replace base end (car all))
+      (setq end (+ base (length (car all))))
+      (completion--done (buffer-substring-no-properties start (point)) 'sole)
+      (setq this-command 'completion-at-point) ;For completion-in-region.
+      ;; Set cycling after modifying the buffer since the flush hook resets it.
+      (unless dont-cycle
+        ;; If completing file names, (car all) may be a directory, so we'd now
+        ;; have a new set of possible completions and might want to reset
+        ;; completion-all-sorted-completions to nil, but we prefer not to,
+        ;; so that repeated calls minibuffer-force-complete still cycle
+        ;; through the previous possible completions.
+        (let ((last (last all)))
+          (if (equal (this-command-keys) [backtab])
+              (let ((second-last (nthcdr (- (safe-length all) 2) all)))
+                (setcdr second-last (cdr last))
+                (setcdr last all)
+                (setq all last)
+                (completion--cache-all-sorted-completions start end all))
+            (progn
+              (setcdr last (cons (car all) (cdr last)))
+              (completion--cache-all-sorted-completions start end (cdr all)))))
+        ;; Make sure repeated uses cycle, even though completion--done might
+        ;; have added a space or something that moved us outside of the field.
+        ;; (bug#12221).
+        (let* ((table minibuffer-completion-table)
+               (pred minibuffer-completion-predicate)
+               (extra-prop completion-extra-properties)
+               (cmd
+                (lambda () "Cycle through the possible completions."
+                  (interactive)
+                  (let ((completion-extra-properties extra-prop))
+                    (completion-in-region start (point) table pred)))))
+          (setq completion-cycling
+                (set-transient-map
+                 (let ((map (make-sparse-keymap)))
+                   (define-key map [remap completion-at-point] cmd)
+                   (define-key map (vector last-command-event) cmd)
+                   map)))))))))
+
+(keymap-global-set "<backtab>" #'completion-at-point)
+(setq completion-in-region-function #'quiescent-completion--in-region)
+
+;; 
+
+;; ** Transient Mark Mode Commands
 
 (defvar quiescent-transient-command-mode-map
   (let ((map (make-sparse-keymap)))
