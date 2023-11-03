@@ -41,6 +41,7 @@
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "")
  '(org-src-window-setup 'current-window)
+ '(process-error-pause-time 0)
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(safe-local-variable-values
