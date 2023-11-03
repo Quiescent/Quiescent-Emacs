@@ -1850,6 +1850,53 @@ DONT-CYCLE tells the function not to setup cycling."
 (keymap-global-set "<backtab>" #'completion-at-point)
 (setq completion-in-region-function #'quiescent-completion--in-region)
 
+;; Not quite there.  It fails in the terminal because of two things:
+;; spaces after the table, and failing to insert the ./ at the start
+;; /shrug...
+
+;; (defun quiescent-completion--in-region (start end collection &optional predicate)
+;;   "My own `completion-in-region' function.
+
+;; [START, END] denote the bounds of the string in the buffer we're
+;; completing.
+
+;; COLLECTION is a completion table.
+
+;; PREDICATE is an optional function that excludes some completions."
+;;   (progn
+;;     (setq this-command 'completion-at-point)
+;;     (if (eq 'completion-at-point last-command)
+;;         (progn
+;;           (completion--flush-all-sorted-completions)
+;;           (setq minibuffer-scroll-window nil))
+;;       (let ((minibuffer-completion-table collection)
+;;             (minibuffer-completion-predicate predicate)
+;;             (all (completion-all-sorted-completions start end)))
+;;         (when (null all)
+;;           (completion--cache-all-sorted-completions
+;;            start
+;;            end
+;;            (setq all (completion-all-sorted-completions start end))))
+;;         (quiescent-completion-insert-and-cycle start end all)))))
+
+;; (defun quiescent-completion-insert-and-cycle (start end all)
+;;   "Insert the current completion and then cycle the current list of all completions."
+;;   (progn
+;;     (completion--replace start end (car all))
+;;     (setq end (+ start (length (car all))))
+;;     (completion--done (buffer-substring-no-properties start (point)) 'sole)
+;;     (setq this-command 'completion-at-point) ;For completion-in-region.
+;;     (let ((last (last all)))
+;;      (if (equal (this-command-keys) [backtab])
+;;          (let ((second-last (nthcdr (- (safe-length all) 2) all)))
+;;            (setcdr second-last (cdr last))
+;;            (setcdr last all)
+;;            (setq all last)
+;;            (completion--cache-all-sorted-completions start end all))
+;;        (progn
+;;          (setcdr last (cons (car all) (cdr last)))
+;;          (completion--cache-all-sorted-completions start end (cdr all)))))))
+
 ;; 
 
 ;; ** Transient Mark Mode Commands
