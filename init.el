@@ -1126,11 +1126,13 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defun quiescent-completion-search-self-insert-command ()
   "Add the current character to the search text and continue searching."
   (interactive)
-  (progn
-    (setq quiescent-completion-search-text (concat (or quiescent-completion-search-text "")
-                                                   (string last-command-event)))
-    (quiescent-completion-search-message)
-    (quiescent-completion-search-forward)))
+  (if (equal (string last-command-event) " ")
+      (insert " ")
+    (progn
+      (setq quiescent-completion-search-text (concat (or quiescent-completion-search-text "")
+                                                     (string last-command-event)))
+      (quiescent-completion-search-message)
+      (quiescent-completion-search-forward))))
 
 (defun quiescent-completion-search-delete-backward-char ()
   "Delete the last inserted search character."
