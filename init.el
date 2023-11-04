@@ -1146,6 +1146,11 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (quiescent-completion-search-message)
     (quiescent-completion-search-forward)))
 
+(defun quiescent-completion-quit-search-resume-complete ()
+  "Quit searching and resume completion."
+  (interactive)
+  (setq this-command 'completion-at-point))
+
 (defun quiescent-completion-search-forward ()
   "Alter the direction of search or continue to next hit."
   (interactive)
@@ -1184,12 +1189,12 @@ current buffer through time (i.e. undo/redo while you scroll.)"
       (setq quiescent-completion-search-direction 'forward)
       (set-transient-map
        (let ((map (make-sparse-keymap)))
+         (define-key map [remap keyboard-quit]        #'quiescent-completion-quit-search-resume-complete)
          (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
          (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
          (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
          map)))
     (setq this-command 'quiescent-completion-search-forward)))
-
 
 (defun quiescent-completion--in-region (start end collection &optional predicate)
   "My own `completion-in-region' function.
