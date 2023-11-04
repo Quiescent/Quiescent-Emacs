@@ -1108,479 +1108,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** Q-Complete
-;;
-;; This is my attempt at the completion style that I've always wanted
-;; and company only gets close to.
-
-(defun q-complete-or-indent ()
-  "If there are completions, `q-complete' otherwise indent."
-  (interactive)
-  (if (and (not (region-active-p))
-           (q-complete--all-completions))
-      (q-complete)
-    (funcall-interactively #'indent-for-tab-command)))
-
-(defvar q-complete-mode-map
-  (let ((keymap (make-sparse-keymap)))
-    (define-key keymap (kbd "<tab>") #'q-complete-or-indent)
-    ;; Put indent on backtab since tab is occupied
-    (define-key keymap (kbd "C-<tab>") #'indent-for-tab-command)
-    keymap)
-  "Keymap for `q-complete'.")
-
-(define-minor-mode q-complete-mode ()
-  "Unintrusive, inline completion."
-  :init-value nil
-  :lighter nil
-  :global nil)
-
-(add-hook 'prog-mode-hook #'q-complete-mode)
-
-(defvar q-complete-saved-cursor nil
-  "The style of cursor before we meddled with it.")
-
-(defun q-complete--restore-cursor ()
-  "If there's a saved cursor, restore it."
-  (when q-complete-saved-cursor
-    (setq cursor-type q-complete-saved-cursor
-          q-complete-saved-cursor nil)))
-
-(defun q-complete--set-cursor ()
-  "Set the cursor to a bar to indicate we're completing."
-  (when (null q-complete-saved-cursor)
-    (setq q-complete-saved-cursor cursor-type
-          cursor-type (cons 'hbar 2))))
-
-(defun q-complete-transient-quit ()
-  "Exit transient completion when the user does anything."
-  (interactive)
-  (progn
-    (setq q-complete-original-start nil
-          q-complete-transient-original-text nil
-          q-complete-transient-candidates nil
-          q-complete-transient-start-point nil
-          q-complete-transient-end-point nil
-          q-complete-transient-candidate-index nil)
-    (q-complete-transient-mode -1)
-    (q-complete-mode 1)))
-
-(defvar q-complete-recent-completions nil
-  "A list of the completions that were recently selected.")
-
-(defun q-complete-remember (hit)
-  "Add HIT to the front of the list of recent completions."
-  (setq q-complete-recent-completions
-        (cons hit (cl-remove hit q-complete-recent-completions :test #'string-equal))))
-
-(defun q-complete--tide-completions (prefix)
-  (let ((file-location
-         `(:file ,(tide-buffer-file-name)
-                 :line ,(tide-line-number-at-pos) :offset ,(- (tide-current-offset) (length prefix))
-                 :includeExternalModuleExports ,tide-completion-enable-autoimport-suggestions
-                 :includeInsertTextCompletions t)))
-    (when (and (not (tide-in-string-p)) (not (tide-member-completion-p prefix)))
-      (setq file-location (-concat file-location `(:prefix ,prefix))))
-    (prescient-sort (mapcar (lambda (hit) (plist-get hit :name))
-                            (plist-get (tide-send-command-sync
-                                        "completions"
-                                        file-location)
-                                       :body)))))
-
-(defun q-complete-transient-insert-and-quit ()
-  "Insert the last key that was pressed and exit `q-complete-transient-mode'."
-  (interactive)
-  (progn
-    ;; Use prescient to remember that we completed to this one
-    (let ((hit (nth q-complete-transient-candidate-index
-                    q-complete-transient-candidates)))
-      (when hit
-        (prescient-remember hit)
-        (q-complete-remember hit)))
-    (setq unread-command-events (list last-input-event))
-    (q-complete-transient-quit)))
-
-
-(defun q-complete-transient-accept-and-quit ()
-  "Accept/record the last candidate and exit `q-complete-transient-mode'."
-  (interactive)
-  (progn
-    ;; Use prescient to remember that we completed to this one
-    (let ((hit (nth q-complete-transient-candidate-index
-                    q-complete-transient-candidates)))
-      (when hit
-        (prescient-remember hit)
-        (q-complete-remember hit)))
-    (q-complete-transient-quit)))
-
-(defun q-complete-transient-abort-then-mark ()
-  "Quit `q-complete-transient-mode' and activate the mark."
-  (interactive)
-  (progn
-    (let ((hit (nth q-complete-transient-candidate-index
-                    q-complete-transient-candidates)))
-      (when hit
-        (prescient-remember hit)
-        (q-complete-remember hit)))
-    (q-complete-transient-quit)
-    (call-interactively #'set-mark-command)))
-
-(defun q-complete-transient-abort-then-mark-sexp ()
-  "Quit `q-complete-transient-mode' and mark next sexp."
-  (interactive)
-  (progn
-    (let ((hit (nth q-complete-transient-candidate-index
-                    q-complete-transient-candidates)))
-      (when hit
-        (prescient-remember hit)
-        (q-complete-remember hit)))
-    (q-complete-transient-quit)
-    (call-interactively #'mark-sexp)))
-
-(defvar q-complete-transient-mode-map
-  (let ((map (make-keymap)))
-    (set-char-table-range (nth 1 map) t #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "ESC") nil)
-    (define-key map (kbd "C-SPC") #'q-complete-transient-abort-then-mark)
-    (define-key map (kbd "C-M-SPC") #'q-complete-transient-abort-then-mark-sexp)
-    (define-key map (kbd "C-M-f") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "C-M-b") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "C-M-u") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "C-M-d") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "M-f") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "M-b") #'q-complete-transient-insert-and-quit)
-    (define-key map (kbd "q") #'q-complete-transient-abort)
-    (define-key map (kbd "<tab>") #'q-complete-transient-next-candidate)
-    (define-key map (kbd "<backtab>") #'q-complete-transient-previous-candidate)
-    (define-key map (kbd "C-s") #'q-complete-isearch)
-    (define-key map (kbd "C-r") #'q-complete-isearch)
-    (define-key map (kbd "RET") #'q-complete-transient-accept-and-quit)
-    map)
-  "Keymap used by `q-complete-transient-mode'.")
-
-(define-minor-mode q-complete-transient-mode ()
-  "A mode that's invoked during completion to scroll through options."
-  :init-value nil
-  :ligther nil
-  :global nil
-  (if q-complete-transient-mode
-      (q-complete--set-cursor)
-    (q-complete--restore-cursor)))
-
-(defvar q-complete-transient-original-text nil
-  "The text that was originally to be completed.")
-
-(defvar q-complete-original-start nil
-  "The position we invoked `q-complete' from.")
-
-(defvar q-complete-transient-candidates nil
-  "A list of completion candidates for this transient session.")
-
-(defvar q-complete-transient-start-point nil
-  "The position in the buffer where the thing we're completing starts.")
-
-(defvar q-complete-transient-end-point nil
-  "The position in the buffer where the thing we're completing ends.")
-
-(defvar q-complete-transient-candidate-index nil
-  "The index of the currently selected candidate.")
-
-(require 'prescient)
-
-(prescient-persist-mode 1)
-
-(defun q-complete--all-completions ()
-  "Produce a table of all the completions at point."
-  (let* ((thing-spec 'symbol)
-         (text   (or (thing-at-point thing-spec) ""))
-         (bounds (or (bounds-of-thing-at-point thing-spec)
-                     (cons (point) (point))))
-         (text-start (car bounds))
-         (text-end   (cdr bounds)))
-    (let* ((pos (cl-search (buffer-substring text-start (point)) text))
-           ;; From minibuffer.el
-           (capf-results (run-hook-wrapped 'completion-at-point-functions
-                                           #'completion--capf-wrapper 'all))
-           (all-completions (completion-all-completions
-                             text
-                             (thread-last (nth 3 capf-results)
-                                          (prescient-filter text)
-                                          prescient-completion-sort)
-                             #'identity
-                             pos)))
-      (when (not (null (nth 0 all-completions)))
-        (list all-completions text-start text-end text)))))
-
-(defun q-complete ()
-  "Enter `q-complete-transient-mode' for the text around point."
-  (interactive)
-  (pcase (q-complete--all-completions)
-    (`(,all-completions ,text-start ,text-end ,text)
-     (when (not (null (nth 0 all-completions)))
-       (q-complete-mode -1)
-       (q-complete-transient-mode t)
-       (setq q-complete-original-start (point)
-             q-complete-transient-original-text text
-             q-complete-transient-candidates all-completions
-             q-complete-transient-start-point text-start
-             q-complete-transient-end-point text-end
-             ;; We currently don't have a completion selected
-             q-complete-transient-candidate-index -1)
-       ;; Select the first completion
-       (q-complete-transient-next-candidate)))))
-
-(defun q-complete-transient-abort ()
-  "Restore the original string and position from before completion and quit."
-  (interactive)
-  (progn
-    (when (and q-complete-transient-start-point q-complete-transient-end-point)
-      (kill-region q-complete-transient-start-point
-                  q-complete-transient-end-point))
-    (when (and q-complete-transient-start-point q-complete-transient-original-text)
-      (goto-char q-complete-transient-start-point)
-      (insert q-complete-transient-original-text))
-    (q-complete-transient-quit)))
-
-(defun q-complete--highlight-prefix ()
-  "Highilght the part of the completion that matches the prefix."
-  )
-
-(defun q-complete--insert-completion ()
-  "Insert the current completion at point and update trackers."
-  (let ((post-command-hook nil))
-    (kill-region q-complete-transient-start-point
-                 q-complete-transient-end-point)
-    (goto-char q-complete-transient-start-point)
-    (let ((candidate (nth q-complete-transient-candidate-index
-                          q-complete-transient-candidates)))
-      (setq q-complete-transient-end-point
-            (+ q-complete-transient-start-point
-               (length candidate)))
-      (insert candidate))))
-
-(defun q-complete-isearch ()
-  "Activate `q-complete-isearch-mode'."
-  (interactive)
-  (q-complete-isearch-mode t)
-  (q-complete-isearch-message))
-
-(defvar q-complete-isearch-text nil
-  "The string that we're searching completions for.")
-
-(defun q-complete-isearch-message ()
-  "Display what we're searching for."
-  (message "%s" (concat (apply #'propertize
-                               "Search: "
-                               minibuffer-prompt-properties)
-                        q-complete-isearch-text)))
-
-(defun q-complete-isearch-insert ()
-  "Insert the last character to the end of the search text."
-  (interactive)
-  (progn
-    (setq q-complete-isearch-text
-          (concat q-complete-isearch-text (string last-command-event)))
-    (if (eq q-complete-isearch-direction 'forward)
-        (q-complete-isearch-forward t)
-      (q-complete-isearch-backward t))))
-
-(defun q-complete-isearch-backspace ()
-  "Backspace the last searched character."
-  (interactive)
-  (progn
-    (setq q-complete-isearch-text
-          (substring q-complete-isearch-text
-                     0
-                     (1- (length q-complete-isearch-text))))
-    (if (eq q-complete-isearch-direction 'forward)
-        (q-complete-isearch-forward t)
-      (q-complete-isearch-backward t))))
-
-(defun q-complete-isearch-abort ()
-  "Abort `q-complete-isearch' and drop to transient completion.
-
-Keeps the index where it moved to during the search session."
-  (interactive)
-  (when q-complete-highlight-search-hit-overlay
-    (delete-overlay q-complete-highlight-search-hit-overlay)
-    (setq q-complete-highlight-search-hit-overlay nil))
-  (q-complete-isearch-mode -1))
-
-(defun q-complete-isearch-pre-command-hook ()
-  "Abort exit search and `q-complete' sessions if command should.
-
-e.g. if you are searching and `forward-char' then it should exit
-both `q-complete-transient-mode' and `q-complete-isearch-mode'.
-
-See `isearch-pre-command-hook' for inspiration of this approach."
-  (cond
-   ((member (this-single-command-keys) (list (kbd "<tab>")
-                                             [32] ; Space
-                                             ))
-    (q-complete-isearch-abort))
-   ((and (not (eq 'self-insert-command
-                  (lookup-key global-map (this-single-command-keys))))
-         (not (commandp (lookup-key q-complete-isearch-mode-map
-                                    (this-single-command-keys)
-                                    nil))))
-    (q-complete-isearch-abort))))
-
-(defvar q-complete-isearch-mode-map
-  (let ((keymap (make-sparse-keymap)))
-    ;; We don't want to include space here because that should
-    ;; terminate completion.
-    (let ((c (1+ ?\s)))
-      (while (< c 256)
-        (define-key keymap (vector c) #'q-complete-isearch-insert)
-        (cl-incf c)))
-    (define-key keymap (kbd "C-s") #'q-complete-isearch-forward)
-    (define-key keymap (kbd "C-r") #'q-complete-isearch-backward)
-    (define-key keymap (kbd "C-g") #'q-complete-isearch-abort)
-    (define-key keymap (kbd "<backspace>") #'q-complete-isearch-backspace)
-    (define-key keymap (kbd "<tab>") #'q-complete-transient-accept-and-quit)
-    keymap)
-  "Keymap for `q-complete-isearch-mode'.")
-
-(define-minor-mode q-complete-isearch-mode ()
-  "A mode that searches through the current q-complete candidates."
-  :init-value nil
-  :lighter nil
-  :global nil
-  (progn
-    (setq q-complete-isearch-text
-          (if q-complete-isearch-mode "" nil))
-    (if q-complete-isearch-mode
-        (add-hook 'pre-command-hook #'q-complete-isearch-pre-command-hook)
-      (remove-hook 'pre-command-hook #'q-complete-isearch-pre-command-hook))))
-
-(defvar q-complete-isearch-direction 'forward
-  "The direction to search through candidates.")
-
-(defvar q-complete-highlight-search-hit-overlay nil
-  "An overlay that marks the part of the buffer that matches the search term.")
-
-(defun q-complete--highlight-search-hit ()
-  "Highlight the part of the completion that matches the search."
-  (progn
-    (when q-complete-isearch-text
-      (let* ((hit-start (cl-search (downcase q-complete-isearch-text)
-                                   (downcase (buffer-substring q-complete-transient-start-point
-                                                               q-complete-transient-end-point))))
-             (start (+ q-complete-transient-start-point
-                       (or hit-start 0)))
-             (end (+ start (length q-complete-isearch-text))))
-        (when hit-start
-          (if (null q-complete-highlight-search-hit-overlay)
-              (progn
-                (setq q-complete-highlight-search-hit-overlay
-                      (make-overlay start end))
-                (overlay-put q-complete-highlight-search-hit-overlay
-                             'face 'highlight))
-            (move-overlay q-complete-highlight-search-hit-overlay
-                          start
-                          end)))))))
-
-(defun q-complete-isearch-forward (&optional no-advance)
-  "Search forward from the current index.
-
-Exit `q-complete' on RET.
-Drop back to tabbing through hits on `quit'.
-
-If NO-ADVANCE is t supplied then we don't bump the pointer."
-  (interactive)
-  (progn
-    (setq q-complete-isearch-direction 'forward)
-    (when (not no-advance)
-      (if (not (consp (nthcdr q-complete-transient-candidate-index
-                              q-complete-transient-candidates)))
-          (setf q-complete-transient-candidate-index 0)
-        (cl-incf q-complete-transient-candidate-index)))
-    (let ((pointer (nthcdr q-complete-transient-candidate-index
-                           q-complete-transient-candidates)))
-      (while (and (consp pointer)
-                  (not (string-match q-complete-isearch-text
-                                     (car pointer))))
-        (setq pointer (cdr pointer))
-        (cl-incf q-complete-transient-candidate-index))
-      (if (not (consp pointer))
-          (progn
-            (setq q-complete-transient-candidate-index 0)
-            (funcall ring-bell-function)
-            (message "%s" (concat (apply #'propertize
-                                         "Overwrapped search: "
-                                         minibuffer-prompt-properties)
-                                  q-complete-isearch-text)))
-        (progn
-          (q-complete--insert-completion)
-          (q-complete--highlight-search-hit)
-          (q-complete-isearch-message))))))
-
-(defun q-complete--move-to-last-hit ()
-  "Move the pointer to the last hit."
-  (let ((pointer q-complete-transient-candidates))
-    (while (consp pointer)
-      (setq pointer (cdr pointer))
-      (cl-incf q-complete-transient-candidate-index))
-    (cl-decf q-complete-transient-candidate-index)))
-
-(defun q-complete-isearch-backward (&optional no-advance)
-  "Search forward from the current index.
-
-Exit `q-complete' on RET.
-Drop back to tabbing through hits on `quit'.
-
-If NO-ADVANCE is t supplied then we don't bump the pointer."
-  (interactive)
-  (progn
-    (setq q-complete-isearch-direction 'backward)
-    (when (not no-advance)
-      (if (= 0 q-complete-transient-candidate-index 0)
-          (q-complete--move-to-last-hit)
-        (cl-decf q-complete-transient-candidate-index)))
-    (while (and (/= 0 q-complete-transient-candidate-index)
-                (not (string-match q-complete-isearch-text
-                                   (nth q-complete-transient-candidate-index
-                                        q-complete-transient-candidates))))
-      (cl-decf q-complete-transient-candidate-index))
-    (if (= 0 q-complete-transient-candidate-index)
-        (progn
-          (q-complete--move-to-last-hit)
-          (funcall ring-bell-function)
-          (message "%s" (concat (apply #'propertize
-                                       "Overwrapped search: "
-                                       minibuffer-prompt-properties)
-                                q-complete-isearch-text)))
-      (progn
-        (q-complete--insert-completion)
-        (q-complete--highlight-search-hit)
-        (q-complete-isearch-message)))))
-
-(defun q-complete-transient-next-candidate ()
-  "Replace the completion text with the next candidate."
-  (interactive)
-  (progn
-    (setf q-complete-transient-candidate-index
-          (1+ q-complete-transient-candidate-index))
-    (when (not (consp (nthcdr q-complete-transient-candidate-index
-                              q-complete-transient-candidates)))
-      (setq q-complete-transient-candidate-index 0))
-    (q-complete--insert-completion)))
-
-(defun q-complete-transient-previous-candidate ()
-  "Replace the completion text with the next candidate."
-  (interactive)
-  (progn
-    (if (= 0 q-complete-transient-candidate-index)
-        (q-complete--move-to-last-hit)
-      (cl-decf q-complete-transient-candidate-index))
-    (q-complete--insert-completion)))
-
-;; 
-
-;; ** Completion at Point Extensions
-
-(defvar quiescent-completion--cycling nil
-  "T if we're cycling completions or haven't done anything after completing.")
+;; ** Quiescent Completion -- My Implementation of Completion at Point
 
 (defvar quiescent-completion-search-text nil
   "What we're searching for in all completions.")
@@ -1602,9 +1130,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
     (setq quiescent-completion-search-text (concat (or quiescent-completion-search-text "")
                                                    (string last-command-event)))
     (quiescent-completion-search-message)
-    (if (eq quiescent-completion-search-direction 'forward)
-        (quiescent-completion-search-forward)
-      (quiescent-completion-search-backward))))
+    (quiescent-completion-search-forward)))
 
 (defun quiescent-completion-search-delete-backward-char ()
   "Delete the last inserted search character."
@@ -1616,9 +1142,7 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
                                                         0
                                                         (1- (length quiescent-completion-search-text)))))
     (quiescent-completion-search-message)
-    (if (eq quiescent-completion-search-direction 'forward)
-        (quiescent-completion-search-forward)
-      (quiescent-completion-search-backward))))
+    (quiescent-completion-search-forward)))
 
 (defun quiescent-completion-search-forward ()
   "Alter the direction of search or continue to next hit."
@@ -1627,7 +1151,6 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
     ;; This is what's not working.  When I insert the text, the
     ;; command changes to 'completion-at-point.
     (when (not (memq last-command '(quiescent-completion-search-forward
-                                    quiescent-completion-search-backward
                                     quiescent-completion-search-self-insert-command)))
       (setq quiescent-completion-search-text nil
             quiescent-completion-search-direction nil))
@@ -1660,56 +1183,10 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
       (set-transient-map
        (let ((map (make-sparse-keymap)))
          (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
-         (define-key map [remap isearch-backward]     #'quiescent-completion-search-backward)
          (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
          (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
          map)))
     (setq this-command 'quiescent-completion-search-forward)))
-
-(defun quiescent-completion-search-backward ()
-  "Alter the direction of search or continue to next hit."
-  (interactive)
-  (progn
-    (when (not (memq last-command '(quiescent-completion-search-forward
-                                    quiescent-completion-search-backward
-                                    quiescent-completion-search-self-insert-command)))
-      (setq quiescent-completion-search-text nil
-            quiescent-completion-search-direction nil))
-    (quiescent-completion-search-message)
-    (when (eq quiescent-completion-search-direction 'backward)
-      (let* ((start (car completion--all-sorted-completions-location))
-             (end (cdr completion--all-sorted-completions-location))
-             (all (completion-all-sorted-completions start end))
-             (current (car all))
-             (start-value (car all)))
-        (when (eq last-command 'quiescent-completion-search-backward)
-          (setq all (quiescent-completion-cycle-backwards all))
-          (setq current (car all)))
-        (while (and (not (string-match-p (format ".*%s.*" quiescent-completion-search-text) current))
-                    (not (eq current start-value)))
-          (setq all (quiescent-completion-cycle-backwards all))
-          (setq current (car all)))
-        (when (eq current start-value)
-          (funcall ring-bell-function)
-          (message "Completion not found")
-          (setq all (quiescent-completion-cycle-forwards all)))
-        (setq all (quiescent-completion-cycle-backwards all))
-        (completion--cache-all-sorted-completions start end all)
-        (quiescent-completion-insert-and-cycle start end all)
-        (setq all (completion-all-sorted-completions start end))
-        (when (string-match-p (format ".*%s.*" quiescent-completion-search-text) current)
-          (setq all (quiescent-completion-cycle-forwards all))
-          (completion--cache-all-sorted-completions start end all))))
-    (progn
-      (setq quiescent-completion-search-direction 'backward)
-      (set-transient-map
-       (let ((map (make-sparse-keymap)))
-         (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
-         (define-key map [remap isearch-backward]     #'quiescent-completion-search-backward)
-         (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
-         (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
-         map)))
-    (setq this-command 'quiescent-completion-search-backward)))
 
 
 (defun quiescent-completion--in-region (start end collection &optional predicate)
@@ -1727,7 +1204,6 @@ PREDICATE is an optional function that excludes some completions."
         (completion--flush-all-sorted-completions)
         (setq minibuffer-scroll-window nil)
         (setq quiescent-completion-last-cycle-direction nil))
-    (setq quiescent-completion--cycling t)
     (let ((minibuffer-completion-table collection)
           (minibuffer-completion-predicate predicate)
           (all (completion-all-sorted-completions start end)))
@@ -1740,7 +1216,6 @@ PREDICATE is an optional function that excludes some completions."
     (set-transient-map
      (let ((map (make-sparse-keymap)))
        (define-key map [remap isearch-forward]  #'quiescent-completion-search-forward)
-       (define-key map [remap isearch-backward] #'quiescent-completion-search-backward)
        map))))
 
 (defun quiescent-completion-cycle-backwards (all)
@@ -1787,7 +1262,11 @@ Completions are drawn from the dotted list ALL."
       (setq quiescent-completion-last-cycle-direction 'forward))
     (completion--cache-all-sorted-completions start end all)))
 
-(keymap-global-set "<backtab>" #'completion-at-point)
+(keymap-set prog-mode-map "<backtab>" #'completion-at-point)
+(keymap-set prog-mode-map "TAB" #'completion-at-point)
+(keymap-set shell-mode-map "<backtab>" #'completion-at-point)
+(keymap-set shell-mode-map "TAB" #'completion-at-point)
+(keymap-global-set "C-<tab>" #'indent-for-tab-command)
 (setq completion-in-region-function #'quiescent-completion--in-region)
 
 ;; 
