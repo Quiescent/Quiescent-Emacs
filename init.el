@@ -1610,6 +1610,8 @@ If NO-ADVANCE is t supplied then we don't bump the pointer."
   "Alter the direction of search or continue to next hit."
   (interactive)
   (progn
+    ;; This is what's not working.  When I insert the text, the
+    ;; command changes to 'completion-at-point.
     (when (not (memq last-command '(quiescent-completion-search-forward
                                     quiescent-completion-search-backward
                                     quiescent-completion-search-self-insert-command)))
