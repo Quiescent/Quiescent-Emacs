@@ -1936,7 +1936,9 @@ Usually because of too much overhead in checking.")
   :straight t
   :init (progn
           (yas-global-mode 1)
-          (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
+          (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+          (keymap-unset yas-minor-mode-map "TAB")
+          (keymap-set yas-minor-mode-map "M-TAB" yas-maybe-expand)))
 
 ;; 
 
