@@ -1115,6 +1115,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defvar quiescent-completion-search-direction nil
   "Which direction we're searching in completions.")
 
+(defvar quiescent-completion-last-inserted nil
+  "Records the last value that was inserted by `quiescent-completion'.")
+
 (defun quiescent-completion-search-message ()
   "Display what we're searching for."
   (message "%s" (concat (apply #'propertize
@@ -1238,6 +1241,11 @@ current buffer through time (i.e. undo/redo while you scroll.)"
          map)))
     (setq this-command 'quiescent-completion-search-backward)))
 
+(defun quiescent-completion-replace (base end candidate)
+  "Replace text in current buffer at [BASE, END] with CANDIDATE."
+  (completion--replace base end candidate)
+  (setq quiescent-completion-last-inserted candidate))
+
 (defun quiescent-completion-insert (start end all)
   "Insert the current completion.
 
@@ -1247,7 +1255,7 @@ is bounded by [START, END].
 Completions are drawn from the dotted list ALL."
   (let ((base (+ start (or (cdr (last all)) 0))))
     (setq this-command 'completion-at-point)
-    (completion--replace base end (car all))
+    (quiescent-completion-replace base end (car all))
     (setq end (+ base (length (car all))))
     (completion--done (buffer-substring-no-properties start (point)) 'sole)
     (completion--cache-all-sorted-completions start end all)))
@@ -1264,17 +1272,27 @@ PREDICATE is an optional function that excludes some completions."
   (progn
     (setq this-command 'completion-at-point)
     (unless (eq 'completion-at-point last-command)
-        (completion--flush-all-sorted-completions)
-        (setq minibuffer-scroll-window nil)
-        (setq quiescent-completion-last-cycle-direction nil))
+      (completion--flush-all-sorted-completions)
+      (setq minibuffer-scroll-window nil)
+      (setq quiescent-completion-last-cycle-direction nil)
+      (when quiescent-completion-last-inserted
+        (prescient-remember quiescent-completion-last-inserted))
+      (setq quiescent-completion-last-inserted nil))
     (let ((minibuffer-completion-table collection)
           (minibuffer-completion-predicate predicate)
           (all (completion-all-sorted-completions start end)))
       (when (null all)
-        (completion--cache-all-sorted-completions
-         start
-         end
-         (setq all (completion-all-sorted-completions start end))))
+        (let* ((computed-all (completion-all-sorted-completions start end))
+               (last-cell    (last computed-all))
+               (base         (cdr last-cell)))
+          (setcdr last-cell nil)
+          (let* ((sorted (prescient-sort computed-all)))
+            (setcdr (last sorted) base)
+            (setq all sorted)
+            (completion--cache-all-sorted-completions
+             start
+             end
+             sorted))))
       (quiescent-completion-insert-and-cycle start end all))
     (set-transient-map
      (let ((map (make-sparse-keymap)))
@@ -1317,7 +1335,7 @@ Completions are drawn from the dotted list ALL."
                (eq quiescent-completion-last-cycle-direction 'backward))
       (setq all (quiescent-completion-cycle-forwards all)))
     (let ((base (+ start (or (cdr (last all)) 0))))
-      (completion--replace base end (car all))
+      (quiescent-completion-replace base end (car all))
       (setq end (+ base (length (car all)))))
     (completion--done (buffer-substring-no-properties start (point)) 'sole)
     (when (not (equal (this-command-keys) [backtab]))
