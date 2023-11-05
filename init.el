@@ -1,5 +1,4 @@
-;;; .emacs --- My emacs root config file.
-;;; -*- lexical-binding: t -*-
+;;; .emacs --- My emacs root config file. -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;; This file is now pointing at a literate program version of
