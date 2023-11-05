@@ -1323,7 +1323,22 @@ Completions are drawn from the dotted list ALL."
     (when (not (equal (this-command-keys) [backtab]))
       (setq all (quiescent-completion-cycle-forwards all))
       (setq quiescent-completion-last-cycle-direction 'forward))
-    (completion--cache-all-sorted-completions start end all)))
+    (completion--cache-all-sorted-completions start end all)
+    (let* ((table minibuffer-completion-table)
+           (pred minibuffer-completion-predicate)
+           (extra-prop completion-extra-properties)
+           (cmd
+            (lambda () "Cycle through the possible completions."
+              (interactive)
+              (let ((completion-extra-properties extra-prop))
+                (completion-in-region start (point) table pred)))))
+      (set-transient-map
+       (let ((map (make-sparse-keymap)))
+         (define-key map [remap isearch-forward]     #'quiescent-completion-search-forward)
+         (define-key map [remap completion-at-point] cmd)
+         map)))))
+
+(quiescent-js2-jump-then-ggtags-find-other-symbol)
 
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
