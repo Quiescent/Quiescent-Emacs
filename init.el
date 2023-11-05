@@ -1143,7 +1143,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                                                         0
                                                         (1- (length quiescent-completion-search-text)))))
     (quiescent-completion-search-message)
-    (quiescent-completion-search-forward)))
+    (if (eq quiescent-completion-search-direction 'forward)
+        (quiescent-completion-search-forward)
+      (quiescent-completion-search-backward))))
 
 (defun quiescent-completion-quit-search-resume-complete ()
   "Quit searching and resume completion."
@@ -1157,6 +1159,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     ;; This is what's not working.  When I insert the text, the
     ;; command changes to 'completion-at-point.
     (when (not (memq last-command '(quiescent-completion-search-forward
+                                    quiescent-completion-search-backward
                                     quiescent-completion-search-self-insert-command)))
       (setq quiescent-completion-search-text nil
             quiescent-completion-search-direction nil))
@@ -1174,26 +1177,80 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                     (not (eq current start-value)))
           (setq all (quiescent-completion-cycle-forwards all))
           (setq current (car all)))
-        (when (eq current start-value)
+        (when (and (eq current start-value)
+                   (not (string-match-p (format ".*%s.*" quiescent-completion-search-text) current)))
           (funcall ring-bell-function)
-          (message "Completion not found")
-          (setq all (quiescent-completion-cycle-backwards all)))
+          (message "Completion not found"))
         (completion--cache-all-sorted-completions start end all)
-        (quiescent-completion-insert-and-cycle start end all)
-        (setq all (completion-all-sorted-completions start end))
-        (when (string-match-p (format ".*%s.*" quiescent-completion-search-text) current)
-          (setq all (quiescent-completion-cycle-backwards all))
-          (completion--cache-all-sorted-completions start end all))))
+        (quiescent-completion-insert start end all)))
     (progn
       (setq quiescent-completion-search-direction 'forward)
       (set-transient-map
        (let ((map (make-sparse-keymap)))
          (define-key map [remap keyboard-quit]        #'quiescent-completion-quit-search-resume-complete)
+         (define-key map [remap isearch-backward]     #'quiescent-completion-search-backward)
          (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
          (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
          (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
          map)))
     (setq this-command 'quiescent-completion-search-forward)))
+
+(defun quiescent-completion-search-backward ()
+  "Alter the direction of search or continue to next hit."
+  (interactive)
+  (progn
+    ;; This is what's not working.  When I insert the text, the
+    ;; command changes to 'completion-at-point.
+    (when (not (memq last-command '(quiescent-completion-search-forward
+                                    quiescent-completion-search-backward
+                                    quiescent-completion-search-self-insert-command)))
+      (setq quiescent-completion-search-text nil
+            quiescent-completion-search-direction nil))
+    (quiescent-completion-search-message)
+    (when (eq quiescent-completion-search-direction 'backward)
+      (let* ((start (car completion--all-sorted-completions-location))
+             (end (cdr completion--all-sorted-completions-location))
+             (all (completion-all-sorted-completions start end))
+             (current (car all))
+             (start-value (car all)))
+        (when (eq last-command 'quiescent-completion-search-backward)
+          (setq all (quiescent-completion-cycle-backwards all))
+          (setq current (car all)))
+        (while (and (not (string-match-p (format ".*%s.*" quiescent-completion-search-text) current))
+                    (not (eq current start-value)))
+          (setq all (quiescent-completion-cycle-backwards all))
+          (setq current (car all)))
+        (when (and (eq current start-value)
+                   (not (string-match-p (format ".*%s.*" quiescent-completion-search-text) current)))
+          (funcall ring-bell-function)
+          (message "Completion not found"))
+        (completion--cache-all-sorted-completions start end all)
+        (quiescent-completion-insert start end all)))
+    (progn
+      (setq quiescent-completion-search-direction 'backward)
+      (set-transient-map
+       (let ((map (make-sparse-keymap)))
+         (define-key map [remap keyboard-quit]        #'quiescent-completion-quit-search-resume-complete)
+         (define-key map [remap isearch-backward]     #'quiescent-completion-search-backward)
+         (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
+         (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
+         (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
+         map)))
+    (setq this-command 'quiescent-completion-search-backward)))
+
+(defun quiescent-completion-insert (start end all)
+  "Insert the current completion.
+
+The region of text in the buffer containing the text to complete
+is bounded by [START, END].
+
+Completions are drawn from the dotted list ALL."
+  (let ((base (+ start (or (cdr (last all)) 0))))
+    (setq this-command 'completion-at-point)
+    (completion--replace base end (car all))
+    (setq end (+ base (length (car all))))
+    (completion--done (buffer-substring-no-properties start (point)) 'sole)
+    (completion--cache-all-sorted-completions start end all)))
 
 (defun quiescent-completion--in-region (start end collection &optional predicate)
   "My own `completion-in-region' function.
@@ -1270,8 +1327,9 @@ Completions are drawn from the dotted list ALL."
 
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
-(keymap-set shell-mode-map "<backtab>" #'completion-at-point)
-(keymap-set shell-mode-map "TAB" #'completion-at-point)
+(with-eval-after-load "shell-mode"
+  (keymap-set shell-mode-map "<backtab>" #'completion-at-point)
+  (keymap-set shell-mode-map "TAB" #'completion-at-point))
 (keymap-global-set "C-<tab>" #'indent-for-tab-command)
 (setq completion-in-region-function #'quiescent-completion--in-region)
 
