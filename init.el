@@ -1356,8 +1356,6 @@ Completions are drawn from the dotted list ALL."
          (define-key map [remap completion-at-point] cmd)
          map)))))
 
-(quiescent-js2-jump-then-ggtags-find-other-symbol)
-
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
 (with-eval-after-load "js2-mode"
