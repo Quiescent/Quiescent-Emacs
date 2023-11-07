@@ -1294,12 +1294,14 @@ PREDICATE is an optional function that excludes some completions."
                start
                end
                sorted)))))
-      (when all
-        (quiescent-completion-insert-and-cycle start end all)
-        (set-transient-map
-         (let ((map (make-sparse-keymap)))
-           (define-key map [remap isearch-forward]  #'quiescent-completion-search-forward)
-           map))))))
+      (if all
+          (progn
+            (quiescent-completion-insert-and-cycle start end all)
+            (set-transient-map
+             (let ((map (make-sparse-keymap)))
+               (define-key map [remap isearch-forward]  #'quiescent-completion-search-forward)
+               map)))
+        (error "No completions")))))
 
 (defun quiescent-completion-cycle-backwards (all)
   "When completing cycle ALL backward."
