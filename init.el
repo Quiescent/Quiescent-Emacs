@@ -1285,19 +1285,21 @@ PREDICATE is an optional function that excludes some completions."
         (let* ((computed-all (completion-all-sorted-completions start end))
                (last-cell    (last computed-all))
                (base         (cdr last-cell)))
-          (setcdr last-cell nil)
-          (let* ((sorted (prescient-sort computed-all)))
-            (setcdr (last sorted) base)
-            (setq all sorted)
-            (completion--cache-all-sorted-completions
-             start
-             end
-             sorted))))
-      (quiescent-completion-insert-and-cycle start end all))
-    (set-transient-map
-     (let ((map (make-sparse-keymap)))
-       (define-key map [remap isearch-forward]  #'quiescent-completion-search-forward)
-       map))))
+          (when computed-all
+            (setcdr last-cell nil)
+            (let* ((sorted (prescient-sort computed-all)))
+              (setcdr (last sorted) base)
+              (setq all sorted)
+              (completion--cache-all-sorted-completions
+               start
+               end
+               sorted)))))
+      (when all
+        (quiescent-completion-insert-and-cycle start end all)
+        (set-transient-map
+         (let ((map (make-sparse-keymap)))
+           (define-key map [remap isearch-forward]  #'quiescent-completion-search-forward)
+           map))))))
 
 (defun quiescent-completion-cycle-backwards (all)
   "When completing cycle ALL backward."
