@@ -1118,12 +1118,47 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (defvar quiescent-completion-last-inserted nil
   "Records the last value that was inserted by `quiescent-completion'.")
 
+(defvar quiescent-completion-highlight-search-message-overlay nil
+  "The overlay that highlights what's being searched for.")
+
 (defun quiescent-completion-search-message ()
   "Display what we're searching for."
   (message "%s" (concat (apply #'propertize
                                "Search: "
                                minibuffer-prompt-properties)
                         quiescent-completion-search-text)))
+
+(defun quiescent-completion-highlight-post-command-hook ()
+  "Unhighlight the current search string if we aren't searching anymore."
+  (unless (memq this-command '(quiescent-completion-search-forward
+                               quiescent-completion-search-backward
+                               quiescent-completion-search-self-insert-command
+                               quiescent-completion-search-delete-backward-char))
+    (delete-overlay quiescent-completion-highlight-search-message-overlay)
+    (setq quiescent-completion-highlight-search-message-overlay nil)
+    (remove-hook 'post-command-hook #'quiescent-completion-highlight-post-command-hook)))
+
+(defun quiescent-completion-highlight-search-string ()
+  "If there's a search string, and we're completing, highlight it."
+  (let* ((start (car completion--all-sorted-completions-location))
+         (end   (cdr completion--all-sorted-completions-location))
+         (text  (buffer-substring-no-properties start end)))
+    (unless (or (null quiescent-completion-search-text)
+                (null start)
+                (null end))
+      (let* ((text-start   (cl-search quiescent-completion-search-text text))
+             (text-end     (+ text-start (length quiescent-completion-search-text)) )
+             (buffer-start (+ text-start start))
+             (buffer-end   (+ text-end   start)))
+        (if (not quiescent-completion-highlight-search-message-overlay)
+            (setq quiescent-completion-highlight-search-message-overlay
+                  (let ((overlay (make-overlay buffer-start buffer-end)))
+                    (overlay-put overlay 'face 'isearch)
+                    overlay))
+          (move-overlay quiescent-completion-highlight-search-message-overlay
+                        buffer-start
+                        buffer-end)))
+      (add-hook 'post-command-hook #'quiescent-completion-highlight-post-command-hook))))
 
 (defun quiescent-completion-search-self-insert-command ()
   "Add the current character to the search text and continue searching."
@@ -1134,7 +1169,9 @@ current buffer through time (i.e. undo/redo while you scroll.)"
       (setq quiescent-completion-search-text (concat (or quiescent-completion-search-text "")
                                                      (string last-command-event)))
       (quiescent-completion-search-message)
-      (quiescent-completion-search-forward))))
+      (if (eq quiescent-completion-search-direction 'forward)
+          (quiescent-completion-search-forward)
+        (quiescent-completion-search-backward)))))
 
 (defun quiescent-completion-search-delete-backward-char ()
   "Delete the last inserted search character."
@@ -1159,11 +1196,10 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   "Alter the direction of search or continue to next hit."
   (interactive)
   (progn
-    ;; This is what's not working.  When I insert the text, the
-    ;; command changes to 'completion-at-point.
     (when (not (memq last-command '(quiescent-completion-search-forward
                                     quiescent-completion-search-backward
-                                    quiescent-completion-search-self-insert-command)))
+                                    quiescent-completion-search-self-insert-command
+                                    quiescent-completion-search-delete-backward-char)))
       (setq quiescent-completion-search-text nil
             quiescent-completion-search-direction nil))
     (quiescent-completion-search-message)
@@ -1195,6 +1231,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
          (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
          (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
          (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
+         (define-key map (kbd "<backspace>")          #'quiescent-completion-search-delete-backward-char)
          map)))
     (setq this-command 'quiescent-completion-search-forward)))
 
@@ -1206,7 +1243,8 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     ;; command changes to 'completion-at-point.
     (when (not (memq last-command '(quiescent-completion-search-forward
                                     quiescent-completion-search-backward
-                                    quiescent-completion-search-self-insert-command)))
+                                    quiescent-completion-search-self-insert-command
+                                    quiescent-completion-search-delete-backward-char)))
       (setq quiescent-completion-search-text nil
             quiescent-completion-search-direction nil))
     (quiescent-completion-search-message)
@@ -1238,6 +1276,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
          (define-key map [remap isearch-forward]      #'quiescent-completion-search-forward)
          (define-key map [remap self-insert-command]  #'quiescent-completion-search-self-insert-command)
          (define-key map [remap delete-backward-char] #'quiescent-completion-search-delete-backward-char)
+         (define-key map (kbd "<backspace>")          #'quiescent-completion-search-delete-backward-char)
          map)))
     (setq this-command 'quiescent-completion-search-backward)))
 
@@ -1258,7 +1297,8 @@ Completions are drawn from the dotted list ALL."
     (quiescent-completion-replace base end (car all))
     (setq end (+ base (length (car all))))
     (completion--done (buffer-substring-no-properties start (point)) 'sole)
-    (completion--cache-all-sorted-completions start end all)))
+    (completion--cache-all-sorted-completions start end all)
+    (quiescent-completion-highlight-search-string)))
 
 (defun quiescent-completion--in-region (start end collection &optional predicate)
   "My own `completion-in-region' function.
