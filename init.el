@@ -1413,6 +1413,68 @@ Completions are drawn from the dotted list ALL."
 
 ;; 
 
+;; ** Complete Locally Bound Lisp Symbols
+
+(defun quiescent-complete-locally-bound-lisp-symbols-at-point ()
+  "Try to find a locally bound symbol to complete to."
+  (cl-labels ((bindings-from-list (xs)
+                (cond
+                 ((memq (caar xs) '(let let* bind)) (thread-last
+                                                      (cadar xs)
+                                                      (mapcar #'car)
+                                                      (cl-remove-if-not #'symbolp)
+                                                      (mapcar #'symbol-name)))
+                 (t nil)))
+              (combine-options (options ordinary-options)
+                (cond
+                 ((obarrayp (caddr ordinary-options))
+                  (let ((obarray (caddr ordinary-options)))
+                    (dolist (option options)
+                      (intern option obarray))))
+                 (t ordinary-options))))
+    (let ((options nil)
+          (search-string (thing-at-point 'symbol))
+          (ordinary-options (cond
+                             ((eq major-mode 'emacs-lisp-mode)
+                              (elisp-completion-at-point))
+                             ;; TODO: other lisps...
+                             (t nil))))
+      (save-excursion
+        (while (condition-case _error (progn (backward-up-list) t) (t nil))
+          (let* ((start (point))
+                 (end (ignore-errors
+                        (save-excursion
+                          (forward-list)
+                          (point)))))
+            (when (/= start end)
+              (let* ((lisp-at-point-as-list (read-from-string
+                                             (buffer-substring start
+                                                               end)))
+                     (bindings (bindings-from-list lisp-at-point-as-list))
+                     (matches  (cl-remove-if-not (apply-partially #'cl-search search-string)
+                                                 bindings)))
+                (when bindings
+                  (setq options (nconc options matches))))))))
+      (when options
+        (let ((bounds (bounds-of-thing-at-point 'symbol)))
+          (list (car bounds) (cdr bounds) options))))))
+
+(defun quiescent-setup-elisp-completion ()
+  "Setup completion for elisp buffers."
+  (setq-local completion-at-point-functions (list #'quiescent-complete-locally-bound-lisp-symbols-at-point
+                                                  #'elisp-completion-at-point
+                                                  t)))
+
+(defun quiescent-setup-lisp-completion ()
+  "Setup completion for elisp buffers."
+  (setq-local completion-at-point-functions (list #'quiescent-complete-locally-bound-lisp-symbols-at-point
+                                                  #'quiescent-slime-completion-at-point
+                                                  t)))
+
+(add-hook 'elisp-mode-hook #'quiescent-setup-elisp-completion)
+
+;; 
+
 ;; ** Transient Mark Mode Commands
 
 (defvar quiescent-transient-command-mode-map
@@ -3224,12 +3286,6 @@ comment."
 (use-package slime-company
   :straight t)
 
-(defun quiescent-setup-slime-completion ()
-  "Setup company for slime."
-  (when (null quiescent-starting-up)
-    (setq-local company-backends '(company-capf company-slime))
-    (setq-local completion-at-point-functions '(quiescent-slime-completion-at-point))))
-
 (defun quiescent-slime-completion-at-point ()
   "A completion at point function for slime.
 
@@ -3313,8 +3369,8 @@ Based on `slime-expand-abbreviations-and-complete' from
     (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
     (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
     (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
-    (add-hook 'slime-mode-hook      #'quiescent-setup-slime-completion)
-    (add-hook 'slime-repl-mode-hook #'quiescent-setup-slime-completion))
+    (add-hook 'slime-mode-hook      #'quiescent-setup-lisp-completion)
+    (add-hook 'slime-repl-mode-hook #'quiescent-setup-lisp-completion))
   :init (progn (setq inferior-lisp-program "sbcl")
                (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))))
 
