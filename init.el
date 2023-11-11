@@ -1424,14 +1424,7 @@ Completions are drawn from the dotted list ALL."
                                                       (mapcar #'car)
                                                       (cl-remove-if-not #'symbolp)
                                                       (mapcar #'symbol-name)))
-                 (t nil)))
-              (combine-options (options ordinary-options)
-                (cond
-                 ((obarrayp (caddr ordinary-options))
-                  (let ((obarray (caddr ordinary-options)))
-                    (dolist (option options)
-                      (intern option obarray))))
-                 (t ordinary-options))))
+                 (t nil))))
     (let ((options nil)
           (search-string (thing-at-point 'symbol))
           (ordinary-options (cond
