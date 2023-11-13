@@ -1146,8 +1146,10 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (unless (or (null quiescent-completion-search-text)
                 (null start)
                 (null end))
-      (let* ((text-start   (cl-search quiescent-completion-search-text text))
-             (text-end     (+ text-start (length quiescent-completion-search-text)) )
+      (let ((text-start (cl-search (downcase quiescent-completion-search-text)
+                                   (downcase text))))
+        (when text-start
+          (let* ((text-end     (+ text-start (length quiescent-completion-search-text)) )
              (buffer-start (+ text-start start))
              (buffer-end   (+ text-end   start)))
         (if (not quiescent-completion-highlight-search-message-overlay)
@@ -1157,7 +1159,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                     overlay))
           (move-overlay quiescent-completion-highlight-search-message-overlay
                         buffer-start
-                        buffer-end)))
+                            buffer-end)))))
       (add-hook 'post-command-hook #'quiescent-completion-highlight-post-command-hook))))
 
 (defun quiescent-completion-search-self-insert-command ()
