@@ -2020,6 +2020,109 @@ search through."
 
 ;; 
 
+;; ** Live Occur Buffer
+
+;; Problem: I want to filter a buffer (such as a tailed log file or a
+;; shell-like buffer) as more data is generated.
+;;
+;; Solution: Initially, I think I'll only support a series of regular
+;; expressions.  Every line in the buffer is added to the current
+;; buffer and as content is added to the buffer, it's appended to the
+;; Live Grep Buffer if it matches one of the regular expressions.
+
+(define-derived-mode live-occur-mode special-mode "Live"
+  "Present all lines queries in a buffer and keep them up to date.
+
+The queries are a series of regular expressions that all
+displayed lines must match.")
+
+(defvar live-occur-source-buffer nil
+  "The buffer that we're narrowing down.")
+
+(defvar live-occur-queries nil
+  "The queries we use to narrow down the source buffer.")
+
+(defvar live-occur-timer nil
+  "A timer to update results whenever the live occur source buffer changes.")
+
+(defvar live-occur-source-buffer-continue-marker nil
+  "Where we should continue scanning the source buffer for more results.")
+
+(defvar live-occur-update-frequency 1
+  "Frequency of the updates to the live occur buffer.
+
+It should match the spec of the TIME argument in `run-at-time'.")
+
+(defun live-occur (initial-query)
+  "Initialise live occur for the current buffer.
+
+The INITIAL-QUERY is used to filter the buffer down for initial
+display."
+  (interactive "sQuery: ")
+  (progn
+    (display-buffer (get-buffer-create "*live-occur*"))
+    (setq live-occur-source-buffer (current-buffer)
+          live-occur-queries       (list initial-query))
+    (live-occur-refresh)))
+
+(defun live-occur-append (line)
+  "Append LINE to the live occur buffer."
+  (with-current-buffer (get-buffer-create "*live-occur*")
+    (save-excursion
+      (goto-char (point-max))
+      (read-only-mode -1)
+      (insert "\n")
+      (insert line)
+      (read-only-mode 1))))
+
+(defun live-occur-accumulate-from-point ()
+  "Accumulate results from the current point until end of buffer."
+  (let ((initial-eob (point-max)))
+    (while (< (point) initial-eob)
+      (move-beginning-of-line nil)
+      (when (cl-some (lambda (query)
+                       (looking-at-p (format "^.*%s.*$" query)))
+                     live-occur-queries)
+        (live-occur-append (buffer-substring (point)
+                                             (save-excursion (end-of-line)
+                                                             (point)))))
+      (end-of-line)
+      (ignore-errors (forward-line)))))
+
+(defun live-occur-refresh ()
+  "Empty the live occur buffer, display results and start watching for more."
+  (with-current-buffer (get-buffer-create "*live-occur*")
+    (read-only-mode -1)
+    (delete-region (point-min) (point-max))
+    (read-only-mode 1)
+    (with-current-buffer live-occur-source-buffer
+      (save-excursion
+        (goto-char (point-min))
+        (live-occur-accumulate-from-point)
+        (let ((marker (make-marker)))
+            (set-marker marker (point))
+            (setq live-occur-source-buffer-continue-marker marker))))
+    (live-occur-start-timer)))
+
+(defun live-occur-advance-marker ()
+  "Advance the marker to the end of the source buffer displaying new hits."
+  (with-current-buffer live-occur-source-buffer
+    (save-excursion
+      (goto-char (marker-position live-occur-source-buffer-continue-marker))
+      (live-occur-accumulate-from-point)
+      (set-marker live-occur-source-buffer-continue-marker (point)))))
+
+(defun live-occur-start-timer ()
+  "Start a timer to append new results to the live occur buffer and advance the marker."
+  (progn
+    (when (timerp live-occur-timer)
+      (cancel-timer live-occur-timer))
+    (setq live-occur-timer (run-at-time live-occur-update-frequency
+                                        live-occur-update-frequency
+                                        #'live-occur-advance-marker))))
+
+;; 
+
 ;; ** Go Up
 
 (defun quiescent-one-directory-above-current ()
