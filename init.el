@@ -1485,7 +1485,7 @@ Completions are drawn from the dotted list ALL."
 (defvar quiescent-javascript-keywords '("const" "export" "function" "then" "return" "async")
   "A list of keywords in Javascript.")
 
-(defun quiescent-complete-symbol-from-backward-up-list ()
+(defun quiescent-complete-javascript-symbol-from-backward-up-list ()
   "Find any symbols in enclosing scopes that completes the symbol at point."
   (let ((search-string (thing-at-point 'symbol))
         (options))
@@ -1514,9 +1514,51 @@ Completions are drawn from the dotted list ALL."
         (let ((bounds (bounds-of-thing-at-point 'symbol)))
           (list (car bounds) (cdr bounds) options)))))
 
+(defun quiescent-complete-javascript-symbol-from-top-level-variable ()
+  "Complete symbol at point by looking at functions and variables at top-level."
+  (let* ((search-string (thing-at-point 'symbol))
+         (re-const "^const\\s-+\\([a-zA-Z0-0_^]+\\)")
+         (re-default-import "^import\\s-+\\([a-zA-Z0-0_^]+\\)")
+         (re-destructured-import "^import\\s-+{\\(.+\\)}")
+         (re-function "^function\\s-+\\([a-zA-Z0-0_^]+\\)")
+         (re-destructured-const "^const\\s-+{\\(.+\\)}")
+         (options))
+    (cl-labels ((accumulate (candidate)
+                  (when (not (string-equal candidate search-string))
+                    (push candidate options))))
+      (save-match-data
+        (save-excursion
+          (goto-char (point-min))
+          (while (not (eobp))
+            (beginning-of-defun)
+            (cond
+             ((looking-at re-const) (accumulate (match-string-no-properties 1)))
+             ((looking-at re-default-import) (accumulate (match-string-no-properties 1)))
+             ((looking-at re-function) (accumulate (match-string-no-properties 1)))
+             ((looking-at re-destructured-import) (dolist (candidate (split-string (match-string-no-properties 1)
+                                                                                   ","
+                                                                                   t
+                                                                                   "\\s-"))
+                                                    (accumulate candidate)))
+             ((looking-at re-destructured-const) (dolist (candidate (split-string (match-string-no-properties 1)
+                                                                                  ","
+                                                                                  t
+                                                                                  "\\s-"))
+                                                   (accumulate candidate))))
+            (end-of-defun)
+            (end-of-defun)))))
+    (when options
+      (let ((bounds (bounds-of-thing-at-point 'symbol)))
+        (list (car bounds)
+              (cdr bounds)
+              (cl-remove search-string
+                         options
+                         :test #'string-equal))))))
+
 (defun quiescent-setup-javascript-completion ()
   "Setup completion for Javascript buffers."
-  (setq-local completion-at-point-functions (list #'quiescent-complete-symbol-from-backward-up-list
+  (setq-local completion-at-point-functions (list #'quiescent-complete-javascript-symbol-from-backward-up-list
+                                                  #'quiescent-complete-javascript-symbol-from-top-level-variable
                                                   #'tern-completion-at-point
                                                   t)))
 
