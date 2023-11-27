@@ -1470,6 +1470,60 @@ Completions are drawn from the dotted list ALL."
 
 ;; 
 
+;; ** Complete Local Symbols with Regexp
+
+(defun quiescent-all-regexp-matches-in-region (regexp beg end)
+  "Produce every mathc for REGEXP in the buffer from BEG to END."
+  (let ((matches))
+    (save-match-data
+     (save-excursion
+       (goto-char beg)
+       (while (re-search-forward regexp end t 1)
+         (push (match-string-no-properties 0) matches))))
+    matches))
+
+(defvar quiescent-javascript-keywords '("const" "export" "function" "then" "return" "async")
+  "A list of keywords in Javascript.")
+
+(defun quiescent-complete-symbol-from-backward-up-list ()
+  "Find any symbols in enclosing scopes that completes the symbol at point."
+  (let ((search-string (thing-at-point 'symbol))
+        (options))
+    (save-excursion
+      (while (condition-case _error (progn (backward-up-list) t) (t nil))
+        (let* ((start (point))
+               (end (ignore-errors
+                      (save-excursion
+                        (forward-list)
+                        (point)))))
+          (when (/= start end)
+            (let* ((symbols-from-contents (quiescent-all-regexp-matches-in-region "[a-zA-Z0-9_]+"
+                                                                                  start
+                                                                                  end))
+                   (names-from-contents (cl-remove search-string
+                                                   (cl-set-difference symbols-from-contents
+                                                                      quiescent-javascript-keywords
+                                                                      :test #'string-equal)
+                                                   :test #'string-equal))
+                   (matches (cl-remove-if-not (apply-partially #'cl-search search-string)
+                                              names-from-contents)))
+              (when matches
+                (setq options (cl-remove-duplicates (nconc options matches)
+                                                    :test #'string-equal))))))))
+    (when options
+        (let ((bounds (bounds-of-thing-at-point 'symbol)))
+          (list (car bounds) (cdr bounds) options)))))
+
+(defun quiescent-setup-javascript-completion ()
+  "Setup completion for Javascript buffers."
+  (setq-local completion-at-point-functions (list #'quiescent-complete-symbol-from-backward-up-list
+                                                  #'tern-completion-at-point
+                                                  t)))
+
+(add-hook 'js2-mode-hook #'quiescent-setup-javascript-completion)
+
+;; 
+
 ;; ** Transient Mark Mode Commands
 
 (defvar quiescent-transient-command-mode-map
