@@ -1558,22 +1558,24 @@ Completions are drawn from the dotted list ALL."
                          :test #'string-equal))))))
 
 (defun quiescent-complete-javascript-function-argument ()
-  "Create a list of arguments to the function we're in with heuristics."
+  "Create a list of matching arguments to the function we're in with heuristics."
   (save-excursion
-    (let ((search-string (thing-at-point 'symbol))
-          (bounds (bounds-of-thing-at-point 'symbol))
-          (options (progn
-                     (beginning-of-defun)
-                     (mapcan (lambda (group)
-                               (split-string (thread-last (1- (length group))
-                                                          (substring group 1))
-                                             ","
-                                             t
-                                             "\\s-"))
-                             (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_,\\s-]+)"
-                                                                     (point)
-                                                                     (save-excursion (search-forward "{")
-                                                                                     (point)))))))
+    (let* ((search-string (thing-at-point 'symbol))
+           (bounds (bounds-of-thing-at-point 'symbol))
+           (options (progn
+                      (beginning-of-defun)
+                      (mapcan (lambda (group)
+                                (->> (split-string (thread-last (1- (length group))
+                                                                (substring group 1))
+                                                   ","
+                                                   t
+                                                   "\\s-")
+                                     (cl-remove-if-not (lambda (candidate)
+                                                         (cl-search search-string candidate)))))
+                              (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_,\\s-]+)"
+                                                                      (point)
+                                                                      (save-excursion (search-forward "{")
+                                                                                      (point)))))))
       (when options
         (list (car bounds)
               (cdr bounds)
