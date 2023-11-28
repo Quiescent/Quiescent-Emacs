@@ -1742,6 +1742,13 @@ Usually because of too much overhead in checking.")
           (keymap-unset yas-minor-mode-map "TAB")
           (keymap-set yas-minor-mode-map "M-TAB" yas-maybe-expand)))
 
+(defun quiescent-set-lisp-syntax-for-yasnippet ()
+  "Setup the syntax for expanding snippets in Lisp."
+  (setq-local yas-key-syntaxes '("w_" "w_." "w_.()" "^ ")))
+
+(add-hook 'lisp-mode-hook #'quiescent-set-lisp-syntax-for-yasnippet)
+(add-hook 'emacs-lisp-mode-hook #'quiescent-set-lisp-syntax-for-yasnippet)
+
 ;; 
 
 ;; ** Paredit
