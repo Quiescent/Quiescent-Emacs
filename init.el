@@ -1443,8 +1443,9 @@ Completions are drawn from the dotted list ALL."
                           (point)))))
             (when (/= start end)
               (let* ((lisp-at-point-as-list (read-from-string
-                                             (buffer-substring start
-                                                               end)))
+                                             (cl-remove ?#
+                                                        (buffer-substring start
+                                                                          end))))
                      (bindings (bindings-from-list lisp-at-point-as-list))
                      (matches  (cl-remove-if-not (apply-partially #'cl-search search-string)
                                                  bindings)))
