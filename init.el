@@ -1511,9 +1511,10 @@ Completions are drawn from the dotted list ALL."
               (when matches
                 (setq options (cl-remove-duplicates (nconc options matches)
                                                     :test #'string-equal))))))))
-    (when options
+    (let ((argument-options (caddr (quiescent-complete-javascript-function-argument))))
+      (when (or options argument-options)
         (let ((bounds (bounds-of-thing-at-point 'symbol)))
-          (list (car bounds) (cdr bounds) options)))))
+          (list (car bounds) (cdr bounds) (append options argument-options)))))))
 
 (defun quiescent-complete-javascript-symbol-from-top-level-variable ()
   "Complete symbol at point by looking at functions and variables at top-level."
@@ -1550,6 +1551,30 @@ Completions are drawn from the dotted list ALL."
             (end-of-defun)))))
     (when options
       (let ((bounds (bounds-of-thing-at-point 'symbol)))
+        (list (car bounds)
+              (cdr bounds)
+              (cl-remove search-string
+                         options
+                         :test #'string-equal))))))
+
+(defun quiescent-complete-javascript-function-argument ()
+  "Create a list of arguments to the function we're in with heuristics."
+  (save-excursion
+    (let ((search-string (thing-at-point 'symbol))
+          (bounds (bounds-of-thing-at-point 'symbol))
+          (options (progn
+                     (beginning-of-defun)
+                     (mapcan (lambda (group)
+                               (split-string (thread-last (1- (length group))
+                                                          (substring group 1))
+                                             ","
+                                             t
+                                             "\\s-"))
+                             (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_,\\s-]+)"
+                                                                     (point)
+                                                                     (save-excursion (search-forward "{")
+                                                                                     (point)))))))
+      (when options
         (list (car bounds)
               (cdr bounds)
               (cl-remove search-string
