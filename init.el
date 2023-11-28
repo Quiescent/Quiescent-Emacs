@@ -1531,24 +1531,26 @@ Completions are drawn from the dotted list ALL."
       (save-match-data
         (save-excursion
           (goto-char (point-min))
-          (while (not (eobp))
-            (beginning-of-defun)
-            (cond
-             ((looking-at re-const) (accumulate (match-string-no-properties 1)))
-             ((looking-at re-default-import) (accumulate (match-string-no-properties 1)))
-             ((looking-at re-function) (accumulate (match-string-no-properties 1)))
-             ((looking-at re-destructured-import) (dolist (candidate (split-string (match-string-no-properties 1)
-                                                                                   ","
-                                                                                   t
-                                                                                   "\\s-"))
-                                                    (accumulate candidate)))
-             ((looking-at re-destructured-const) (dolist (candidate (split-string (match-string-no-properties 1)
-                                                                                  ","
-                                                                                  t
-                                                                                  "\\s-"))
-                                                   (accumulate candidate))))
-            (end-of-defun)
-            (end-of-defun)))))
+          (let ((previous-start))
+            (while (not (eobp))
+              (setq previous-start (point))
+              (beginning-of-defun)
+              (cond
+               ((looking-at re-const) (accumulate (match-string-no-properties 1)))
+               ((looking-at re-default-import) (accumulate (match-string-no-properties 1)))
+               ((looking-at re-function) (accumulate (match-string-no-properties 1)))
+               ((looking-at re-destructured-import) (dolist (candidate (split-string (match-string-no-properties 1)
+                                                                                     ","
+                                                                                     t
+                                                                                     "\\s-"))
+                                                      (accumulate candidate)))
+               ((looking-at re-destructured-const) (dolist (candidate (split-string (match-string-no-properties 1)
+                                                                                    ","
+                                                                                    t
+                                                                                    "\\s-"))
+                                                     (accumulate candidate))))
+              (while (<= (point) previous-start)
+                (end-of-defun)))))))
     (when options
       (let ((bounds (bounds-of-thing-at-point 'symbol)))
         (list (car bounds)
