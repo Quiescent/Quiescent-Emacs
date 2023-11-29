@@ -1574,7 +1574,7 @@ Completions are drawn from the dotted list ALL."
                                                    "\\s-")
                                      (cl-remove-if-not (lambda (candidate)
                                                          (cl-search search-string candidate)))))
-                              (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_,\\s-]+)"
+                              (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_, ]+)"
                                                                       (point)
                                                                       (save-excursion (search-forward "{")
                                                                                       (point)))))))
