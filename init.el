@@ -1521,7 +1521,7 @@ Completions are drawn from the dotted list ALL."
   (let* ((search-string (thing-at-point 'symbol))
          (re-const "^const\\s-+\\([a-zA-Z0-0_^]+\\)")
          (re-default-import "^import\\s-+\\([a-zA-Z0-0_^]+\\)")
-         (re-destructured-import "^import\\s-+{\\(.+\\)}")
+         (re-destructured-import "^import\\s-+{")
          (re-function "^function\\s-+\\([a-zA-Z0-0_^]+\\)")
          (re-destructured-const "^const\\s-+{\\(.+\\)}")
          (options))
@@ -1539,10 +1539,24 @@ Completions are drawn from the dotted list ALL."
                ((looking-at re-const) (accumulate (match-string-no-properties 1)))
                ((looking-at re-default-import) (accumulate (match-string-no-properties 1)))
                ((looking-at re-function) (accumulate (match-string-no-properties 1)))
-               ((looking-at re-destructured-import) (dolist (candidate (split-string (match-string-no-properties 1)
-                                                                                     ","
-                                                                                     t
-                                                                                     "\\s-"))
+               ((looking-at re-destructured-import) (dolist (candidate
+                                                             (mapcar
+                                                              (lambda (line)
+                                                                (remove ?\n
+                                                                        (replace-regexp-in-string "\\s-+"
+                                                                                                  ""
+                                                                                                  line)))
+                                                              (split-string
+                                                               (save-excursion
+                                                                 (search-forward "{")
+                                                                 (backward-char)
+                                                                 (buffer-substring (1+ (point))
+                                                                                   (progn
+                                                                                     (forward-list)
+                                                                                     (1- (point)))))
+                                                               ","
+                                                               t
+                                                               "\\s-")))
                                                       (accumulate candidate)))
                ((looking-at re-destructured-const) (dolist (candidate (split-string (match-string-no-properties 1)
                                                                                     ","
