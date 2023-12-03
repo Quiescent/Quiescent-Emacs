@@ -1417,15 +1417,32 @@ Completions are drawn from the dotted list ALL."
 
 ;; ** Complete Locally Bound Lisp Symbols
 
+(defun quiescent-flatten (xs)
+  "Produce a flat version of XS.
+
+If it's a list with no nested forms, produce that list.
+If it's dotted list, produce the values in the dotted list."
+  (if (consp xs)
+      (let ((x (car xs))
+            (rest (quiescent-flatten (cdr xs))))
+        (cond
+         ((consp x) (append (quiescent-flatten x) rest))
+         (t (cons x rest))))
+    (if (null xs)
+        xs
+      (list xs))))
+
 (defun quiescent-complete-locally-bound-lisp-symbols-at-point ()
   "Try to find a locally bound symbol to complete to."
   (cl-labels ((bindings-from-list (xs)
                 (cond
-                 ((memq (caar xs) '(let let* bind labels)) (thread-last
-                                                             (cadar xs)
-                                                             (mapcar #'car)
-                                                             (cl-remove-if-not #'symbolp)
-                                                             (mapcar #'symbol-name)))
+                 ((memq (caar xs) '(let let* bind labels))
+                  (thread-last
+                    (cadar xs)
+                    (mapcar #'car)
+                    (mapcan #'quiescent-flatten)
+                    (cl-remove-if-not #'symbolp)
+                    (mapcar #'symbol-name)))
                  (t nil))))
     (let ((options nil)
           (search-string (thing-at-point 'symbol))
