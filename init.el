@@ -1421,11 +1421,11 @@ Completions are drawn from the dotted list ALL."
   "Try to find a locally bound symbol to complete to."
   (cl-labels ((bindings-from-list (xs)
                 (cond
-                 ((memq (caar xs) '(let let* bind)) (thread-last
-                                                      (cadar xs)
-                                                      (mapcar #'car)
-                                                      (cl-remove-if-not #'symbolp)
-                                                      (mapcar #'symbol-name)))
+                 ((memq (caar xs) '(let let* bind labels)) (thread-last
+                                                             (cadar xs)
+                                                             (mapcar #'car)
+                                                             (cl-remove-if-not #'symbolp)
+                                                             (mapcar #'symbol-name)))
                  (t nil))))
     (let ((options nil)
           (search-string (thing-at-point 'symbol))
