@@ -1565,7 +1565,7 @@ If it's dotted list, produce the values in the dotted list."
                                                                                                   line)))
                                                               (split-string
                                                                (save-excursion
-                                                                 (search-forward "{")
+                                                                 (search-forward "{" nil t)
                                                                  (backward-char)
                                                                  (buffer-substring (1+ (point))
                                                                                    (progn
@@ -1607,7 +1607,7 @@ If it's dotted list, produce the values in the dotted list."
                                                          (cl-search search-string candidate)))))
                               (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_, ]+)"
                                                                       (point)
-                                                                      (save-excursion (search-forward "{")
+                                                                      (save-excursion (search-forward "{" nil t)
                                                                                       (point)))))))
       (when options
         (list (car bounds)
