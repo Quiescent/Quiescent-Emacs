@@ -3048,7 +3048,19 @@ Nil if root is supplied as DIR."
             (define-key js2-mode-map (kbd "<f7>") #'quiescent-start-jest-with-this-file)
             (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)
             (define-key js2-mode-map (kbd "C-M-f") #'quiescent-js2-forward-sexp)
-            (define-key js2-mode-map (kbd "C-M-b") #'quiescent-js2-backward-sexp)))
+            (define-key js2-mode-map (kbd "C-M-b") #'quiescent-js2-backward-sexp)
+            (define-key js2-mode-map (kbd "C-c C-z") #'quiescent-switch-to-visible-shell)))
+
+(defun quiescent-switch-to-visible-shell ()
+  "Switch to a visible buffer with a shell-like mode active."
+  (interactive)
+  (cl-block find-window
+    (loop
+     for window being the windows
+     do (when (save-window-excursion (select-window window)
+                                     (member major-mode '(shell-mode)))
+          (select-window window)
+          (cl-return-from find-window)))))
 
 (defun quiescent-js2-forward-sexp (&optional arg interactive)
   "Go `forward-sexp' accounting for comments in `js2-mode'.
