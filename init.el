@@ -3485,6 +3485,13 @@ Replaces the buffer string in that region."
 (use-package rust-mode
   :straight t)
 
+(with-eval-after-load "eglot"
+  (make-variable-buffer-local 'eglot-ignored-server-capabilities))
+
+(defun quiescent-disable-eglot-post-insert ()
+  "Disable features like inserting matching pair."
+  (add-to-list 'eglot-ignored-server-capabilites :documentOnTypeFormattingProvider))
+
 (use-package rustic
   :straight t
   :config
@@ -3496,6 +3503,7 @@ Replaces the buffer string in that region."
     (remove-hook 'rustic-mode-hook #'flymake-mode-off)
     (add-hook 'rustic-mode-hook #'quiescent-enable-flymake-mode)
     (add-hook 'rustic-mode-hook #'quiescent-disable-flycheck)
+    (add-hook 'rustic-mode-hook #'quiescent-disable-eglot-post-insert)
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)
     (add-hook 'before-save-hook #'quiescent-rustic-format-buffer)))
