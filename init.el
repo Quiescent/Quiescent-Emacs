@@ -3049,10 +3049,13 @@ Nil if root is supplied as DIR."
             (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)
             (define-key js2-mode-map (kbd "C-M-f") #'quiescent-js2-forward-sexp)
             (define-key js2-mode-map (kbd "C-M-b") #'quiescent-js2-backward-sexp)
-            (define-key js2-mode-map (kbd "C-c C-z") #'quiescent-switch-to-visible-shell)))
+            (define-key js2-mode-map (kbd "C-c C-z") #'quiescent-switch-to-shell)))
 
-(defun quiescent-switch-to-visible-shell ()
-  "Switch to a visible buffer with a shell-like mode active."
+(defun quiescent-switch-to-shell ()
+  "Switch to a visible buffer with a shell-like mode active.
+
+If there aren't any, find the most recent shell-like buffer,
+display it in other window and switch to it."
   (interactive)
   (cl-block find-window
     (loop
@@ -3060,6 +3063,14 @@ Nil if root is supplied as DIR."
      do (when (save-window-excursion (select-window window)
                                      (member major-mode '(shell-mode)))
           (select-window window)
+          (cl-return-from find-window)))
+    ;; We didn't find a window.  Loop for a buffer.
+    (loop
+     for buffer being the buffers
+     do (when (save-window-excursion
+                (switch-to-buffer buffer)
+                (member major-mode '(shell-mode)))
+          (switch-to-buffer-other-window buffer)
           (cl-return-from find-window)))))
 
 (defun quiescent-js2-forward-sexp (&optional arg interactive)
