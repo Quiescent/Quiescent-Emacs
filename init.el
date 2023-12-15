@@ -3517,6 +3517,7 @@ Replaces the buffer string in that region."
     (add-hook 'rustic-mode-hook #'quiescent-disable-eglot-post-insert)
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)
+    (define-key rust-mode-map (kbd "C-c C-z") #'quiescent-switch-to-shell)
     (add-hook 'before-save-hook #'quiescent-rustic-format-buffer)))
 
 (defun quiescent-rustic-format-buffer ()
