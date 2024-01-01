@@ -217,48 +217,19 @@
 (use-package svg-tag-mode
   :straight t)
 
-(use-package smex
-  :straight t)
-
 (straight-use-package
  '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
 
 (require 'nano-layout)
 (require 'nano-faces)
 (require 'nano-theme)
-(require 'nano-theme-light)
 (require 'nano-theme-dark)
-(if (member "--light" command-line-args)
-    (nano-theme-set-light)
-  (nano-theme-set-dark))
+(nano-theme-set-dark)
 (call-interactively 'nano-refresh-theme)
-(defun quiescent-nano-defaults ()
-  "Setup nano defaults the way I like 'em."
+(defun quiescent-defaults ()
+  "Setup my defaults the way I like 'em."
   (progn
-    (menu-bar-mode -1)
-    (setq inhibit-startup-screen t)
-    (setq inhibit-startup-message t)
-    (setq inhibit-startup-echo-area-message t)
-    (setq initial-scratch-message nil)
-    (setq initial-buffer-choice nil)
     (setq frame-title-format nil)
-    (setq use-file-dialog nil)
-    (setq use-dialog-box nil)
-    (setq pop-up-windows nil)
-    (setq indicate-empty-lines nil)
-    (setq cursor-in-non-selected-windows nil)
-    (setq font-lock-maximum-decoration nil)
-    (setq font-lock-maximum-size nil)
-    (setq auto-fill-mode nil)
-    (setq fill-column 80)
-    (setq confirm-nonexistent-file-or-buffer nil)
-    (setq org-return-follows-link t)
-    (unless (display-graphic-p)
-      (xterm-mouse-mode 1)
-      (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-      (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
-    (if (fboundp 'scroll-bar-mode) (set-scroll-bar-mode nil))
-    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
     (when (eq system-type 'darwin)
       (setq ns-use-native-fullscreen t
             mac-option-key-is-meta t
@@ -276,12 +247,8 @@
                (eq system-type 'darwin))
       (setq interprogram-cut-function 'paste-to-osx)
       (setq interprogram-paste-function 'copy-from-osx))
-    (setq-default indent-tabs-mode nil)
     (fset 'yes-or-no-p 'y-or-n-p)
     (setq-default tab-width 4)
-    (temp-buffer-resize-mode)
-    (setq temp-buffer-max-height 8)
-    (setq window-min-height 1)
     (prefer-coding-system       'utf-8)
     (set-default-coding-systems 'utf-8)
     (set-terminal-coding-system 'utf-8)
@@ -305,33 +272,9 @@
         ad-do-it))
     (ad-activate 'term-sentinel)
     (setq pop-up-windows t)))
-(quiescent-nano-defaults)
-(require 'nano-session)
+(quiescent-defaults)
 (require 'nano-modeline)
-(require 'nano-splash)
 
-;; 
-
-;; ** Prism
-(use-package prism
-  :straight t
-  ;; Based on the readme for prism, adjusted to look closer to the
-  ;; original doom theme
-  :config (progn
-            (defun quiescent-prism-mode ()
-              "Enable Prism, only when we're not loading."
-              (when (null quiescent-starting-up)
-                (prism-mode 1)))
-            (prism-set-colors :num 24
-              :desaturations (list 10 20 30) :lightens (list 0 -0.25 -5)
-              :colors (list 'font-lock-string-face 'font-lock-keyword-face
-                            'font-lock-function-name-face 'font-lock-constant-face
-                            'font-lock-type-face)))
-  :hook (((clojure-mode
-           emacs-lisp-mode
-           lisp-mode
-           racket-mode)
-          . quiescent-prism-mode)))
 ;; 
 
 ;; ** Page Break Lines
@@ -1150,15 +1093,15 @@ current buffer through time (i.e. undo/redo while you scroll.)"
                                    (downcase text))))
         (when text-start
           (let* ((text-end     (+ text-start (length quiescent-completion-search-text)) )
-             (buffer-start (+ text-start start))
-             (buffer-end   (+ text-end   start)))
-        (if (not quiescent-completion-highlight-search-message-overlay)
-            (setq quiescent-completion-highlight-search-message-overlay
-                  (let ((overlay (make-overlay buffer-start buffer-end)))
-                    (overlay-put overlay 'face 'isearch)
-                    overlay))
-          (move-overlay quiescent-completion-highlight-search-message-overlay
-                        buffer-start
+                 (buffer-start (+ text-start start))
+                 (buffer-end   (+ text-end   start)))
+            (if (not quiescent-completion-highlight-search-message-overlay)
+                (setq quiescent-completion-highlight-search-message-overlay
+                      (let ((overlay (make-overlay buffer-start buffer-end)))
+                        (overlay-put overlay 'face 'isearch)
+                        overlay))
+              (move-overlay quiescent-completion-highlight-search-message-overlay
+                            buffer-start
                             buffer-end)))))
       (add-hook 'post-command-hook #'quiescent-completion-highlight-post-command-hook))))
 
@@ -3269,6 +3212,9 @@ Pass ARG and INTERACTIVE to `backward-sexp'."
 (define-key js2-highlight-vars-local-keymap (kbd "M-r") nil)
 
 (define-key js2-mode-map (kbd "M-r") #'quiescent-js2-raise-variable)
+(define-key js2-mode-map (kbd "M-.") #'js2-jump-to-definition)
+(define-key js2-mode-map (kbd "M-,") #'xref-go-back)
+(define-key js2-mode-map (kbd "C-c C-r") #'rjsx-rename-tag-at-point)
 
 (defun quiescent-js-dependency-graph-for-directory ()
   "Compute the dependency graph between JS modules in DEFAULT-DIRECTORY."
@@ -3462,24 +3408,6 @@ Replaces the buffer string in that region."
 ;;       (advice-add #'tide-jump-to-definition :before  #'xref-push-marker-stack)
 ;;       (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)
 ;;       (setq xref-backend-functions '(dumb-jump-xref-activate etags--xref-backend)))))
-
-;; 
-
-;; Tern Mode
-
-(add-to-list 'load-path "~/frm-src/tern/emacs/")
-(autoload 'tern-mode "tern.el" nil t)
-
-(defun quiescent-enable-tern-mode ()
-  "Enabled tern mode."
-  (tern-mode t))
-
-(with-eval-after-load 'tern
-  (define-key tern-mode-keymap (kbd "M-.") #'js2-jump-to-definition)
-  (define-key tern-mode-keymap (kbd "M-,") #'xref-go-back)
-  (define-key tern-mode-keymap (kbd "C-c C-r") #'rjsx-rename-tag-at-point))
-
-(add-hook 'js-mode-hook #'quiescent-enable-tern-mode)
 
 ;; 
 
@@ -5340,3 +5268,4 @@ The cofee should be delivered by DELIVER-BY."
 
 (setq quiescent-starting-up nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
