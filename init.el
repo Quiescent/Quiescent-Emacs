@@ -5259,6 +5259,13 @@ The cofee should be delivered by DELIVER-BY."
 
 (setq proced-enable-color-flag t)
 
+;; ** Pomm
+
+(use-package pomm
+  :straight t
+  :commands (pomm pomm-third-time)
+  :init (global-set-key (kbd "<f10>") #'pomm-third-time))
+
 ;; 
 
 ;; Reload custom in case anything overwrote it
