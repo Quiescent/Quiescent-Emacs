@@ -5264,7 +5264,9 @@ The cofee should be delivered by DELIVER-BY."
 (use-package pomm
   :straight t
   :commands (pomm pomm-third-time)
-  :init (global-set-key (kbd "<f10>") #'pomm-third-time))
+  :init (progn
+          (global-set-key (kbd "<f10>") #'pomm-third-time)
+          (setq pomm-third-time-fraction "1/4")))
 
 ;; 
 
