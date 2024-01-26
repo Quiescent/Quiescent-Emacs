@@ -1798,7 +1798,8 @@ Usually because of too much overhead in checking.")
         tsx-ts-mode-hook
         typescript-ts-base-mode-hook
         sql-mode-hook
-        org-mode-hook))
+        org-mode-hook
+        plantuml-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 (make-variable-buffer-local 'electric-pair-pairs)
