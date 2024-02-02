@@ -1347,6 +1347,7 @@ Completions are drawn from the dotted list ALL."
 
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
+(keymap-set prog-mode-map "<tab>" #'completion-at-point)
 (with-eval-after-load "js2-mode"
   (keymap-set js2-mode-map "<backtab>" #'completion-at-point)
   (keymap-set js2-mode-map "TAB" #'completion-at-point))
@@ -1716,6 +1717,7 @@ Usually because of too much overhead in checking.")
           (yas-global-mode 1)
           (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
           (keymap-unset yas-minor-mode-map "TAB")
+          (keymap-unset yas-minor-mode-map "<tab>")
           (keymap-set yas-minor-mode-map "M-TAB" yas-maybe-expand)))
 
 (defun quiescent-set-lisp-syntax-for-yasnippet ()
