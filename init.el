@@ -1568,6 +1568,30 @@ If it's dotted list, produce the values in the dotted list."
 
 (add-hook 'js2-mode-hook #'quiescent-setup-javascript-completion)
 
+;; Should look at all things in strings instead.  (Use syntax-ppps)
+(defun quiescent-complete-json-symbol-from-file ()
+  "Find all words in the whole JSON file and complete from them."
+  (let ((search-string (thing-at-point 'symbol))
+        (options))
+    (let* ((symbols-from-contents (quiescent-all-regexp-matches-in-region "[a-zA-Z0-9_]+"
+                                                                          (point-min)
+                                                                          (point-max)))
+           (names-from-contents (cl-remove search-string
+                                           symbols-from-contents
+                                           :test #'string-equal))
+           (matches (cl-remove-if-not (apply-partially #'cl-search search-string)
+                                      names-from-contents)))
+      (when matches
+        (setq options (cl-remove-duplicates matches :test #'string-equal))))
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (list (car bounds) (cdr bounds) options))))
+
+(defun quiescent-setup-json-completion ()
+  "Setup completion in JSON buffers."
+  (setq-local completion-at-point-functions (list #'quiescent-complete-json-symbol-from-file t)))
+
+(add-hook 'json-mode-hook #'quiescent-setup-json-completion)
+
 ;; 
 
 ;; ** Transient Mark Mode Commands
