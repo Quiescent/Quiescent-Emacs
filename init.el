@@ -1564,7 +1564,6 @@ If it's dotted list, produce the values in the dotted list."
   "Setup completion for Javascript buffers."
   (setq-local completion-at-point-functions (list #'quiescent-complete-javascript-symbol-from-backward-up-list
                                                   #'quiescent-complete-javascript-symbol-from-top-level-variable
-                                                  #'tern-completion-at-point
                                                   t)))
 
 (add-hook 'js2-mode-hook #'quiescent-setup-javascript-completion)
