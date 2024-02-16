@@ -2526,6 +2526,38 @@ the thought."
 
 ;; 
 
+;; ** Snake Case Region
+
+(defun quiescent-snake-case-region (beg end)
+  "Snake case the region [BEG, END] in the current region."
+  (interactive "r")
+  (let ((s (buffer-substring-no-properties beg end)))
+    (delete-region beg end)
+    (insert (thread-last (coerce s 'list)
+                         cdr
+                         (cl-mapcan (lambda (c)
+                                      (if (char-uppercase-p c)
+                                          (list ?_ (downcase c))
+                                        (list c))))
+                         (cons (downcase (aref s 0)))
+                         (map 'string #'identity)))))
+
+(defun quiescent-pascal-to-display-region (beg end)
+  "Turn the Pascal-case name in region [BEG, END] into a display name."
+  (interactive "r")
+  (let ((s (buffer-substring-no-properties beg end)))
+    (delete-region beg end)
+    (insert (thread-last (coerce s 'list)
+                         cdr
+                         (cl-mapcan (lambda (c)
+                                      (if (char-uppercase-p c)
+                                          (list ?\  c)
+                                        (list c))))
+                         (cons (upcase (aref s 0)))
+                         (map 'string #'identity)))))
+
+;; 
+
 ;; ** iBuffer
 
 (require 'ibuffer)
