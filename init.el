@@ -1568,7 +1568,25 @@ If it's dotted list, produce the values in the dotted list."
 
 (add-hook 'js2-mode-hook #'quiescent-setup-javascript-completion)
 
-;; Should look at all things in strings instead.  (Use syntax-ppps)
+;; Not quite there.  This is a little slow.  I could work from the
+;; other end and scan through string matches in the buffer,
+;; constructing as hit as the full string the hit was in...
+(defun quiescent-all-strings-in-buffer ()
+  "Produce a list of all the strings in the buffer ordered by point."
+  (let ((strings))
+    (save-excursion
+      (goto-char (point-min))
+      (while (< (point) (point-max))
+        (if (nth 3 (syntax-ppss))
+            (let ((start (point)))
+              (while (and (nth 3 (syntax-ppss))
+                          (<= (point) (point-max)))
+                (ignore-errors (forward-char)))
+              (push (buffer-substring-no-properties start (1- (point)))
+                    strings))
+          (ignore-errors (forward-char))))
+      strings)))
+
 (defun quiescent-complete-json-symbol-from-file ()
   "Find all words in the whole JSON file and complete from them."
   (let ((search-string (thing-at-point 'symbol))
