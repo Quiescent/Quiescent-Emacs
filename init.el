@@ -1738,7 +1738,7 @@ Usually because of too much overhead in checking.")
             (show-paren-mode +1)
             (setq show-paren-when-point-inside-paren t)
             (setq show-paren-when-point-in-periphery t)
-            (setq show-paren-context-when-offscreen 'child-frame)))
+            (setq show-paren-context-when-offscreen nil)))
 
 ;; 
 
