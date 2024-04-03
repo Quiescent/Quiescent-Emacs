@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debug
+# key: d
+# --
+console.debug('${1:variable}:', $1);
