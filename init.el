@@ -2740,6 +2740,39 @@ arguments actually mean."
 
 ;; 
 
+;; ** Files with Multiple Grep Hits
+
+(defun quiescent-read-many-strings ()
+  "Keep reading strings until the user provides an empty string."
+  (let ((next (read-string "Grep pattern: ")))
+    (when (and next (not (string-equal next "")))
+      (cons next (quiescent-read-many-strings)))))
+
+(defun quiescent-project-find-files-with-multiple-hits ()
+  "Find files in the project which match multiple grep queries."
+  (interactive)
+  (let* ((grep-queries (quiescent-read-many-strings))
+         (all-files (project-files (project-current)))
+         (matching-files (cl-reduce (lambda (acc next-query)
+                                      (remove-if (lambda (file)
+                                                   (/= 0 (call-process "grep"
+                                                                       nil
+                                                                       nil
+                                                                       nil
+                                                                       next-query
+                                                                       file)))
+                                                 acc))
+                                    grep-queries
+                                    :initial-value all-files)))
+    (display-buffer (get-buffer-create "*multi-grep-file-hits*"))
+    (save-window-excursion
+      (switch-to-buffer (get-buffer-create "*multi-grep-file-hits*"))
+      (read-only-mode -1)
+      (delete-region (point-min) (point-max))
+      (mapc (lambda (file) (insert file) (insert "\n")) matching-files))))
+
+;; 
+
 ;; * Languages
 
 ;; ** Json Mode
