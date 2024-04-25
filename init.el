@@ -4121,6 +4121,13 @@ See URL `https://www.npmjs.com/package/jscs'."
                  '(svelte-mode . ("svelteserver" "--stdio")))
     (add-hook 'svelte-mode-hook  #'eglot-ensure)))
 
+(use-package eglot-booster
+  :straight (eglot-booster :type git
+                           :host github
+                           :repo "jdtsmith/eglot-booster")
+  :after eglot
+  :config (eglot-booster-mode))
+
 ;; 
 
 ;; ** Markdown Mode
