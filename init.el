@@ -3984,6 +3984,11 @@ Assumes that you use SBT."
 
 ;; 
 
+(straight-use-package
+ '(svelte-mode :type git :host github :repo "leafOfTree/svelte-mode"))
+
+;; 
+
 ;; * Tree Sitter
 
 ;; This has its own section after Languages because it's likely to
@@ -4111,23 +4116,10 @@ See URL `https://www.npmjs.com/package/jscs'."
     (add-to-list 'eglot-server-programs '(rustic-mode . ("rust-analyzer")))
     (add-hook 'scala-mode-hook #'eglot-ensure)
     (add-hook 'rust-mode-hook  #'eglot-ensure)
-    (define-key eglot-mode-map (kbd "M-RET") #'eglot-code-actions)))
-
-;; ** LSP
-
-(use-package lsp-mode
-  :straight t
-  :init (progn
-          (defun quiescent-setup-svelte ()
-            "Setup svelte if we're in a file with that exten."
-            (progn
-              (setq-local font-lock-maximum-decoration 1)
-              (when (thread-last (buffer-file-name (current-buffer))
-                                 file-name-extension
-                                 (string-equal "svelte"))
-                (lsp)
-                (lsp-headerline-breadcrumb-mode -1))))
-          (add-hook 'web-mode-hook #'quiescent-setup-svelte)))
+    (define-key eglot-mode-map (kbd "M-RET") #'eglot-code-actions)
+    (add-to-list 'eglot-server-programs
+                 '(svelte-mode . ("svelteserver" "--stdio")))
+    (add-hook 'svelte-mode-hook  #'eglot-ensure)))
 
 ;; 
 
