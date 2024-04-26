@@ -2773,6 +2773,37 @@ arguments actually mean."
 
 ;; 
 
+;; 
+
+;; ** Instant Register Mode
+
+(defun instant-registers-create-register-inserter (id)
+  "Create an interactive function to insert the register at ID."
+  (lambda ()
+    (interactive)
+    (insert-register id)))
+
+(defvar instant-registers-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "1") (instant-registers-create-register-inserter ?1))
+    (define-key map (kbd "2") (instant-registers-create-register-inserter ?2))
+    (define-key map (kbd "3") (instant-registers-create-register-inserter ?3))
+    (define-key map (kbd "4") (instant-registers-create-register-inserter ?4))
+    (define-key map (kbd "5") (instant-registers-create-register-inserter ?5))
+    (define-key map (kbd "6") (instant-registers-create-register-inserter ?6))
+    (define-key map (kbd "7") (instant-registers-create-register-inserter ?7))
+    (define-key map (kbd "8") (instant-registers-create-register-inserter ?8))
+    (define-key map (kbd "9") (instant-registers-create-register-inserter ?9))
+    (define-key map (kbd "0") (instant-registers-create-register-inserter ?0))
+    map)
+  "Keymap used by `instant-registers-command-mode'.")
+
+(define-minor-mode instant-registers-mode
+  "Insert registers from the number keys without the register binding prefix." 
+  :global t)
+
+;; 
+
 ;; * Languages
 
 ;; ** Json Mode
