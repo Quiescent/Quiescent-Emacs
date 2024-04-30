@@ -3125,6 +3125,7 @@ Nil if root is supplied as DIR."
   :straight t
   :config (progn
             (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+            (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js2-mode))
             (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
             (define-key js2-mode-map (kbd "<f5>") #'quiescent-start-node-with-this-file)
             (define-key js2-mode-map (kbd "<f6>") #'quiescent-start-mocha-with-this-file)
