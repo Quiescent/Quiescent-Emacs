@@ -3622,16 +3622,6 @@ comment."
 
 (define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun-or-fill-paragraph)
 
-(defun rustic-mode--find-project-root (directory)
-  "Produce the root of Rust project containing DIRECTORY."
-  (let ((rustic-root (locate-dominating-file directory "cargo.toml")))
-    (when rustic-root
-      (cons 'transient rustic-root))))
-
-(require 'project)
-
-(add-hook 'project-find-functions #'rustic-mode--find-project-root)
-
 (use-package flymake-clippy
   :straight t
   :hook (rustic-mode . flymake-clippy-setup-backend))
@@ -3900,23 +3890,6 @@ Store PREV-VAL in variable."
   "Enable eglot in the curernt buffer."
   (when (null quiescent-starting-up)
     (eglot-ensure)))
-
-(defun scala-mode--find-project-root (directory)
-  "Produce the root of SBT project containing DIRECTORY.
-
-Assumes that you use SBT."
-  (when (null quiescent-starting-up)
-    (let ((sbt-root (locate-dominating-file directory "build.sbt")))
-      (when sbt-root
-        (cons 'sbt sbt-root)))))
-
-(add-hook 'project-find-functions #'scala-mode--find-project-root)
-
-(cl-defmethod project-roots ((project (head sbt)))
-  (list (cdr project)))
-
-(cl-defmethod project-files ((project (head sbt)) &optional dirs)
-  (project-files (project-try-vc (car (project-roots project))) dirs))
 
 ;; 
 
