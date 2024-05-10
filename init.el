@@ -226,6 +226,12 @@
 (require 'nano-theme-dark)
 (nano-theme-set-dark)
 (call-interactively 'nano-refresh-theme)
+(defun quiescent-light-mode ()
+  "Set the nano theme to light."
+  (interactive)
+  (require 'nano-theme-light)
+  (nano-theme-set-light)
+  (call-interactively 'nano-refresh-theme))
 (defun quiescent-defaults ()
   "Setup my defaults the way I like 'em."
   (progn
