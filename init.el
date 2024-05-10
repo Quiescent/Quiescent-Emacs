@@ -3622,21 +3622,6 @@ comment."
 
 (define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun-or-fill-paragraph)
 
-(use-package flymake-clippy
-  :straight t
-  :hook (rustic-mode . flymake-clippy-setup-backend))
-
-(with-eval-after-load 'eglot
- (add-to-list 'eglot-stay-out-of 'flymake))
-
-(defun quiescent-manually-activate-flymake ()
-  "Activate flymake with clippy in eglot."
-  (progn
-    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
-    (flymake-mode 1)))
-
-(add-hook 'eglot-managed-mode-hook #'quiescent-manually-activate-flymake)
-
 ;; 
 
 ;; ** Slime Mode
