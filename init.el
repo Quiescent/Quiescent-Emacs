@@ -3729,7 +3729,7 @@ Based on `slime-expand-abbreviations-and-complete' from
     (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
     (add-hook 'slime-mode-hook      #'quiescent-setup-lisp-completion)
     (add-hook 'slime-repl-mode-hook #'quiescent-setup-lisp-completion))
-  :init (progn (setq inferior-lisp-program "sbcl")
+  :init (progn (setq inferior-lisp-program "sbcl --dynamic-space-size 2048")
                (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))))
 
 (defun quiescent-setup-slime ()
