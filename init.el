@@ -1353,7 +1353,6 @@ Completions are drawn from the dotted list ALL."
 
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
-(keymap-set prog-mode-map "<tab>" #'completion-at-point)
 (with-eval-after-load "js2-mode"
   (keymap-set js2-mode-map "<backtab>" #'completion-at-point)
   (keymap-set js2-mode-map "TAB" #'completion-at-point))
