@@ -1,4 +1,4 @@
-;;; .emacs --- My emacs root config file. -*- lexical-binding: t -*-
+;;; .emacs --- My emacs root config file. -*- lexical-binding: t; outline-minor-mode: t -*-
 
 ;;; Commentary:
 ;; This file is now pointing at a literate program version of
@@ -204,9 +204,9 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-;; * Themes
+;;; * Themes
 
-;; ** Nano
+;;; ** Nano
 
 (use-package mini-frame
   :straight t)
@@ -283,7 +283,7 @@
 
 ;; 
 
-;; ** Page Break Lines
+;;; ** Page Break Lines
 
 (use-package page-break-lines
   :straight t
@@ -293,21 +293,21 @@
 
 ;; 
 
-;; ** MB Depth
+;;; ** MB Depth
 
 (use-package mb-depth
   :straight t)
 
 ;; 
 
-;; ** Crosshair
+;;; ** Crosshair
 
 (use-package xhair
   :straight t)
 
 ;; 
 
-;; ** Visual Bell
+;;; ** Visual Bell
 
 ;; From Phil, posted on https://pragmaticemacs.wordpress.com/2017/10/15/using-a-visible-bell-in-emacs/
 ;;
@@ -345,7 +345,7 @@
 
 ;; 
 
-;; ** Compilation mode
+;;; ** Compilation mode
 
 (defun endless/colorize-compilation ()
   "Colorize from `compilation-filter-start' to `point'."
@@ -363,9 +363,9 @@
               #'endless/colorize-compilation)))
 
 ;; 
-;; * Editing Anything
+;;; * Editing Anything
 
-;; ** Manipulating Windows and Frames
+;;; ** Manipulating Windows and Frames
 
 (defun quiescent-close-help ()
   "Close the help window."
@@ -390,7 +390,7 @@
 
 ;; 
 
-;; ** Flyspell
+;;; ** Flyspell
 
 (use-package flyspell
   :init (progn
@@ -410,7 +410,7 @@
 
 ;; 
 
-;; ** Unfill Paragraph
+;;; ** Unfill Paragraph
 
 ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
 (defun unfill-paragraph (&optional region)
@@ -428,7 +428,7 @@ i.e. the reverse of fill paragraph."
 
 ;; 
 
-;; ** Fill/Unfill All
+;;; ** Fill/Unfill All
 
 (defmacro quiescent-for-all-paragraphs (&rest body)
   "Execute BODY with the point in each paragraph in the current buffer."
@@ -451,7 +451,7 @@ i.e. the reverse of fill paragraph."
 
 ;; 
 
-;; ** General Editing Conf
+;;; ** General Editing Conf
 
 (setq-default indent-tabs-mode nil)
 (defun quiescent-disable-indent-tabs-mode ()
@@ -465,7 +465,7 @@ i.e. the reverse of fill paragraph."
 
 ;; 
 
-;; ** Using the Other Window 
+;;; ** Using the Other Window 
 
 (defmacro quiescent-in-other-buffer (&rest body)
   "Execute BODY in the other window and return to the startindg window."
@@ -499,7 +499,7 @@ Maintains the point in the current window."
 
 ;; 
 
-;; ** Swapping windows
+;;; ** Swapping windows
 
 (defun quiescent-swap-windows ()
   "Swap the two most recently displayed windows."
@@ -517,7 +517,7 @@ Maintains the point in the current window."
 
 ;; 
 
-;; ** Treating Buffer Lines as Sets
+;;; ** Treating Buffer Lines as Sets
 
 (defvar *buffer-disjunction-results-buffer-name* "*disjunction-results*"
   "The name of the buffer to display disjunction results in.")
@@ -572,7 +572,7 @@ Maintains the point in the current window."
 
 ;; 
 
-;; ** Tiny
+;;; ** Tiny
 
 (use-package tiny
   :straight t
@@ -580,7 +580,7 @@ Maintains the point in the current window."
 
 ;; 
 
-;; ** Hippie Expand
+;;; ** Hippie Expand
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -680,7 +680,7 @@ Pass ARGS to F."
 
 ;; 
 
-;; ** Avy
+;;; ** Avy
 
 (use-package avy
   :straight t
@@ -748,7 +748,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Better Backward Up List
+;;; ** Better Backward Up List
 
 (defun quiescent-backward-up-list ()
   "Go `backward-up-list' leaving behind the marker."
@@ -767,7 +767,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Keep Popping the Ring Until the Point Moved
+;;; ** Keep Popping the Ring Until the Point Moved
 
 (defun quiescent-keep-popping-til-moved (pop-function &rest args)
   "Keep popping the mark until either the mark ring is empty or the point moved."
@@ -782,7 +782,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Make the Mark Visible
+;;; ** Make the Mark Visible
 
 (use-package visible-mark
   :straight t
@@ -793,7 +793,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Hydra
+;;; ** Hydra
 
 (use-package hydra
   :straight t
@@ -869,7 +869,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Window Jump
+;;; ** Window Jump
 
 (use-package window-jump
   :straight t
@@ -881,7 +881,7 @@ to make the advice work."
 
 ;; 
 
-;; ** iSearch
+;;; ** iSearch
 
 (defun quiescent-kill-isearch-match ()
   "Kill the current isearch match string and continue searching."
@@ -917,7 +917,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Crosslink Buffers
+;;; ** Crosslink Buffers
 
 (defvar quiescent-cross-link-linked-buffer nil
   "The buffer which this buffer is cross linked to.")
@@ -946,7 +946,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Multiple Cursors
+;;; ** Multiple Cursors
 
 (use-package multiple-cursors
   :straight t
@@ -961,7 +961,7 @@ to make the advice work."
 
 ;; 
 
-;; ** iEdit
+;;; ** iEdit
 
 (use-package iedit
   :straight t
@@ -969,7 +969,7 @@ to make the advice work."
 
 ;; 
 
-;; ** Hi-Scroll-Mode
+;;; ** Hi-Scroll-Mode
 ;; (Based on an XKCD ^_^)
 
 (define-minor-mode hiscroll-mode
@@ -1011,7 +1011,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** Recursive Editing
+;;; ** Recursive Editing
 
 (defun quiescent-general-recursive-edit ()
   "Enter a recursive editing session remembering the window config etc."
@@ -1024,7 +1024,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** Composable Editing
+;;; ** Composable Editing
 
 (eval-and-compile
   (add-to-list 'load-path "~/.emacs.d/lisp/composable.el/")
@@ -1036,7 +1036,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** EACL
+;;; ** EACL
 
 (use-package eacl
   :straight t
@@ -1047,7 +1047,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** Fido
+;;; ** Fido
 
 (fido-vertical-mode t)
 
@@ -1056,7 +1056,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; 
 
-;; ** Quiescent Completion -- My Implementation of Completion at Point
+;;; ** Quiescent Completion -- My Implementation of Completion at Point
 
 (defvar quiescent-completion-search-text nil
   "What we're searching for in all completions.")
@@ -1364,7 +1364,7 @@ Completions are drawn from the dotted list ALL."
 
 ;; 
 
-;; ** Complete Locally Bound Lisp Symbols
+;;; ** Complete Locally Bound Lisp Symbols
 
 (defun quiescent-flatten (xs)
   "Produce a flat version of XS.
@@ -1437,7 +1437,7 @@ If it's dotted list, produce the values in the dotted list."
 
 ;; 
 
-;; ** Complete Local Symbols with Regexp
+;;; ** Complete Local Symbols with Regexp
 
 (defun quiescent-all-regexp-matches-in-region (regexp beg end)
   "Produce every mathc for REGEXP in the buffer from BEG to END."
@@ -1617,7 +1617,7 @@ If it's dotted list, produce the values in the dotted list."
 
 ;; 
 
-;; ** Transient Mark Mode Commands
+;;; ** Transient Mark Mode Commands
 
 (defvar quiescent-transient-command-mode-map
   (let ((map (make-sparse-keymap)))
@@ -1721,7 +1721,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Flymake
+;;; ** Flymake
 
 (require 'flymake)
 
@@ -1735,7 +1735,7 @@ Usually because of too much overhead in checking.")
 
 (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
 
-;; ** Show Parenthises
+;;; ** Show Parenthises
 
 (use-package paren
   :config (progn
@@ -1747,7 +1747,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Yasnippet
+;;; ** Yasnippet
 
 ;; From SO: http://emacs.stackexchange.com/questions/12613/convert-the-first-character-to-uppercase-capital-letter-using-yasnippet
 (defun kaushalmodi-capitalize-first-char (string)
@@ -1775,7 +1775,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Paredit
+;;; ** Paredit
 
 (defun quiescent-activate-paredit-mode ()
   "Activate paredit mode."
@@ -1802,7 +1802,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Electric Pair
+;;; ** Electric Pair
 
 (require 'elec-pair)
 
@@ -1855,7 +1855,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Save Place
+;;; ** Save Place
 
 (use-package saveplace
   :defer 10
@@ -1863,7 +1863,7 @@ Usually because of too much overhead in checking.")
 
 ;; 
 
-;; ** Preview Region in Specific Mode
+;;; ** Preview Region in Specific Mode
 
 (defun quiescent-point-at-start-of-line ()
   "Produce the point at the start of the line."
@@ -1985,7 +1985,7 @@ which ends up being reflected.")
 
 ;; 
 
-;; ** Insert Random Int
+;;; ** Insert Random Int
 
 (defvar quiescent-random-int-threshold 20000
   "A threshold for the randomly generated integers.")
@@ -1997,21 +1997,21 @@ which ends up being reflected.")
 
 ;; 
 
-;; ** Editor Conf
+;;; ** Editor Conf
 
 (use-package editorconfig
   :straight t
   :init (with-eval-after-load "editorconfig"
           (editorconfig-mode 1)))
 
-;; ** Eros
+;;; ** Eros
 
 (use-package eros
   :straight t)
 
 ;; 
 
-;; ** Too Long Lines
+;;; ** Too Long Lines
 
 (use-package too-long-lines-mode
   :load-path "~/.emacs.d/lisp/too-long-lines-mode/"
@@ -2019,7 +2019,7 @@ which ends up being reflected.")
 
 ;; 
 
-;; ** Ediff
+;;; ** Ediff
 
 (require 'ediff)
 
@@ -2040,7 +2040,7 @@ which ends up being reflected.")
 
 ;; 
 
-;; ** Recent Files (recentf)
+;;; ** Recent Files (recentf)
 
 (require 'recentf)
 
@@ -2074,7 +2074,7 @@ which ends up being reflected.")
 
 ;; 
 
-;; ** VC Git Grep
+;;; ** VC Git Grep
 
 (defun quiescent-vc-git-grep (regexp)
   "Search for REGEXP in the current project using grep.
@@ -2099,13 +2099,13 @@ search through."
 
 ;; 
 
-;; ** iMenu
+;;; ** iMenu
 
 (global-set-key (kbd "M-i") #'imenu)
 
 ;; 
 
-;; ** Project
+;;; ** Project
 
 (global-set-key (kbd "C-S-P") #'project-find-file)
 (global-set-key (kbd "C-c p f") #'project-find-file)
@@ -2113,7 +2113,7 @@ search through."
 
 ;; 
 
-;; ** Goto Change
+;;; ** Goto Change
 
 (use-package goto-chg
   :straight t
@@ -2123,7 +2123,7 @@ search through."
 
 ;; 
 
-;; ** Lock Files & Backups
+;;; ** Lock Files & Backups
 
 (make-variable-buffer-local 'create-lockfiles)
 
@@ -2140,7 +2140,7 @@ search through."
 
 ;; 
 
-;; ** Smartscan
+;;; ** Smartscan
 
 (use-package smartscan
   :straight t
@@ -2166,7 +2166,7 @@ search through."
 
 ;; 
 
-;; ** Wgrep
+;;; ** Wgrep
 
 (use-package wgrep
   :straight t)
@@ -2176,7 +2176,7 @@ search through."
 
 ;; 
 
-;; ** Live Occur Buffer
+;;; ** Live Occur Buffer
 
 ;; Problem: I want to filter a buffer (such as a tailed log file or a
 ;; shell-like buffer) as more data is generated.
@@ -2278,7 +2278,7 @@ display."
 
 ;; 
 
-;; ** Go Up
+;;; ** Go Up
 
 (defun quiescent-one-directory-above-current ()
   "Produce the directory one above the current one."
@@ -2319,7 +2319,7 @@ display."
 
 ;; 
 
-;; ** Tick Number at Point
+;;; ** Tick Number at Point
 
 (defun quiescent-increment-number-at-point ()
   "Increment the number at point.
@@ -2355,11 +2355,11 @@ outside of one."
 
 ;; 
 
-;; ** KMacro
+;;; ** KMacro
 
 (global-set-key (kbd "C-c r") 'replace-string)
 
-;; ** Aligned Movement
+;;; ** Aligned Movement
 
 (defmacro aligned-searcher (backward)
   "Create an aligned move function.
@@ -2413,7 +2413,7 @@ Backward is S-p."
 
 ;; 
 
-;; ** Separedit
+;;; ** Separedit
 
 (use-package separedit
   :straight t
@@ -2426,7 +2426,7 @@ Backward is S-p."
 
 ;; 
 
-;; ** Thought Stack
+;;; ** Thought Stack
 
 (define-minor-mode thought-stack-mode
   "Keep track of small related tasks.
@@ -2531,7 +2531,7 @@ the thought."
 
 ;; 
 
-;; ** Dump Jump
+;;; ** Dump Jump
 
 (use-package dumb-jump
   :straight t
@@ -2543,7 +2543,7 @@ the thought."
 
 ;; 
 
-;; ** Capitalise Word
+;;; ** Capitalise Word
 
 (require 'subr-x)
 (require 'cl-lib)
@@ -2572,7 +2572,7 @@ the thought."
 
 ;; 
 
-;; ** Snake Case Region
+;;; ** Snake Case Region
 
 (defun quiescent-snake-case-region (beg end)
   "Snake case the region [BEG, END] in the current region."
@@ -2604,7 +2604,7 @@ the thought."
 
 ;; 
 
-;; ** iBuffer
+;;; ** iBuffer
 
 (require 'ibuffer)
 
@@ -2623,13 +2623,13 @@ the thought."
               (name 16 -1)
               " " filename)))
 
-;; ** IsearchB
+;;; ** IsearchB
 
 (define-key global-map [(control ?z)] 'isearchb-activate)
 
 ;; 
 
-;; ** Hilight Block
+;;; ** Hilight Block
 
 (define-minor-mode highlight-block-mode
   "Highlight the containing block.
@@ -2692,7 +2692,7 @@ Should also highlight containing blocks when the buffer isn't focused."
 
 ;; 
 
-;; ** Query Replace Multiple Matches
+;;; ** Query Replace Multiple Matches
 ;;
 ;; Source: https://tony-zorman.com/posts/query-replace/2022-08-06-query-replace-many.html
 
@@ -2745,7 +2745,7 @@ arguments actually mean."
 
 ;; 
 
-;; ** Files with Multiple Grep Hits
+;;; ** Files with Multiple Grep Hits
 
 (defun quiescent-read-many-strings ()
   "Keep reading strings until the user provides an empty string."
@@ -2780,7 +2780,7 @@ arguments actually mean."
 
 ;; 
 
-;; ** Instant Register Mode
+;;; ** Instant Register Mode
 
 (defun instant-registers-create-register-inserter (id)
   "Create an interactive function to insert the register at ID."
@@ -2809,9 +2809,9 @@ arguments actually mean."
 
 ;; 
 
-;; * Languages
+;;; * Languages
 
-;; ** Json Mode
+;;; ** Json Mode
 
 (use-package json-mode
   :straight t)
@@ -2846,28 +2846,28 @@ arguments actually mean."
 
 ;; 
 
-;; ** Julia Mode
+;;; ** Julia Mode
 
 (use-package julia-mode
   :straight t)
 
 ;; 
 
-;; ** YAML Mode
+;;; ** YAML Mode
 
 (use-package yaml-mode
   :straight t)
 
 ;; 
 
-;; ** Groovy Mode
+;;; ** Groovy Mode
 
 (use-package groovy-mode
   :straight t)
 
 ;; 
 
-;; ** C/C++ Mode
+;;; ** C/C++ Mode
 
 (require 'cc-mode)
 
@@ -2893,28 +2893,28 @@ arguments actually mean."
 
 ;; 
 
-;; ** PlantUML Mode
+;;; ** PlantUML Mode
 
 (use-package plantuml-mode
   :straight t)
 
 ;; 
 
-;; ** F Sharp Mode
+;;; ** F Sharp Mode
 
 (use-package fsharp-mode
   :straight t)
 
 ;; 
 
-;; ** Graphviz Dot Mode
+;;; ** Graphviz Dot Mode
 
 (use-package graphviz-dot-mode
   :straight t)
 
 ;; 
 
-;; ** Web/HTML Mode(s)
+;;; ** Web/HTML Mode(s)
 
 (require 'sgml-mode)
 
@@ -2952,14 +2952,14 @@ arguments actually mean."
 
 ;; 
 
-;; ** SASS Mode
+;;; ** SASS Mode
 
 (use-package sass-mode
   :straight t)
 
 ;; 
 
-;; ** RJSX Mode
+;;; ** RJSX Mode
 
 (use-package rjsx-mode
   :straight t
@@ -2981,7 +2981,7 @@ arguments actually mean."
 
 ;; 
 
-;; ** Powershell
+;;; ** Powershell
 
 (use-package powershell
   :straight t
@@ -2989,7 +2989,7 @@ arguments actually mean."
 
 ;; 
 
-;; ** Haskell Mode
+;;; ** Haskell Mode
 
 (defun quiescent-turn-on-haskell-doc-mode ()
   "Activate `haskell-doc-mode'."
@@ -3028,14 +3028,14 @@ arguments actually mean."
 
 ;; 
 
-;; ** Cython Mode
+;;; ** Cython Mode
 
 (use-package cython-mode
   :load-path "~/.emacs.d/cython")
 
 ;; 
 
-;; ** NXML Mode
+;;; ** NXML Mode
 
 (require 'nxml-mode)
 
@@ -3080,7 +3080,7 @@ by using nxml's indentation rules."
 
 ;; 
 
-;; ** Maven
+;;; ** Maven
 
 (defun quiescent-nearest-pom-up ()
   "Goto the nearest pom file updwards from the current directory."
@@ -3113,7 +3113,7 @@ Nil if root is supplied as DIR."
 
 ;; 
 
-;; ** JS2 Mode
+;;; ** JS2 Mode
 
 (defun quiescent-indent-js-function ()
   "Indent the javascript function at point."
@@ -3495,7 +3495,7 @@ Replaces the buffer string in that region."
 
 ;; 
 
-;; ** Tide Mode
+;;; ** Tide Mode
 
 ;; (use-package tide
 ;;   :straight t
@@ -3557,7 +3557,7 @@ Replaces the buffer string in that region."
 
 ;; 
 
-;; ** Typescript Mode
+;;; ** Typescript Mode
 
 (use-package typescript-mode
   :straight t
@@ -3565,7 +3565,7 @@ Replaces the buffer string in that region."
 
 ;; 
 
-;; ** Rust Mode
+;;; ** Rust Mode
 
 (use-package rust-mode
   :straight t)
@@ -3623,7 +3623,7 @@ comment."
 
 ;; 
 
-;; ** Slime Mode
+;;; ** Slime Mode
 
 (use-package slime-company
   :straight t)
@@ -3742,7 +3742,7 @@ Source: https://github.com/fukamachi/qlot"
 
 ;; 
 
-;; ** Clojure
+;;; ** Clojure
 
 (defun quiescent-setup-clojure-hooks ()
   "Setup hooks for clojure mode."
@@ -3778,7 +3778,7 @@ Source: https://github.com/fukamachi/qlot"
 
 ;; 
 
-;; ** Emacs Lisp
+;;; ** Emacs Lisp
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'quiescent-switch-to-ielm-buffer)
 (define-key emacs-lisp-mode-map (kbd "C-c C-k") #'eval-buffer)
@@ -3848,7 +3848,7 @@ Store PREV-VAL in variable."
 
 ;; 
 
-;; ** Scala
+;;; ** Scala
 
 (use-package scala-mode
   :straight t
@@ -3877,28 +3877,28 @@ Store PREV-VAL in variable."
 
 ;; 
 
-;; ** Dockerfile Mode
+;;; ** Dockerfile Mode
 
 (use-package dockerfile-mode
   :straight t)
 
 ;; 
 
-;; ** Kotlin Mode
+;;; ** Kotlin Mode
 
 (use-package kotlin-mode
   :straight t)
 
 ;; 
 
-;; ** Terraform Mode
+;;; ** Terraform Mode
 
 (use-package terraform-mode
   :straight t)
 
 ;; 
 
-;; ** Python
+;;; ** Python
 
 (use-package pyvenv
   :load-path "~/.emacs.d/lisp/pyvenv/")
@@ -3926,14 +3926,14 @@ Store PREV-VAL in variable."
 
 ;; 
 
-;; ** Racket Mode
+;;; ** Racket Mode
 
 (use-package racket-mode
   :straight t)
 
 ;; 
 
-;; ** Ruby Mode
+;;; ** Ruby Mode
 
 (use-package enh-ruby-mode
   :straight t
@@ -3958,21 +3958,21 @@ Store PREV-VAL in variable."
 
 ;; 
 
-;; ** ESS (R etc.)
+;;; ** ESS (R etc.)
 
 (use-package ess
   :straight t)
 
 ;; 
 
-;; ** Swift Mode
+;;; ** Swift Mode
 
 (use-package swift-mode
   :straight t)
 
 ;; 
 
-;; ** CSV mode
+;;; ** CSV mode
 
 (use-package csv-mode
   :straight t)
@@ -3984,7 +3984,7 @@ Store PREV-VAL in variable."
 
 ;; 
 
-;; * Tree Sitter
+;;; * Tree Sitter
 
 ;; This has its own section after Languages because it's likely to
 ;; depend on languages.
@@ -4025,9 +4025,9 @@ Store PREV-VAL in variable."
   :hook (emacs-startup . treesit-parser-manager-install-grammars))
 
 
-;; * Post Programming Languages Config
+;;; * Post Programming Languages Config
 
-;; ** Flycheck
+;;; ** Flycheck
 
 (require 'flycheck)
 
@@ -4099,7 +4099,7 @@ See URL `https://www.npmjs.com/package/jscs'."
 
 ;; 
 
-;; ** Eglot
+;;; ** Eglot
 
 (use-package eglot
   :straight t
@@ -4125,14 +4125,14 @@ See URL `https://www.npmjs.com/package/jscs'."
 
 ;; 
 
-;; ** Markdown Mode
+;;; ** Markdown Mode
 
 (use-package markdown-mode
   :straight t)
 
 ;; 
 
-;; ** GGTags
+;;; ** GGTags
 
 (use-package ggtags
   :straight t
@@ -4156,21 +4156,21 @@ Give ARG to ggtags."
 
 ;; 
 
-;; ** XREF
+;;; ** XREF
 
 (add-hook 'xref-after-update-hook #'outline-minor-mode)
 
 ;; 
 
-;; ** Outline Minor Mode
+;;; ** Outline Minor Mode
 
 (define-key outline-minor-mode-map (kbd "s-%") #'outline-cycle-buffer)
 
 ;; 
 
-;; * Applications
+;;; * Applications
 
-;; ** Shell
+;;; ** Shell
 
 (defvar quiescent-supress-cd nil
   "Whether to not cd to the directory where shell was called.")
@@ -4196,7 +4196,7 @@ Then switch directory to where we called it from"
 
 (add-hook 'shell-mode-hook #'shell-highlight-undef-mode)
 
-;; ** Eshell
+;;; ** Eshell
 
 (require 'em-prompt)
 (require 'vc-git)
@@ -4322,14 +4322,14 @@ See `eshell-prompt-regexp'."
 
 ;; 
 
-;; ** EAT (Emulato A Terminal)
+;;; ** EAT (Emulato A Terminal)
 
 (use-package eat
   :straight t)
 
 ;; 
 
-;; ** GNUs
+;;; ** GNUs
 
 (defun quiescent-gnus-summary-toggle-header ()
   "Run summary toggle header."
@@ -4341,7 +4341,7 @@ See `eshell-prompt-regexp'."
 
 ;; 
 
-;; ** Dired
+;;; ** Dired
 
 (use-package dired-x
   :config (progn
@@ -4669,18 +4669,18 @@ In particular, inode number, number of hard links, and file size."
 
 ;; 
 
-;; ** EWW
+;;; ** EWW
 
 (setq browse-url-browser-function 'eww-browse-url)
 
 ;; 
 
-;; ** EPA
+;;; ** EPA
 
 (use-package epa-file
   :config (epa-file-enable))
 
-;; ** Org Mode
+;;; ** Org Mode
 
 (use-package all-the-icons
   :straight t)
@@ -5046,7 +5046,7 @@ first created to remember those values."
 
 ;; 
 
-;; ** Secretaria
+;;; ** Secretaria
 
 (use-package alert
   :straight t)
@@ -5107,7 +5107,7 @@ first created to remember those values."
 
 ;; 
 
-;; ** Demo It
+;;; ** Demo It
 
 (use-package demo-it
   :straight t)
@@ -5126,7 +5126,7 @@ first created to remember those values."
 
 ;; 
 
-;; ** Git Related Navigation
+;;; ** Git Related Navigation
 
 ;; Source: https://macroexpand.net/pages/git-related.html
 
@@ -5135,7 +5135,7 @@ first created to remember those values."
 
 ;; 
 
-;; ** Git Time Machine
+;;; ** Git Time Machine
 
 ;; Note: moved to: https://codeberg.org/pidu/git-timemachine.git
 (use-package git-timemachine
@@ -5143,14 +5143,14 @@ first created to remember those values."
 
 ;; 
 
-;; ** Chess
+;;; ** Chess
 
 (use-package chess
   :straight t)
 
 ;; 
 
-;; ** Lock this PC
+;;; ** Lock this PC
 
 (defun quiescent-lock-pc ()
   "Lock this computer.
@@ -5161,14 +5161,14 @@ Enter the password for this account to unlock it."
 
 ;; 
 
-;; ** GNU Plot
+;;; ** GNU Plot
 
 (use-package gnuplot
   :straight t)
 
 ;; 
 
-;; ** Rest Client
+;;; ** Rest Client
 
 (use-package restclient
   :straight t
@@ -5176,7 +5176,7 @@ Enter the password for this account to unlock it."
 
 ;; 
 
-;; ** Coffee Business
+;;; ** Coffee Business
 
 (defun quiescent-add-coffee-order (date amount description deliver-by)
   "Add an order made on DATE costing AMOUNT for coffee described by DESCRIPTION.
@@ -5212,7 +5212,7 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
-;; ** IA Writer Mode
+;;; ** IA Writer Mode
 
 (use-package writeroom-mode
   :straight t)
@@ -5282,7 +5282,7 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
-;; ** AucTeX
+;;; ** AucTeX
 
 (require 'ox-latex)
 
@@ -5321,7 +5321,7 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
-;; ** Sqlite mode
+;;; ** Sqlite mode
 
 (use-package sqlite-mode
   :config
@@ -5330,7 +5330,7 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
-;; ** PDF Tools
+;;; ** PDF Tools
 
 ;; (defvar install-pdf-tools
 ;;   '(use-package pdf-tools
@@ -5352,17 +5352,17 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
-;; ** Calc
+;;; ** Calc
 
 (setq calc-kill-line-numbering nil)
 
 ;; 
 
-;; ** Proced
+;;; ** Proced
 
 (setq proced-enable-color-flag t)
 
-;; ** Pomm
+;;; ** Pomm
 
 (use-package pomm
   :straight t
@@ -5376,7 +5376,7 @@ The cofee should be delivered by DELIVER-BY."
 ;; Reload custom in case anything overwrote it
 (load custom-file)
 
-;; * DONE!
+;;; * DONE!
 
 (setq quiescent-starting-up nil)
 (put 'narrow-to-region 'disabled nil)
