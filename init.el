@@ -2830,6 +2830,9 @@ arguments actually mean."
 ;; Use the window management rules when switching to buffer.
 (setq switch-to-buffer-obey-display-actions t)
 
+;; left, top, right, bottom
+(setq window-sides-slots '(1 0 2 1))
+
 ;; Help buffers
 (add-to-list 'display-buffer-alist
              '((or (major-mode . Info-mode)
@@ -2883,6 +2886,43 @@ arguments actually mean."
                (reusable-frames . t)
                (side . bottom)
                (window-height . 0.5)))
+
+;; Magit
+(add-to-list 'display-buffer-alist
+             '((major-mode . magit-status-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . right)
+               (slot . 0)
+               (window-width . 100)))
+
+(add-to-list 'display-buffer-alist
+             '((major-mode . magit-process-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . right)
+               (slot . 1)
+               (window-width . 100)))
+
+(add-to-list 'display-buffer-alist
+             '((major-mode . magit-diff-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . right)
+               (slot . 1)
+               (window-width . 100)))
+
+(add-to-list 'display-buffer-alist
+             '("COMMIT_EDITMSG"
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . left)
+               (slot . 0)
+               (window-width . 68)))
 
 ;; 
 
