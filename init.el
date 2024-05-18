@@ -2846,9 +2846,8 @@ arguments actually mean."
 (add-to-list 'display-buffer-alist
              '((major-mode . lisp-mode)
                (display-buffer-reuse-window
-                display-buffer-use-some-window)
-               (reusable-frames . t)
-               (inhibit-same-window . t)))
+                display-buffer-pop-up-window)
+               (reusable-frames . t)))
 
 ;; Lisp Repl Window
 (add-to-list 'display-buffer-alist
@@ -2858,15 +2857,14 @@ arguments actually mean."
                (reusable-frames . t)
                (side . right)))
 
-;; Rust/Shell Setup
+;; Rust Setup
 
 ;; Rustic Windows
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-mode)
                (display-buffer-reuse-window
-                display-buffer-use-some-window)
-               (reusable-frames . t)
-               (inhibit-same-window . t)))
+                display-buffer-pop-up-window)
+               (reusable-frames . t)))
 
 ;; Rustic Compilation
 (add-to-list 'display-buffer-alist
@@ -2874,7 +2872,8 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . bottom)))
+               (side . bottom)
+               (window-height . 0.5)))
 
 ;; Shell Mode
 (add-to-list 'display-buffer-alist
@@ -2882,7 +2881,8 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . bottom)))
+               (side . bottom)
+               (window-height . 0.5)))
 
 ;; 
 
