@@ -4194,7 +4194,8 @@ See URL `https://www.npmjs.com/package/jscs'."
     (define-key eglot-mode-map (kbd "M-RET") #'eglot-code-actions)
     (add-to-list 'eglot-server-programs
                  '(svelte-mode . ("svelteserver" "--stdio")))
-    (add-hook 'svelte-mode-hook  #'eglot-ensure)))
+    (add-hook 'svelte-mode-hook  #'eglot-ensure)
+    (setq rustic-cargo-check-arguments "--tests")))
 
 (use-package eglot-booster
   :straight (eglot-booster :type git
