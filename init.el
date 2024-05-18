@@ -2856,6 +2856,7 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
+               (side . right)
                (dedicated . t)))
 
 ;; Rust/Shell Setup
@@ -2868,12 +2869,22 @@ arguments actually mean."
                (reusable-frames . t)
                (inhibit-same-window . t)))
 
-;; Shell/Rustic Compilation
+;; Rustic Compilation
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-compilation-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
+               (side . bottom)
+               (dedicated . t)))
+
+;; Shell Mode
+(add-to-list 'display-buffer-alist
+             '((major-mode . shell-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . bottom)
                (dedicated . t)))
 
 ;; 
