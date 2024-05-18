@@ -2038,6 +2038,22 @@ which ends up being reflected.")
 
 (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 
+(defun quiescent-ediff-two-visible-buffers-regions-wordwise ()
+  "Run `ediff-regions-wordwise' on the regions in the two visible buffers."
+  (interactive)
+  (let* ((buffer-A (current-buffer))
+         (reg-A (sort (list (point) (mark)) #'<))
+         (buffer-B (save-window-excursion
+                     (other-window 1)
+                     (current-buffer)))
+         (reg-B (save-window-excursion
+                  (other-window 1)
+                  (sort (list (point) (mark)) #'<))))
+    (ediff-regions-internal
+     (get-buffer buffer-A) (car reg-A) (cadr reg-A)
+     (get-buffer buffer-B) (car reg-B) (cadr reg-B)
+     nil 'ediff-regions-wordwise 'word-mode nil)))
+
 ;; 
 
 ;;; ** Recent Files (recentf)
