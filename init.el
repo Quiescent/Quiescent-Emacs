@@ -2820,7 +2820,7 @@ arguments actually mean."
                    (major-mode . help-mode))
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
-               (reusable-frames . visible)
+               (reusable-frames . t)
                (side . right)
                (window-width . 0.5)))
 
@@ -2831,7 +2831,7 @@ arguments actually mean."
              '((major-mode . lisp-mode)
                (display-buffer-reuse-window
                 display-buffer-use-some-window)
-               (reusable-frames . visible)
+               (reusable-frames . t)
                (inhibit-same-window . t)))
 
 ;; Lisp Repl Window
@@ -2839,7 +2839,25 @@ arguments actually mean."
              '((major-mode . slime-repl-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
-               (reusable-frames . visible)
+               (reusable-frames . t)
+               (dedicated . t)))
+
+;; Rust/Shell Setup
+
+;; Rustic Windows
+(add-to-list 'display-buffer-alist
+             '((major-mode . rustic-mode)
+               (display-buffer-reuse-window
+                display-buffer-use-some-window)
+               (reusable-frames . t)
+               (inhibit-same-window . t)))
+
+;; Shell/Rustic Compilation
+(add-to-list 'display-buffer-alist
+             '((major-mode . rustic-compilation-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
                (dedicated . t)))
 
 ;; 
