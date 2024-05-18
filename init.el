@@ -2809,6 +2809,41 @@ arguments actually mean."
 
 ;; 
 
+;;; ** Window Management
+
+;; Use the window management rules when switching to buffer.
+(setq switch-to-buffer-obey-display-actions t)
+
+;; Help buffers
+(add-to-list 'display-buffer-alist
+             '((or (major-mode . Info-mode)
+                   (major-mode . help-mode))
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . visible)
+               (side . right)
+               (window-width . 0.5)))
+
+;; Slime Setup
+
+;; Lisp Windows
+(add-to-list 'display-buffer-alist
+             '((major-mode . lisp-mode)
+               (display-buffer-reuse-window
+                display-buffer-use-some-window)
+               (reusable-frames . visible)
+               (inhibit-same-window . t)))
+
+;; Lisp Repl Window
+(add-to-list 'display-buffer-alist
+             '((major-mode . slime-repl-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . visible)
+               (dedicated . t)))
+
+;; 
+
 ;;; * Languages
 
 ;;; ** Json Mode
