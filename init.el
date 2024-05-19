@@ -2914,6 +2914,15 @@ arguments actually mean."
                (window-width . 100)))
 
 (add-to-list 'display-buffer-alist
+             '((major-mode . magit-revision-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . right)
+               (slot . 1)
+               (window-width . 100)))
+
+(add-to-list 'display-buffer-alist
              '("COMMIT_EDITMSG"
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
