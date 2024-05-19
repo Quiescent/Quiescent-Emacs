@@ -2848,8 +2848,7 @@ arguments actually mean."
 ;; Lisp Windows
 (add-to-list 'display-buffer-alist
              '((major-mode . lisp-mode)
-               (display-buffer-reuse-window
-                display-buffer-pop-up-window)
+               (display-buffer-pop-up-window)
                (reusable-frames . t)))
 
 ;; Lisp Repl Window
@@ -2865,8 +2864,7 @@ arguments actually mean."
 ;; Rustic Windows
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-mode)
-               (display-buffer-reuse-window
-                display-buffer-pop-up-window)
+               (display-buffer-pop-up-window)
                (reusable-frames . t)))
 
 ;; Rustic Compilation
