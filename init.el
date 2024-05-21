@@ -2926,6 +2926,11 @@ arguments actually mean."
 
 ;; 
 
+;;; ** El Grep (Emacs Style Grepping Recursively in a Dir)
+
+(use-package elgrep
+  :straight t)
+
 ;;; * Languages
 
 ;;; ** Json Mode
