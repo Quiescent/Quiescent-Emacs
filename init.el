@@ -2924,8 +2924,7 @@ arguments actually mean."
 
 (add-to-list 'display-buffer-alist
              '("COMMIT_EDITMSG"
-               (display-buffer-reuse-window
-                display-buffer-in-side-window)
+               display-buffer-pop-up-window
                (reusable-frames . t)
                (side . left)
                (slot . 0)
