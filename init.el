@@ -2930,6 +2930,20 @@ arguments actually mean."
                (slot . 0)
                (window-width . 68)))
 
+(defun quiescent-dedicate-current-window ()
+  "Set the current window as dedicated to its buffer.
+
+Prevents Emacs from displaying other buffers in that window."
+  (interactive)
+  (set-window-dedicated-p (selected-window) t))
+
+(defun quiescent-undedicate-current-window ()
+  "Un-dedicate the current window its buffer.
+
+Allows Emacs to display other buffers in that window."
+  (interactive)
+  (set-window-dedicated-p (selected-window) nil))
+
 ;; 
 
 ;;; ** El Grep (Emacs Style Grepping Recursively in a Dir)
