@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cfn
+# key: cfn
+# --
+export const $1 = ($0) => undefined;

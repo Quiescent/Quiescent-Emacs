@@ -1,0 +1,29 @@
+# -*- mode: snippet -*-
+# name: story
+# key: story
+# --
+import React from 'react'
+import { PropTypes } from 'react-proptypes'
+
+import `(setq quiescent-file-name (subseq (buffer-name) 0 (- (length (buffer-name)) 11)))` from '../components/`quiescent-file-name`'
+
+export default {
+  title: 'Plottr/`quiescent-file-name`',
+  component: `quiescent-file-name`,
+  argTypes: {
+    
+  }
+}
+
+const Template = (args) => (
+  <`quiescent-file-name`
+    {...args}
+  />
+)
+
+`quiescent-file-name`.propTypes = {
+}
+
+export const Example = Template.bind({})
+Example.args = {
+}

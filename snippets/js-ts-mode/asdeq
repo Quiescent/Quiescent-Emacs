@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: assertDeepEqual
+# key: asdeq
+# --
+assert.deepEqual($1, $2);$0
