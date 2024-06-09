@@ -1572,6 +1572,7 @@ If it's dotted list, produce the values in the dotted list."
                                                   t)))
 
 (add-hook 'js2-mode-hook #'quiescent-setup-javascript-completion)
+(add-hook 'js-ts-mode-hook #'quiescent-setup-javascript-completion)
 
 ;; Not quite there.  This is a little slow.  I could work from the
 ;; other end and scan through string matches in the buffer,
