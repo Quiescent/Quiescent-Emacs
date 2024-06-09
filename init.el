@@ -3672,7 +3672,7 @@ Replaces the buffer string in that region."
            '((javascript-mode . js-ts-mode)
              ;; (python-mode . python-ts-mode)
              ;; (css-mode . css-ts-mode)
-             ;; (typescript-mode . typescript-ts-mode)
+             (typescript-mode . typescript-ts-mode)
              ;; (js2-mode . js-ts-mode)
              ;; (bash-mode . bash-ts-mode)
              ;; (css-mode . css-ts-mode)
