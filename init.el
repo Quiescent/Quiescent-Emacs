@@ -1813,10 +1813,12 @@ Usually because of too much overhead in checking.")
 
 (mapc (lambda (mode-hook) (add-hook mode-hook #'quiescent-activate-electric-pair))
       '(js-mode-hook
+        js-ts-mode-hook
         js2-mode-hook
         rjsx-mode-hook
         python-mode-hook
         typescript-mode-hook
+        typescript-ts-mode-hook
         sh-mode-hook
         css-mode-hook
         haskell-mode-hook
