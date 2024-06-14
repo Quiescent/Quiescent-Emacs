@@ -499,6 +499,12 @@ Maintains the point in the current window."
 
 ;; 
 
+;; ** Searching and Editing Thing at Point
+
+(define-key prog-mode-map (kbd "M-'") #'isearch-forward-symbol-at-point)
+
+;; 
+
 ;;; ** Swapping windows
 
 (defun quiescent-swap-windows ()
