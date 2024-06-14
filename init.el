@@ -2165,32 +2165,6 @@ search through."
 
 ;; 
 
-;;; ** Smartscan
-
-(use-package smartscan
-  :straight t
-  :demand t
-  :hook ((org-mode . quiescent-smartscan-enable))
-  :config (progn
-            (defun quiescent-smartscan-enable ()
-              "Enable smartscan."
-              (when (and (null quiescent-starting-up)
-                         (boundp 'smartscan-mode))
-                (smartscan-mode 1)))
-            (define-key smartscan-map (kbd "M-n") 'smartscan-symbol-go-forward)
-            (define-key smartscan-map (kbd "M-p") 'smartscan-symbol-go-backward)
-            (setq smartscan-symbol-selector "symbol")))
-
-(defun quiescent-disable-smartscan ()
-  "Disable smartscan mode."
-  (when (and (null quiescent-starting-up)
-             (boundp 'smartscan-mode))
-    (smartscan-mode -1)))
-
-(add-hook 'eshell-mode-hook #'quiescent-disable-smartscan)
-
-;; 
-
 ;;; ** Wgrep
 
 (use-package wgrep
