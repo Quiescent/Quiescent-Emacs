@@ -971,7 +971,7 @@ to make the advice work."
 
 (use-package iedit
   :straight t
-  :config (global-set-key (kbd "M-s ,") #'iedit-mode))
+  :config (global-set-key (kbd "C-'") #'iedit-mode))
 
 ;; 
 
