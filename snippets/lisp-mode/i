@@ -2,5 +2,4 @@
 # name: iter
 # key: i
 # --
-(iter
-  $0)
+(iter $0)

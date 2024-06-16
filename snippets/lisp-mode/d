@@ -2,5 +2,4 @@
 # name: defun-without-fluff
 # key: d
 # --
-(defun ${1:name} (${2:args})
-  $0)
+(defun ${1:name} (${2:args}) $0)
