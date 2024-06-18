@@ -4337,18 +4337,6 @@ See URL `https://www.npmjs.com/package/jscs'."
          (java-mode . ggtags-mode)
          (js-ts-mode . ggtags-mode)))
 
-(defun quiescent-js2-jump-then-ggtags-find-other-symbol (&optional arg)
-  "Use xref to find the definition at point with failover.
-
-Give ARG to ggtags."
-  (interactive (list (ggtags-read-tag 'symbol current-prefix-arg)))
-  (condition-case err
-      (let ((old-point (point)))
-        (funcall-interactively #'js2-jump-to-definition)
-        (when (= (point) old-point)
-          (ggtags-find-other-symbol arg)))
-    (error (ggtags-find-other-symbol arg))))
-
 ;; 
 
 ;;; ** XREF
