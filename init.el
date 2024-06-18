@@ -5220,7 +5220,7 @@ first created to remember those values."
 
 ;; 
 
-;; Magit
+;; ** Magit
 
 (use-package magit
   :straight t
