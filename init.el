@@ -3716,39 +3716,12 @@ Replaces the buffer string in that region."
   (progn
     (add-hook 'js-ts-mode-hook #'quiescent-setup-tide-mode)))
 
-(defun quiescent-tide-jump-to-definition (&optional arg)
-  "Jump to the definition of the symbol at point.
-
-If pointed at an abstract member-declaration, will proceed to look for
-implementations.  When invoked with a prefix arg, jump to the type definition.
-
-Copied from tide's sources with the addition of calling
-js2-mode's find definition and then xref when tide fails."
-  (interactive "P")
-  (let ((cb (lambda (response)
-              (if (and (tide-response-success-p response)
-                       (null (plist-get response :message)))
-                  (condition-case err
-                      (ggtags-find-tag-dwim (thing-at-point 'symbol)))
-                (tide-on-response-success response
-                    (-when-let (filespan (car (plist-get response :body)))
-                      ;; if we're still at the same location...
-                      ;; maybe we're a abstract member which has implementations?
-                      (if (and (not arg)
-                               (tide-filespan-is-current-location-p filespan))
-                          (tide-jump-to-implementation)
-                        (tide-jump-to-filespan filespan tide-jump-to-definition-reuse-window))))))))
-    (if arg
-        (tide-command:typeDefinition cb)
-      (tide-command:definition cb))))
-
 (defun quiescent-setup-tide-mode ()
   "Setup TIDE mode."
-  (when (null quiescent-starting-up)
-    (tide-setup)
-    (tide-hl-identifier-mode +1)
-    (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
-    (define-key tide-mode-map (kbd "M-.") #'quiescent-tide-jump-to-definition)))
+  (tide-setup)
+  (tide-hl-identifier-mode +1)
+  (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
+  (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition))
 
 ;; 
 
