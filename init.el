@@ -4184,40 +4184,41 @@ Store PREV-VAL in variable."
 ;; This has its own section after Languages because it's likely to
 ;; depend on languages.
 
-(use-package treesit-parser-manager
-  :straight (treesit-parser-manager
-             :host codeberg
-             :repo "ckruse/treesit-parser-manager"
-             :files ("*.el"))
-  :commands (treesit-parser-manager-install-grammars
-             treesit-parser-manager-update-grammars
-             treesit-parser-manager-install-or-update-grammars
-             treesit-parser-manager-remove-grammar)
-  :custom
-  (treesit-parser-manager-grammars
-   '(("https://github.com/tree-sitter/tree-sitter-rust"
-      ("tree-sitter-rust"))
+(when (boundp 'treesit-extra-load-path)
+  (use-package treesit-parser-manager
+    :straight (treesit-parser-manager
+               :host codeberg
+               :repo "ckruse/treesit-parser-manager"
+               :files ("*.el"))
+    :commands (treesit-parser-manager-install-grammars
+               treesit-parser-manager-update-grammars
+               treesit-parser-manager-install-or-update-grammars
+               treesit-parser-manager-remove-grammar)
+    :custom
+    (treesit-parser-manager-grammars
+     '(("https://github.com/tree-sitter/tree-sitter-rust"
+        ("tree-sitter-rust"))
 
-     ("https://github.com/ikatyang/tree-sitter-toml"
-      ("tree-sitter-toml"))
+       ("https://github.com/ikatyang/tree-sitter-toml"
+        ("tree-sitter-toml"))
 
-     ("https://github.com/tree-sitter/tree-sitter-typescript"
-      ("tree-sitter-typescript/tsx" "tree-sitter-typescript/typescript"))
+       ("https://github.com/tree-sitter/tree-sitter-typescript"
+        ("tree-sitter-typescript/tsx" "tree-sitter-typescript/typescript"))
 
-     ("https://github.com/tree-sitter/tree-sitter-javascript"
-      ("tree-sitter-javascript"))
+       ("https://github.com/tree-sitter/tree-sitter-javascript"
+        ("tree-sitter-javascript"))
 
-     ("https://github.com/tree-sitter/tree-sitter-css"
-      ("tree-sitter-css"))
+       ("https://github.com/tree-sitter/tree-sitter-css"
+        ("tree-sitter-css"))
 
-     ("https://github.com/serenadeai/tree-sitter-scss"
-      ("tree-sitter-scss"))
+       ("https://github.com/serenadeai/tree-sitter-scss"
+        ("tree-sitter-scss"))
 
-     ("https://github.com/tree-sitter/tree-sitter-json"
-      ("tree-sitter-json"))))
-  :config
-  (add-to-list 'treesit-extra-load-path treesit-parser-manager-target-directory)
-  :hook (emacs-startup . treesit-parser-manager-install-grammars))
+       ("https://github.com/tree-sitter/tree-sitter-json"
+        ("tree-sitter-json"))))
+    :config
+    (add-to-list 'treesit-extra-load-path treesit-parser-manager-target-directory)
+    :hook (emacs-startup . treesit-parser-manager-install-grammars)))
 
 
 ;;; * Post Programming Languages Config
@@ -4226,48 +4227,13 @@ Store PREV-VAL in variable."
 
 (require 'flycheck)
 
-(flycheck-define-checker html-jshint
-  "A JavaScript linter for html."
-  :command ("jshint" "--extract=auto" "--reporter=checkstyle" source)
-  :error-parser flycheck-parse-checkstyle
-  :error-filter
-  (lambda (errors)
-    (flycheck-remove-error-file-names
-     "stdin" (flycheck-dequalify-error-ids errors)))
-  :modes (web-mode))
-
-(flycheck-add-next-checker 'html-tidy 'html-jshint)
-
-(add-to-list 'flycheck-checkers 'html-jshint t)
-
-;; Courtesy: http://daniel-bush.blogspot.co.za/2014/12/emacs-flycheck-and-jshint-and-other.html
-(flycheck-define-checker javascript-jscs
-  "A JavaScript style checker using jscs.
-
-See URL `https://www.npmjs.com/package/jscs'."
-  :command ("jscs" "--reporter=checkstyle"
-            (config-file "--config" flycheck-jscsrc)
-            source)
-  :error-parser flycheck-parse-checkstyle
-  :modes (js-mode js2-mode js3-mode js-jsx-mode))
-
-(flycheck-def-config-file-var flycheck-jscsrc javascript-jscs ".jscsrc"
-  :safe #'stringp)
-
-(add-to-list 'flycheck-checkers 'javascript-jscs t)
-(flycheck-add-next-checker 'javascript-jshint '(t . javascript-jscs))
-(flycheck-add-next-checker 'javascript-jshint '(t . javascript-eslint))
-
-(flycheck-add-mode 'javascript-jshint #'js-jsx-mode)
-
-(add-hook 'js2-mode-hook #'quiescent-select-jshint)
+(add-hook 'js2-mode-hook #'quiescent-select-eslint)
 (add-hook 'rjsx-mode-hook #'quiescent-select-eslint)
 
 (defun quiescent-select-eslint ()
   "Select EsLint as the linter in this buffer."
   (interactive)
-  (when (null quiescent-starting-up)
-    (flycheck-select-checker 'javascript-eslint)))
+  (flycheck-select-checker 'javascript-eslint))
 
 ;; From https://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
 (defun my/use-eslint-from-node-modules ()
@@ -4283,14 +4249,6 @@ See URL `https://www.npmjs.com/package/jscs'."
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-
-(defun quiescent-select-jshint ()
-  "Select JSHint as the linter in this buffer."
-  (interactive)
-  (when (and (null quiescent-starting-up)
-             (not (eq flycheck-checker 'javascript-eslint))
-             (not (eq major-mode 'rjsx-mode)))
-    (flycheck-select-checker 'javascript-jshint)))
 
 ;; 
 
