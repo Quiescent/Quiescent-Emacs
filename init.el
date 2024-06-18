@@ -4334,7 +4334,8 @@ See URL `https://www.npmjs.com/package/jscs'."
   :straight t
   :hook ((js2-mode . ggtags-mode)
          (rjsx-mode . ggtags-mode)
-         (java-mode . ggtags-mode)))
+         (java-mode . ggtags-mode)
+         (js-ts-mode . ggtags-mode)))
 
 (defun quiescent-js2-jump-then-ggtags-find-other-symbol (&optional arg)
   "Use xref to find the definition at point with failover.
