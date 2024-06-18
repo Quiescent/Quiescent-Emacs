@@ -3690,7 +3690,10 @@ Replaces the buffer string in that region."
      (tsx-ts-mode . combobulate-mode))
     ;; Amend this to the directory where you keep Combobulate's source
     ;; code.
-    :load-path ("~/frm-src/combobulate/")))
+    :load-path ("~/frm-src/combobulate/")
+    :config
+    (define-key combobulate-key-map (kbd "M-s") #'combobulate-splice-up)
+    (define-key combobulate-key-map (kbd "M-r") #'combobulate-splice-self)))
 
 (define-key js-ts-mode-map (kbd "M-q") #'quiescent-indent-js-function)
 
