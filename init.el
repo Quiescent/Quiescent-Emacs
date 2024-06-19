@@ -4269,7 +4269,8 @@ Store PREV-VAL in variable."
   :hook ((js2-mode . ggtags-mode)
          (rjsx-mode . ggtags-mode)
          (java-mode . ggtags-mode)
-         (js-ts-mode . ggtags-mode)))
+         (js-ts-mode . ggtags-mode))
+  :config (define-key ggtags-mode-map (kbd "M-.") nil))
 
 ;; 
 
