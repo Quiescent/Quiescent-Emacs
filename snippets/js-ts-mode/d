@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: debug
+# name: defun
 # key: d
 # --
-console.debug('${1:variable}:', $1);
+function ${1:name}(${2:args}) {$0}
