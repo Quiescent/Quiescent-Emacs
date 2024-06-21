@@ -3637,7 +3637,8 @@ Replaces the buffer string in that region."
                (toml "https://github.com/tree-sitter/tree-sitter-toml")
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
+               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
+               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
@@ -3739,14 +3740,25 @@ Replaces the buffer string in that region."
 ;;; ** Rust Mode
 
 (use-package rust-mode
-  :straight t)
+  :straight t
+  :config (setq rust-mode-treesitter-derive t))
 
 (with-eval-after-load "eglot"
   (make-variable-buffer-local 'eglot-ignored-server-capabilities))
 
 (defun quiescent-disable-eglot-post-insert ()
   "Disable features like inserting matching pair."
-  (add-to-list 'eglot-ignored-server-capabilites :documentOnTypeFormattingProvider))
+  (add-to-list 'eglot-ignored-server-capabilites :documentOnTypeFormattingProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :signatureHelpProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :documentHighlightProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :documentSymbolProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :codeLensProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :documentRangeFormattingProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :documentLinkProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :colorProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :foldingRangeProvider)
+  (add-to-list 'eglot-ignored-server-capabilites :inlayHintProvider))
 
 (use-package rustic
   :straight t
@@ -4153,50 +4165,6 @@ Store PREV-VAL in variable."
 (straight-use-package
  '(svelte-mode :type git :host github :repo "leafOfTree/svelte-mode"))
 
-;; 
-
-;;; * Tree Sitter
-
-;; This has its own section after Languages because it's likely to
-;; depend on languages.
-
-(when (boundp 'treesit-extra-load-path)
-  (use-package treesit-parser-manager
-    :straight (treesit-parser-manager
-               :host codeberg
-               :repo "ckruse/treesit-parser-manager"
-               :files ("*.el"))
-    :commands (treesit-parser-manager-install-grammars
-               treesit-parser-manager-update-grammars
-               treesit-parser-manager-install-or-update-grammars
-               treesit-parser-manager-remove-grammar)
-    :custom
-    (treesit-parser-manager-grammars
-     '(("https://github.com/tree-sitter/tree-sitter-rust"
-        ("tree-sitter-rust"))
-
-       ("https://github.com/ikatyang/tree-sitter-toml"
-        ("tree-sitter-toml"))
-
-       ("https://github.com/tree-sitter/tree-sitter-typescript"
-        ("tree-sitter-typescript/tsx" "tree-sitter-typescript/typescript"))
-
-       ("https://github.com/tree-sitter/tree-sitter-javascript"
-        ("tree-sitter-javascript"))
-
-       ("https://github.com/tree-sitter/tree-sitter-css"
-        ("tree-sitter-css"))
-
-       ("https://github.com/serenadeai/tree-sitter-scss"
-        ("tree-sitter-scss"))
-
-       ("https://github.com/tree-sitter/tree-sitter-json"
-        ("tree-sitter-json"))))
-    :config
-    (add-to-list 'treesit-extra-load-path treesit-parser-manager-target-directory)
-    :hook (emacs-startup . treesit-parser-manager-install-grammars)))
-
-
 ;;; * Post Programming Languages Config
 
 ;;; ** Flycheck
@@ -4244,7 +4212,8 @@ Store PREV-VAL in variable."
     (add-to-list 'eglot-server-programs
                  '(svelte-mode . ("svelteserver" "--stdio")))
     (add-hook 'svelte-mode-hook  #'eglot-ensure)
-    (setq rustic-cargo-check-arguments "--tests")))
+    (setq rustic-cargo-check-arguments "--tests")
+    (setq eglot-events-buffer-size 0)))
 
 (use-package eglot-booster
   :straight (eglot-booster :type git
