@@ -4213,7 +4213,11 @@ Store PREV-VAL in variable."
                  '(svelte-mode . ("svelteserver" "--stdio")))
     (add-hook 'svelte-mode-hook  #'eglot-ensure)
     (setq rustic-cargo-check-arguments "--tests")
-    (setq eglot-events-buffer-size 0)))
+    (setq-default eglot-workspace-configuration '(:rust-analyzer (:cargo (:buildScripts (:enable :json-false)
+                                                                          :allTargets :json-false
+                                                                          :targetDir t)
+                                                                  :completion (:autoimport (:enable :json-false))
+                                                                  :checkOnSave :json-false)))))
 
 (use-package eglot-booster
   :straight (eglot-booster :type git
