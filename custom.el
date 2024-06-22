@@ -19,6 +19,7 @@
  '(completions-sort 'prescient-completion-sort)
  '(confirm-nonexistent-file-or-buffer nil)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(eglot-events-buffer-config '(:size 2000000 :format short))
  '(eldoc-echo-area-use-multiline-p nil)
  '(enable-recursive-minibuffers t)
  '(eshell-history-size 1024)
