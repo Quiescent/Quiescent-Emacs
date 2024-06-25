@@ -3065,15 +3065,11 @@ Allows Emacs to display other buffers in that window."
   (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.svelte\\'" . web-mode))
   (with-eval-after-load "js2-mode"
     (progn
       (require 'js2-mode)
       (define-key web-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)
       (define-key js2-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim))))
-
-(with-eval-after-load 'flycheck
-  (flycheck-add-mode 'html-tidy 'web-mode))
 
 ;; 
 
@@ -3706,26 +3702,48 @@ Replaces the buffer string in that region."
   :straight t
   :config
   (progn
-    ;; (defun quiescent-reboot-tide-on-error (f response)
-;;       "Advice around F (`tide-dispatch-response') to detect missing RESPONSE.
-
-;; Restarts the tide server when it finds it."
-;;       (let ((message (plist-get response :message)))
-;;         (if (and message (string-match "Could not find source file" message))
-;;             (tide-restart-server)
-;;           (funcall f response))))
-;;     (advice-add 'tide-dispatch-response :around #'quiescent-reboot-tide-on-error)
-    )
+    ;; Disable suggestions from tide
+    (defun tide-parse-error (response checker)
+      (-map
+       (lambda (diagnostic)
+         (let* ((start (plist-get diagnostic :start))
+                (line (plist-get start :line))
+                (column (plist-get start :offset))
+                (level (if (string= (plist-get diagnostic :category) "suggestion") 'info 'error))
+                (text (plist-get diagnostic :text)))
+           (when (plist-get diagnostic :relatedInformation)
+             (setq text (concat text (propertize " ⮐" 'face 'font-lock-warning-face))))
+           (put-text-property 0 1 'diagnostic diagnostic text)
+           (flycheck-error-new-at line column level text
+                                  :checker checker
+                                  :id (plist-get diagnostic :code))))
+       (let ((diagnostic (car (tide-plist-get response :body))))
+         (-concat (plist-get diagnostic :syntaxDiag)
+                  (plist-get diagnostic :semanticDiag)
+                  ;; (plist-get diagnostic :suggestionDiag)
+                  )))))
   :init
   (progn
     (add-hook 'js-ts-mode-hook #'quiescent-setup-tide-mode)))
+
+(flycheck-define-generic-checker 'quiescent-javascript-tide
+  "A Javascript syntax checker using tsserver."
+  :start #'tide-flycheck-start
+  :verify #'tide-flycheck-verify
+  :modes '(js-mode js2-mode js3-mode js-ts-mode)
+  :predicate #'tide-flycheck-predicate)
+
+(add-to-list 'flycheck-checkers 'quiescent-javascript-tide t)
+
+(flycheck-add-next-checker 'quiescent-javascript-tide 'javascript-eslint)
 
 (defun quiescent-setup-tide-mode ()
   "Setup TIDE mode."
   (tide-setup)
   (tide-hl-identifier-mode +1)
   (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
-  (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition))
+  (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition)
+  (flycheck-select-checker 'quiescent-javascript-tide))
 
 ;; 
 
