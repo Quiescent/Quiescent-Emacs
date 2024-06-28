@@ -3761,23 +3761,6 @@ Replaces the buffer string in that region."
   :straight t
   :config (setq rust-mode-treesitter-derive t))
 
-(with-eval-after-load "eglot"
-  (make-variable-buffer-local 'eglot-ignored-server-capabilities))
-
-(defun quiescent-disable-eglot-post-insert ()
-  "Disable features like inserting matching pair."
-  (add-to-list 'eglot-ignored-server-capabilites :documentOnTypeFormattingProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :signatureHelpProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :documentHighlightProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :documentSymbolProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :codeLensProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :documentRangeFormattingProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :documentLinkProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :colorProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :foldingRangeProvider)
-  (add-to-list 'eglot-ignored-server-capabilites :inlayHintProvider))
-
 (use-package rustic
   :straight t
   :config
@@ -3789,17 +3772,10 @@ Replaces the buffer string in that region."
     (remove-hook 'rustic-mode-hook #'flymake-mode-off)
     (add-hook 'rustic-mode-hook #'quiescent-enable-flymake-mode)
     (add-hook 'rustic-mode-hook #'quiescent-disable-flycheck)
-    (add-hook 'rustic-mode-hook #'quiescent-disable-eglot-post-insert)
     (define-key rust-mode-map (kbd "M-n") #'flymake-goto-next-error)
     (define-key rust-mode-map (kbd "M-p") #'flymake-goto-prev-error)
     (define-key rust-mode-map (kbd "C-c C-z") #'quiescent-switch-to-shell)
-    (add-hook 'before-save-hook #'quiescent-rustic-format-buffer)))
-
-(defun quiescent-rustic-format-buffer ()
-  "If this is a `rustic-mode' buffer, and it's managed by eglot, format it."
-  (when (and (eq major-mode 'rustic-mode)
-             (eglot-managed-p))
-    (eglot-format-buffer)))
+    (setq rust-format-on-save t)))
 
 (defun quiescent-enable-rustic-mode ()
   "Enable rustic mode."
@@ -4216,6 +4192,23 @@ Store PREV-VAL in variable."
 
 ;;; ** Eglot
 
+(straight-use-package
+ '(track-changes :type git :host github :repo "emacs-straight/track-changes"))
+
+(defun quiescent-disable-eglot-capabilities ()
+  "Disable features like inserting matching pair."
+  (add-to-list 'eglot-ignored-server-capabilities :documentOnTypeFormattingProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :hoverProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :signatureHelpProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :documentHighlightProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :documentSymbolProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :codeLensProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :documentRangeFormattingProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :documentLinkProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :colorProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :foldingRangeProvider)
+  (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider))
+
 (use-package eglot
   :straight t
   :config
@@ -4235,7 +4228,10 @@ Store PREV-VAL in variable."
                                                                           :allTargets :json-false
                                                                           :targetDir t)
                                                                   :completion (:autoimport (:enable :json-false))
-                                                                  :checkOnSave :json-false)))))
+                                                                  :checkOnSave :json-false)))
+    (setq eglot-events-buffer-config '(:size 2000000 :format short))
+    (quiescent-disable-eglot-capabilities))
+  :after track-changes)
 
 (use-package eglot-booster
   :straight (eglot-booster :type git
