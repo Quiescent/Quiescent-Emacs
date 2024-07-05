@@ -2808,6 +2808,41 @@ arguments actually mean."
 
 ;; 
 
+;;; ** Instant KMacros Mode
+
+(defun instant-kmacros-create-kmacro-runner (nth)
+  "Create an interactive function to run the NTH kmacro."
+  (lambda (arg)
+    (interactive "p")
+    (when (> nth 1)
+      (kmacro-cycle-ring-previous (1- nth)))
+    (call-interactively 'kmacro-call-macro arg)
+    (when (> nth 1)
+      (kmacro-cycle-ring-next (1- nth)))))
+
+(defvar instant-kmacros-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "1") (instant-kmacros-create-kmacro-runner 1))
+    (define-key map (kbd "2") (instant-kmacros-create-kmacro-runner 2))
+    (define-key map (kbd "3") (instant-kmacros-create-kmacro-runner 3))
+    (define-key map (kbd "4") (instant-kmacros-create-kmacro-runner 4))
+    (define-key map (kbd "5") (instant-kmacros-create-kmacro-runner 5))
+    (define-key map (kbd "6") (instant-kmacros-create-kmacro-runner 6))
+    (define-key map (kbd "7") (instant-kmacros-create-kmacro-runner 7))
+    (define-key map (kbd "8") (instant-kmacros-create-kmacro-runner 8))
+    (define-key map (kbd "9") (instant-kmacros-create-kmacro-runner 9))
+    (define-key map (kbd "0") (instant-kmacros-create-kmacro-runner 0))
+    map)
+  "Keymap used by `instant-kmacros-command-mode'.")
+
+(define-minor-mode instant-kmacros-mode
+  "Run the nth most recently defined kmacro with the number keys.
+
+1-indexed because that's where keyboards start." 
+  :global t)
+
+;; 
+
 ;;; ** Window Management
 
 ;; Use the window management rules when switching to buffer.
