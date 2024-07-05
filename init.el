@@ -2815,10 +2815,12 @@ arguments actually mean."
   (lambda (arg)
     (interactive "p")
     (when (> nth 1)
-      (kmacro-cycle-ring-previous (1- nth)))
-    (call-interactively 'kmacro-call-macro arg)
-    (when (> nth 1)
-      (kmacro-cycle-ring-next (1- nth)))))
+      (dotimes (_n (1- nth))
+        (kmacro-cycle-ring-previous)))
+    (unwind-protect (call-interactively 'kmacro-call-macro arg)
+      (when (> nth 1)
+        (dotimes (_n (1- nth))
+          (kmacro-cycle-ring-next))))))
 
 (defvar instant-kmacros-mode-map
   (let ((map (make-sparse-keymap)))
