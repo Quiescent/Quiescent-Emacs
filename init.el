@@ -281,6 +281,8 @@
 (quiescent-defaults)
 (require 'nano-modeline)
 
+(set-face-attribute 'error nil :foreground "gray22" :box '(:line-width (2 . 2) :color "#EBCB8B"))
+
 ;; 
 
 ;;; ** Page Break Lines
