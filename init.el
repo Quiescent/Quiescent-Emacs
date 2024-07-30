@@ -5426,6 +5426,86 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
+;; ** Flow State Tracker
+
+(defvar quiescent-flow-state-db-path "~/.emacs.d/flow.el")
+
+(defun quiescent-flow-read-db ()
+  "Read the flow db from the Emacs directory and produce it."
+  (save-window-excursion
+    (find-file-literally quiescent-flow-state-db-path)
+    (let ((content (buffer-substring-no-properties (point-min)
+                                                      (point-max))))
+      (car (read-from-string (if (string-equal content "") "()" content))))))
+
+(defun quiescent-flow-write-db (flow-records)
+  "Write the FLOW-RECORDS to the flow state db file."
+  (save-window-excursion
+    (find-file-literally quiescent-flow-state-db-path)
+    (delete-region (point-min) (point-max))
+    (insert (format "%s" flow-records))
+    (save-buffer)))
+
+(defun quiescent-flow-key ()
+  "Produce a key for today's flow state db."
+  (format-time-string "%Y-%m-%d"))
+
+(defun quiescent-flow-register (difficulty skills)
+  "Register a data point for tracking flow state.
+
+DIFFICULTY & SKILLS are integers between 0 and 100 that are used to
+estimate what your state of mind (ITO flow) might be."
+  (interactive "nDifficulty: \nnSkills: ")
+  (assert (and (>= difficulty 0)
+               (<= difficulty 100))
+          t)
+  (assert (and (>= skills 0)
+               (<= skills 100))
+          t)
+  (let* ((flow-state-records (quiescent-flow-read-db))
+         (key-for-today      (quiescent-flow-key))
+         (record             (assoc key-for-today
+                                    flow-state-records
+                                    #'string-equal)))
+    (if record
+        (push (cons difficulty skills) (cdr record))
+      (push (cons key-for-today (list (cons difficulty skills)))
+            flow-state-records))
+    (quiescent-flow-write-db flow-state-records)))
+
+(defvar quiescent-flow-chart-buffer-name "*flow-chart*")
+
+(defun quiescent-flow-draw-chart ()
+  "Draw the today's flow state chart."
+  (interactive)
+  (let* ((flow-state-records (quiescent-flow-read-db))
+         (key-for-today      (quiescent-flow-key))
+         (record             (assoc key-for-today
+                                    flow-state-records
+                                    #'string-equal)))
+    (when (null record)
+      (error "No record for today"))
+    (let ((buffer (get-buffer-create quiescent-flow-chart-buffer-name)))
+      (display-buffer buffer)
+      (save-window-excursion
+        (switch-to-buffer buffer)
+        (special-mode)
+        (read-only-mode -1)
+        (delete-region (point-min) (point-max))
+        (dotimes (_ 50)
+          (insert "|                                                                                                    \n"))
+        (insert "+----------------------------------------------------------------------------------------------------")
+        (overwrite-mode 1)
+        (dolist (point (cdr record))
+          (goto-char (+ (* 2 (cdr point))
+                        (- (* 102 50)
+                           (* 102 (car point))
+                           100)))
+          (insert "*"))
+        (read-only-mode 1)))))
+
+;; 
+
 ;; Reload custom in case anything overwrote it
 (load custom-file)
 
