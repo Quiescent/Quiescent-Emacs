@@ -5477,6 +5477,11 @@ estimate what your state of mind (ITO flow) might be."
 
 (defvar quiescent-flow-chart-buffer-name "*flow-chart*")
 
+(straight-use-package
+ '(eplot :type git :host github :repo "larsmagne/eplot"))
+
+(require 'eplot)
+
 (defun quiescent-flow-draw-chart ()
   "Draw the today's flow state chart."
   (interactive)
@@ -5488,23 +5493,20 @@ estimate what your state of mind (ITO flow) might be."
     (when (null record)
       (error "No record for today"))
     (let ((buffer (get-buffer-create quiescent-flow-chart-buffer-name)))
-      (display-buffer buffer)
       (save-window-excursion
         (switch-to-buffer buffer)
         (special-mode)
         (read-only-mode -1)
         (delete-region (point-min) (point-max))
-        (dotimes (_ 50)
-          (insert "|                                                                                                    \n"))
-        (insert "+----------------------------------------------------------------------------------------------------")
-        (overwrite-mode 1)
+        (insert "Data-Format: xy\n")
+        (insert "Min: 0\n")
+        (insert "Max: 100\n")
         (dolist (point (cdr record))
-          (goto-char (+ (* 2 (cdr point))
-                        (- (* 102 50)
-                           (* 102 (car point))
-                           100)))
-          (insert "*"))
-        (read-only-mode 1)))))
+          (insert (format "%s %s\n" (car point) (cdr point)))
+          (goto-char (point-max)))
+        (read-only-mode 1)
+        (eplot))
+      (display-buffer "*eplot*"))))
 
 ;; 
 
