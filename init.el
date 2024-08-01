@@ -39,6 +39,15 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; From:
+;; https://github.com/radian-software/straight.el/issues/1146#issuecomment-2227133737
+(use-package straight
+  :custom
+  ;; add project and flymake to the pseudo-packages variable so
+  ;; straight.el doesn't download a separate version than what eglot
+  ;; downloads.
+  (straight-built-in-pseudo-packages '(emacs xref nadvice python image-mode project flymake)))
+
 ;; Early in the file to avoid version conflicts
 (straight-use-package 'org)
 
