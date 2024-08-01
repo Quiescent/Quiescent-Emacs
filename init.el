@@ -4086,11 +4086,6 @@ Store PREV-VAL in variable."
 
 (add-hook 'scala-mode-hook #'quiescent-remove-flex)
 
-(defun quiescent-ensure-eglot ()
-  "Enable eglot in the curernt buffer."
-  (when (null quiescent-starting-up)
-    (eglot-ensure)))
-
 ;; 
 
 ;;; ** Dockerfile Mode
@@ -4230,9 +4225,6 @@ Store PREV-VAL in variable."
 ;; 
 
 ;;; ** Eglot
-
-(straight-use-package
- '(track-changes :type git :host github :repo "emacs-straight/track-changes"))
 
 (defun quiescent-disable-eglot-capabilities ()
   "Disable features like inserting matching pair."
@@ -4910,9 +4902,6 @@ itself."
 (setq org-babel-js-function-wrapper
       "console.log(`${require('util').inspect(function(){\n%s\n}())}`);")
 
-(use-package ob-async
-  :straight t)
-
 (add-hook 'after-init-hook #'quiescent-setup-org-babel-languages)
 
 (setq org-capture-templates
@@ -5075,19 +5064,11 @@ first created to remember those values."
       (delete-region (point) (org-babel-result-end)))
     (add-hook 'post-command-hook #'quiescent-render-html-post-command-hook)))
 
-(use-package org-bullets
-  :straight t
-  :config
-  (add-hook 'org-mode-hook #'quiescent-activate-org-bullets-mode)
-  (defun quiescent-activate-org-bullets-mode ()
-    (when (null quiescent-starting-up)
-      (org-bullets-mode 1))))
-
 (setq org-enforce-todo-dependencies t)
 
-(use-package ox-reveal
-  :straight t
-  :demand t)
+;; (use-package ox-reveal
+;;   :straight t
+;;   :demand t)
 
 (require 'url)
 
@@ -5098,67 +5079,6 @@ first created to remember those values."
     (url-copy-file "https://github.com/hakimel/reveal.js/archive/3.9.2.tar.gz" "reveal.js-3.9.2.tar.gz")
     (shell-command "tar -xzvf reveal.js-3.9.2.tar.gz")
     (shell-command "mv reveal.js-3.9.2/ reveal.js")))
-
-;; 
-
-;;; ** Secretaria
-
-(use-package alert
-  :straight t)
-
-(use-package secretaria
-  :straight t)
-
-(copy-face 'fringe 'quiescent-alert-saved-fringe-face)
-
-(defun quiescent-alert-fringe-notify (info)
-  (progn
-    (set-face-background 'fringe (cdr (assq (plist-get info :severity)
-                                            alert-severity-colors)))
-    (message "%s" (plist-get info :message))))
-
-(defun quiescent-alert-fringe-restore (_info)
-  (copy-face 'quiescent-alert-saved-fringe-face 'fringe))
-
-(alert-define-style 'fringe-message :title "Change the fringe color"
-                    :notifier #'quiescent-alert-fringe-notify
-                    :remover #'quiescent-alert-fringe-restore)
-
-(defvar *quiescent-reminder-timer* nil
-  "The timer for the current reminder.")
-
-(defun quiescent-setup-timed-reminder (reminder seconds)
-  "Fires a REMINDER every SECONDS."
-  (interactive "sReminder: \nnSeconds: ")
-  (progn
-    (when *quiescent-reminder-timer*
-      (cancel-timer *quiescent-reminder-timer*))
-    (setq *quiescent-reminder-timer*
-          (run-at-time
-           seconds
-           seconds
-           (lambda () (alert reminder
-                             :title "Reminder"
-                             :severity 'trivial
-                             :style 'fringe-message))))))
-
-(defun quiescent-cancel-timed-reminder ()
-  "Cancel any timed reminder or do nothing if there is none."
-  (interactive)
-  (if *quiescent-reminder-timer*
-      (progn
-        (cancel-timer *quiescent-reminder-timer*)
-        (setq *quiescent-reminder-timer* nil)
-        (message "Cancelled timed reminder."))
-    (error "No timed reminder running")))
-
-(defun org-archive-done-tasks ()
-  "Archive all tasks marked DONE in the current subtree."
-  (interactive)
-  (mapc (lambda (entry)
-          (goto-char entry)
-          (org-archive-subtree))
-        (reverse (org-map-entries (lambda () (point)) "TODO=\"DONE\"" 'tree))))
 
 ;; 
 
