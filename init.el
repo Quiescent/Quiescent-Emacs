@@ -3273,7 +3273,7 @@ Nil if root is supplied as DIR."
 
 ;; 
 
-;;; ** JS2 Mode
+;;; ** JS
 
 (defun quiescent-indent-js-function ()
   "Indent the javascript function at point."
@@ -3282,7 +3282,7 @@ Nil if root is supplied as DIR."
       (if (nth 4 (syntax-ppss))
           (fill-paragraph)
         (save-excursion
-          (mark-defun)
+          (call-interactively #'combobulate-mark-defun)
           (call-interactively #'indent-for-tab-command)))
     (call-interactively #'quiescent-correct-linting-errors-at-point)))
 
