@@ -227,7 +227,7 @@
   :straight t)
 
 (straight-use-package
- '(nano-emacs :type git :host github :repo "rougier/nano-emacs"))
+ '(nano-emacs :type git :host github :repo "Quiescent/nano-emacs"))
 
 (require 'nano-layout)
 (require 'nano-faces)
@@ -5353,7 +5353,15 @@ The cofee should be delivered by DELIVER-BY."
   :commands (pomm pomm-third-time)
   :init (progn
           (global-set-key (kbd "<f10>") #'pomm-third-time)
-          (setq pomm-third-time-fraction "1/4")))
+          (setq pomm-third-time-fraction "1/4"))
+  :config (add-hook 'pomm-on-status-changed-hook
+                    #'quiescent-pomm-require-recognition))
+
+(defun quiescent-pomm-require-recognition ()
+  "Require that the reply with the phrase \"roger\" to proceed."
+  (when (not (string-equal (read-string "POMM state changed.  Please type \"roger\" and hit RET: ")
+                           "roger"))
+    (quiescent-pomm-require-recognition)))
 
 ;; 
 
