@@ -5351,6 +5351,7 @@ The cofee should be delivered by DELIVER-BY."
 (use-package pomm
   :straight (pomm :type git :host github :protocol ssh :repo "Quiescent/pomm.el")
   :commands (pomm pomm-third-time)
+  :demand t
   :custom (pomm-display-timer nil)
   :init (progn
           (global-set-key (kbd "<f10>") #'pomm-third-time)
