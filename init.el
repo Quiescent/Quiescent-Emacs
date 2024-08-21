@@ -1480,7 +1480,7 @@ If it's dotted list, produce the values in the dotted list."
                       (save-excursion
                         (forward-list)
                         (point)))))
-          (when (/= start end)
+          (when (and end (/= start end))
             (let* ((symbols-from-contents (quiescent-all-regexp-matches-in-region "[a-zA-Z0-9_]+"
                                                                                   start
                                                                                   end))
