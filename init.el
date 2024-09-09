@@ -2904,8 +2904,8 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . bottom)
-               (window-height . 0.5)))
+               (side . right)
+               (window-width . 100)))
 
 ;; Shell Mode
 (add-to-list 'display-buffer-alist
@@ -2913,8 +2913,8 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . bottom)
-               (window-height . 0.5)))
+               (side . right)
+               (window-width . 100)))
 
 ;; Magit
 (add-to-list 'display-buffer-alist
