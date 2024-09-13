@@ -2872,12 +2872,6 @@ arguments actually mean."
 
 ;; Slime Setup
 
-;; Lisp Windows
-(add-to-list 'display-buffer-alist
-             '((major-mode . lisp-mode)
-               (display-buffer-pop-up-window)
-               (reusable-frames . t)))
-
 ;; Lisp Repl Window
 (add-to-list 'display-buffer-alist
              '((major-mode . slime-repl-mode)
@@ -2886,17 +2880,18 @@ arguments actually mean."
                (reusable-frames . t)
                (side . right)))
 
-;; Rust Setup
-
-;; Rustic Windows
-(add-to-list 'display-buffer-alist
-             '((major-mode . rustic-mode)
-               (display-buffer-pop-up-window)
-               (reusable-frames . t)))
-
 ;; Rustic Compilation
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-compilation-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . right)
+               (window-width . 100)))
+
+;; Rustic Compilation
+(add-to-list 'display-buffer-alist
+             '((major-mode . rustic-cargo-test-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
