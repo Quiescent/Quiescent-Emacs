@@ -2134,7 +2134,14 @@ search through."
 
 ;;; ** iMenu
 
-(global-set-key (kbd "M-i") #'imenu)
+(use-package flimenu
+  :straight t
+  :init
+  (global-set-key (kbd "M-i") #'imenu)
+  :config
+  (progn
+    ; (setq flimenu-ignore-modes-list 'my-mode-where-things-shouldnt-be-active)
+    (flimenu-global-mode)))
 
 ;; 
 
