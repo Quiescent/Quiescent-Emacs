@@ -3689,6 +3689,12 @@ Replaces the buffer string in that region."
       (unless (treesit-language-available-p (car grammar))
         (treesit-install-language-grammar (car grammar)))))
 
+  (defun quiescent-use-treesit-for-imenu ()
+    "Use treesitter to build `imenu'."
+    (setq imenu-create-index-function #'treesit-simple-imenu))
+
+  (add-hook 'js-ts-mode-hook #'quiescent-use-treesit-for-imenu)
+
   ;; Optional, but recommended. Tree-sitter enabled major modes are
   ;; distinct from their ordinary counterparts.
   ;;
@@ -3790,7 +3796,8 @@ Replaces the buffer string in that region."
   (tide-hl-identifier-mode +1)
   (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
   (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition)
-  (flycheck-select-checker 'quiescent-javascript-tide))
+  (flycheck-select-checker 'quiescent-javascript-tide)
+  (setq imenu-create-index-function #'treesit-simple-imenu))
 
 ;; 
 
