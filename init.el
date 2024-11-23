@@ -1797,12 +1797,22 @@ Usually because of too much overhead in checking.")
   (when (null quiescent-starting-up)
     (enable-paredit-mode)))
 
+(defun quiescent-supress-space-before-bracket-after-fancy-lambda (endp delimiter)
+  "Produce false if we shouldn't insert a space before an open round bracket.
+
+ENDP indicates whether we're considering the end of a list (which we're
+not interested in here.).
+
+DELIMITER indicates what the delimeter character is."
+  (and (not endp) (not (looking-back "#l" 0)) (not (looking-back "#p" 0))))
+
 (use-package paredit
   :straight t
   :config (progn
             (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
             (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
             (define-key paredit-mode-map (kbd "<RET>") nil)
+            (add-to-list 'paredit-space-for-delimiter-predicates #'quiescent-supress-space-before-bracket-after-fancy-lambda)
             (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
             (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
             (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
