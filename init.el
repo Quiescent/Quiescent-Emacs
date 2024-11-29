@@ -1804,7 +1804,7 @@ ENDP indicates whether we're considering the end of a list (which we're
 not interested in here.).
 
 DELIMITER indicates what the delimeter character is."
-  (and (not endp) (not (looking-back "#l" 0)) (not (looking-back "#p" 0))))
+  (and (not endp) (not (looking-back "#l" 0)) (not (looking-back "#p" 0)) (not (looking-back "#c" 0))))
 
 (use-package paredit
   :straight t
