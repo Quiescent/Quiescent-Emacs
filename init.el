@@ -5470,6 +5470,9 @@ estimate what your state of mind (ITO flow) might be."
 
 ;; Reload custom in case anything overwrote it
 (load custom-file)
+;;; ** Plottr
+
+(add-to-list 'auto-mode-alist '("\\.pltr\\'" . json-mode))
 
 ;;; * DONE!
 
