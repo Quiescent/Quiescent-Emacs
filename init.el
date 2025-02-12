@@ -294,6 +294,19 @@
 
 ;; 
 
+;;; ** Ultra Scroll (Mac only)
+
+(use-package ultra-scroll
+  :straight (ultra-scroll :type git
+                          :host github
+                          :repo "jdtsmith/ultra-scroll")
+  :init (when (eq system-type 'darwin)
+          (setq scroll-conservatively 101 ; important!
+                scroll-margin 0)
+          (ultra-scroll-mode 1)))
+
+;; 
+
 ;;; ** Page Break Lines
 
 (use-package page-break-lines
