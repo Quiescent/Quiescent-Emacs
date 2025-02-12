@@ -229,6 +229,9 @@
 (straight-use-package
  '(nano-emacs :type git :host github :repo "Quiescent/nano-emacs"))
 
+(when (eq system-type 'darwin)
+  (setq nano-font-size 14))
+
 (require 'nano-layout)
 (require 'nano-faces)
 (require 'nano-theme)
