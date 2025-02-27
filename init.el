@@ -3013,7 +3013,8 @@ Allows Emacs to display other buffers in that window."
 ;;; ** Json Mode
 
 (use-package json-mode
-  :straight t)
+  :straight t
+  :config (define-key json-mode-map (kbd "C-c C-f") #'json-pretty-print-buffer))
 
 (require 'subr-x)
 
