@@ -1765,7 +1765,30 @@ Usually because of too much overhead in checking.")
   (when (null quiescent-starting-up)
     (flymake-mode 1)))
 
+(use-package posframe
+  :straight t)
+(use-package flymake-posframe
+  :load-path "~/frm-src/flymake-posframe"
+  :hook (flymake-mode . flymake-posframe-mode))
+
 (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
+
+;;; ** Flycheck Mode
+
+(use-package flycheck
+  :straight t)
+
+(defun quiescent-hide-flycheck-posframe ()
+  "Hide the posframe associated with flycheck in the current buffer."
+  (posframe-hide flycheck-posframe-buffer))
+
+(use-package flycheck-posframe
+  :straight t
+  :after flycheck
+  :config (progn
+            (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+            (flycheck-posframe-configure-pretty-defaults)
+            (add-hook 'pre-command-hook #'quiescent-hide-flycheck-posframe)))
 
 ;;; ** Show Parenthises
 
