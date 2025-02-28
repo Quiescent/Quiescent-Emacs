@@ -1782,12 +1782,20 @@ Usually because of too much overhead in checking.")
   "Hide the posframe associated with flycheck in the current buffer."
   (posframe-hide flycheck-posframe-buffer))
 
+;; Adapted from flycheck-posframe
+(defun quiescent-flycheck-posframe-configure-pretty-defaults ()
+  "Configure some nicer settings for prettier display."
+  (setq flycheck-posframe-warning-prefix "⚠ ")
+  (setq flycheck-posframe-error-prefix "X ")
+  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
+  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error))
+
 (use-package flycheck-posframe
   :straight t
   :after flycheck
   :config (progn
             (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-            (flycheck-posframe-configure-pretty-defaults)
+            (quiescent-flycheck-posframe-configure-pretty-defaults)
             (add-hook 'pre-command-hook #'quiescent-hide-flycheck-posframe)))
 
 ;;; ** Show Parenthises
