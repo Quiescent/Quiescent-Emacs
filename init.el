@@ -3039,6 +3039,18 @@ Allows Emacs to display other buffers in that window."
 (use-package elgrep
   :straight t)
 
+;;; 
+
+;;; ** Duplicating Stuff
+
+(global-set-key (kbd "C-c j") #'duplicate-dwim)
+
+(defvar-keymap repeat-line-map
+    :repeat (:enter (duplicate-dwim))
+    "j" #'duplicate-dwim)
+
+(repeat-mode 1)
+
 ;;; * Languages
 
 ;;; ** Json Mode
