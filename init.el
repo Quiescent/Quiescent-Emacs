@@ -5540,3 +5540,4 @@ estimate what your state of mind (ITO flow) might be."
 (setq quiescent-starting-up nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
+(put 'set-goal-column 'disabled nil)
