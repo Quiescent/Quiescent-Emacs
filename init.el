@@ -3848,7 +3848,8 @@ Replaces the buffer string in that region."
                   )))))
   :init
   (progn
-    (add-hook 'js-ts-mode-hook #'quiescent-setup-tide-mode)))
+    (add-hook 'js-ts-mode-hook #'quiescent-setup-tide-mode)
+    (add-hook 'typescript-ts-mode-hook #'quiescent-setup-tide-mode-ts)))
 
 (flycheck-define-generic-checker 'quiescent-javascript-tide
   "A Javascript syntax checker using tsserver."
@@ -3868,6 +3869,24 @@ Replaces the buffer string in that region."
   (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
   (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition)
   (flycheck-select-checker 'quiescent-javascript-tide)
+  (setq imenu-create-index-function #'treesit-simple-imenu))
+
+(flycheck-define-generic-checker 'quiescent-javascript-tide-ts
+  "A Javascript syntax checker using tsserver."
+  :start #'tide-flycheck-start
+  :verify #'tide-flycheck-verify
+  :modes '(typescript-mode typescript-ts-mode)
+  :predicate #'tide-flycheck-predicate)
+
+(add-to-list 'flycheck-checkers 'quiescent-javascript-tide-ts t)
+
+(defun quiescent-setup-tide-mode-ts ()
+  "Setup TIDE mode for typescript."
+  (tide-setup)
+  (tide-hl-identifier-mode +1)
+  (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
+  (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition)
+  (flycheck-select-checker 'quiescent-javascript-tide-ts)
   (setq imenu-create-index-function #'treesit-simple-imenu))
 
 ;; 
