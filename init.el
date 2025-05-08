@@ -5202,7 +5202,11 @@ first created to remember those values."
   :config
   (progn
     (setenv "GIT_ASKPASS" "git-gui--askpass")
-    (global-set-key (kbd "C-c m") #'magit-status)))
+    (global-set-key (kbd "C-c m") #'magit-status)
+    (defun quiescent-magit-list-branches-by-recent-changes ()
+      "List the branches in git by the most recent change first."
+      (interactive)
+      (magit-git-command "git branch --sort=-committerdate"))))
 
 ;; 
 
