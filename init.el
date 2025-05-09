@@ -310,6 +310,18 @@
 
 ;; 
 
+;;; ** Random Additions to Scrolling
+
+(defun quiescent-scroll-percent ()
+  "Display how far the point is out of total lines as a percentage."
+  (interactive)
+  (message "%s%%" (/ (floor (* 10000
+                              (/ (line-number-at-pos)
+                                 (cl-coerce (line-number-at-pos (point-max)) 'float))))
+                    100.0)))
+
+;; 
+
 ;;; ** Page Break Lines
 
 (use-package page-break-lines
