@@ -2870,7 +2870,8 @@ arguments actually mean."
   "Create an interactive function to insert the register at ID."
   (lambda ()
     (interactive)
-    (insert-register id)))
+    (insert-register id)
+    (exchange-point-and-mark)))
 
 (defvar instant-registers-mode-map
   (let ((map (make-sparse-keymap)))
