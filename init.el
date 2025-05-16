@@ -3826,10 +3826,12 @@ Replaces the buffer string in that region."
     ;; code.
     :load-path ("~/frm-src/combobulate/")
     :config
-    (define-key combobulate-key-map (kbd "M-s") #'combobulate-splice-up)
-    (define-key combobulate-key-map (kbd "M-r") #'combobulate-splice-self)))
+    (keymap-set combobulate-key-map "M-s" #'combobulate-splice-up)
+    (keymap-set combobulate-key-map "M-r" #'combobulate-splice-self)
+    (keymap-unset combobulate-key-map "C-M-n" t)
+    (keymap-unset combobulate-key-map "C-M-p" t)))
 
-(define-key js-ts-mode-map (kbd "M-q") #'quiescent-indent-js-function)
+(keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
 
 ;; 
 
