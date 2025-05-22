@@ -3064,6 +3064,15 @@ Allows Emacs to display other buffers in that window."
 
 (repeat-mode 1)
 
+;;; ** String Utilities
+
+(defun quiescent-strings ()
+  "Produce a list of the strings in the current buffer in an occur session."
+  (interactive)
+  (occur (rx (or "'" "`" "\"")
+             (one-or-more not-newline)
+             (or "'" "`" "\""))))
+
 ;;; * Languages
 
 ;;; ** Json Mode
