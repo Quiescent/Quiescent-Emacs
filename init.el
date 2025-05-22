@@ -3069,9 +3069,9 @@ Allows Emacs to display other buffers in that window."
 (defun quiescent-strings ()
   "Produce a list of the strings in the current buffer in an occur session."
   (interactive)
-  (occur (rx (or "'" "`" "\"")
+  (occur (rx (syntax string-quote)
              (one-or-more not-newline)
-             (or "'" "`" "\""))))
+             (syntax string-quote))))
 
 ;;; * Languages
 
