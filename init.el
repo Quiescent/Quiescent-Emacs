@@ -1934,7 +1934,8 @@ DELIMITER indicates what the delimeter character is."
         typescript-ts-base-mode-hook
         sql-mode-hook
         org-mode-hook
-        plantuml-mode-hook))
+        plantuml-mode-hook
+        graphviz-dot-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 (make-variable-buffer-local 'electric-pair-pairs)
