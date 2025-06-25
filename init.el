@@ -540,6 +540,7 @@ Maintains the point in the current window."
 
 ;; ** Searching and Editing Thing at Point
 
+(require 'diff-mode)
 (define-key prog-mode-map (kbd "M-'") #'isearch-forward-symbol-at-point)
 (require 'diff-mode)
 (define-key diff-mode-map (kbd "M-'") #'isearch-forward-symbol-at-point)
