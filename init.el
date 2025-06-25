@@ -2958,7 +2958,8 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . right)))
+               (side . right)
+               (window-width . 0.5)))
 
 ;; Rustic Compilation
 (add-to-list 'display-buffer-alist
