@@ -4327,6 +4327,30 @@ Store PREV-VAL in variable."
 (straight-use-package
  '(svelte-mode :type git :host github :repo "leafOfTree/svelte-mode"))
 
+;; 
+
+;;; ** Assembly Mode
+
+(defun quiescent-align-region-asm ()
+  "Align the region in an assembly file.
+
+It first dedents the region so that it doesn't get confused by the
+leading whitespace."
+  (interactive)
+  (when (< (mark) (point))
+    (exchange-point-and-mark))
+  (let ((start (region-beginning)))
+    (goto-char start)
+    (while (< (point) (region-end))
+      (beginning-of-line)
+      (delete-horizontal-space)
+      (forward-line))
+    (align-regexp start (region-end) "\\(\\s-*\\) ")
+    (indent-region start (region-end))
+    (goto-char start)))
+
+;; 
+
 ;;; * Post Programming Languages Config
 
 ;;; ** Flycheck
