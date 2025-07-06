@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: ia32
+# key: ia32
+# --
+    SYS_EXIT   equ 1
+    SYS_WRITE  equ 4
+    STDOUT     equ 1
+
+section .text
+    global start
+
+_start:
+    $0
+
+    mov eax, SYS_EXIT           ; syscall
+    int 0x80
+    
+section .data
+    
