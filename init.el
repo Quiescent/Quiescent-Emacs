@@ -1637,7 +1637,7 @@ If it's dotted list, produce the values in the dotted list."
           (ignore-errors (forward-char))))
       strings)))
 
-(defun quiescent-complete-json-symbol-from-file ()
+(defun quiescent-complete-symbol-from-file ()
   "Find all words in the whole JSON file and complete from them."
   (let ((search-string (thing-at-point 'symbol))
         (options))
@@ -1654,11 +1654,12 @@ If it's dotted list, produce the values in the dotted list."
     (let ((bounds (bounds-of-thing-at-point 'symbol)))
       (list (car bounds) (cdr bounds) options))))
 
-(defun quiescent-setup-json-completion ()
+(defun quiescent-setup-symbol-completion ()
   "Setup completion in JSON buffers."
-  (setq-local completion-at-point-functions (list #'quiescent-complete-json-symbol-from-file t)))
+  (setq-local completion-at-point-functions (list #'quiescent-complete-symbol-from-file t)))
 
-(add-hook 'json-mode-hook #'quiescent-setup-json-completion)
+(add-hook 'json-mode-hook #'quiescent-setup-symbol-completion)
+(add-hook 'asm-mode-hook #'quiescent-setup-symbol-completion)
 
 ;; 
 
