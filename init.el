@@ -1937,7 +1937,8 @@ DELIMITER indicates what the delimeter character is."
         sql-mode-hook
         org-mode-hook
         plantuml-mode-hook
-        graphviz-dot-mode-hook))
+        graphviz-dot-mode-hook
+        asm-mode-hook))
 
 (add-to-list 'electric-pair-pairs (cons ?\( ?\)))
 (make-variable-buffer-local 'electric-pair-pairs)
