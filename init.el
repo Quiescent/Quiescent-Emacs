@@ -1,29 +1,53 @@
 ;;; .emacs --- My emacs root config file. -*- lexical-binding: t; outline-minor-mode: t -*-
 
 ;;; Commentary:
-;; This file is now pointing at a literate program version of
-;; my Emacs config in ~/.emacs.d/startup.org
 ;;
 ;; Important extra files which are required to be in ~/.emacs.d/
-;;  - conf/system-vars.el
-;;    Defines a set of variables specific to the system which this
-;;    config is being run on (such as which OS is running.)
 ;;  - org-settings/org-agenda-file-list.el
 ;;    Sets the list of files which org should use for agenda on
 ;;    this computer.
-;;
-;; There's an important and wierd fix which I have to make for OS X.
-;; I need to define `x-max-tooltip-size'.  I'm still not really sure
-;; why, but I think that 50 should be fine.
 
 ;;; Code:
 
 ;; For debugging what gets compiled at startup
 ;;(debug-on-entry #'byte-compile)
 
-;; Don't native compile auto loads.  There's something wrong with them
-;; right now: 17/02/2021.
-(setq comp-deferred-compilation-deny-list '("\\(?:[^z-a]*-autoloads\\.el$\\)"))
+;; * Initial Setup
+
+;; Load system specific configuration
+(defvar quiescent-starting-up nil
+  "Whether We're busy starting Emacs.")
+
+(defvar quiescent-work-machine nil
+  "Whether I'm on my work machine..")
+
+(defvar quiescent-exwm-machine nil
+  "Whether this machine uses EXWM as it's window manager.")
+
+(defvar quiescent-exwm-multiple-monitors nil
+  "Whether this machine uses EXWM and has multiple monitors.")
+
+(defvar quiescent-home-pc-linux t
+  "Whether this computer is my Home Linux PC.
+
+This is the default system.")
+
+(defvar quiescent-macbook nil
+  "Whether this computer is my macbook.")
+
+(defun quiescent-computer-with-langtool-installed-p ()
+  "Produce t if this computer is using langtool."
+  (or quiescent-macbook))
+
+(setq quiescent-starting-up t)
+
+(when (file-exists-p "~/.emacs.d/conf/system-conf.el")
+  (load "~/.emacs.d/conf/system-conf.el"))
+
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
+(require 'cl-lib)
 
 ;; Bootstrap straight
 (defvar bootstrap-version)
@@ -55,13 +79,7 @@
 (defalias 'compat-executable-find #'executable-find)
 (defalias 'compat-dired-get-marked-files #'dired-get-marked-files)
 
-;; Load system specific configuration
-(add-to-list 'load-path "~/.emacs.d/conf")
-(require 'system-vars)
-(setq quiescent-starting-up t)
-
-(when (file-exists-p "~/.emacs.d/conf/system-conf.el")
-  (require 'system-conf))
+;; ** Switching Buffers Quickly
 
 (defvar quiescent-toggle-buffer-backwards t
   "Whether we should go forwards or backwards when we next toggle buffers.")
@@ -82,7 +100,7 @@
 (global-set-key (kbd "s-p") #'switch-to-prev-buffer)
 
 (when quiescent-exwm-machine
-  (eval 
+  (eval
    `(progn
       (use-package xelb
         :straight t
@@ -202,58 +220,74 @@
         (quiescent-exwm-setup-global-bindings)
         (quiescent-exwm-setup-displays-and-start)))))
 
-(setq epa-pinentry-mode 'loopback)
-
-(add-to-list 'load-path "~/.emacs.d/conf")
-(require 'system-vars)
-(require 'cl-lib)
-
-(setq quiescent-starting-up t)
-
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
 ;;; * Themes
 
 ;;; ** Nano
 
-(use-package mini-frame
-  :straight t)
+(straight-use-package '(nano-theme :type git :host github
+                                   :repo "rougier/nano-theme"))
 
-(use-package ts
-  :straight t)
+(load-theme 'nano t)
+(load-theme 'nano-dark t)
 
-(use-package svg-tag-mode
-  :straight t)
+(set-face-attribute 'default nil
+                    :family "Roboto Mono" :weight 'light :height 140)
+(set-face-attribute 'bold nil
+                    :family "Roboto Mono" :weight 'regular)
+(set-face-attribute 'italic nil
+                    :family "Victor Mono" :weight 'semilight :slant 'italic)
+(set-fontset-font t 'unicode
+    (font-spec :name "Inconsolata Light" :size 16) nil)
+(set-fontset-font t '(#xe000 . #xffdd)
+    (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
 
-(straight-use-package
- '(nano-emacs :type git :host github :repo "Quiescent/nano-emacs"))
+(use-package nano-modeline
+  :straight (nano-modeline :type git
+                           :host github
+                           :repo "rougier/nano-modeline")
+  :hook ((prog-mode            . nano-modeline-prog-mode)
+         (text-mode            . nano-modeline-text-mode)
+         (org-mode             . nano-modeline-org-mode)
+         (pdf-view-mode        . nano-modeline-pdf-mode)
+         (mu4e-headers-mode    . nano-modeline-mu4e-headers-mode)
+         (mu4e-view-mode       . nano-modeline-mu4e-message-mode)
+         (elfeed-show-mode     . nano-modeline-elfeed-entry-mode)
+         (elfeed-search-mode   . nano-modeline-elfeed-search-mode)
+         (term-mode            . nano-modeline-term-mode)
+         (xwidget-webkit-mode  . nano-modeline-xwidget-mode)
+         (messages-buffer-mode . nano-modeline-message-mode)
+         (org-capture-mode     . nano-modeline-org-capture-mode)
+         (org-agenda-mode      . nano-modeline-org-agenda-mode))
+  :init
+  (nano-modeline-prog-mode t)
+  (setq-default mode-line-format nil))
 
-(when (eq system-type 'darwin)
-  (setq nano-font-size 14))
-
-(require 'nano-layout)
-(require 'nano-faces)
-(require 'nano-theme)
-(require 'nano-theme-dark)
-(nano-theme-set-dark)
-(call-interactively 'nano-refresh-theme)
 (defun quiescent-light-mode ()
   "Set the nano theme to light."
   (interactive)
-  (require 'nano-theme-light)
-  (nano-theme-set-light)
-  (call-interactively 'nano-refresh-theme))
+  (load-theme 'nano-light t))
+
+(defun quiescent-dark-mode ()
+  "Set the nano theme to dark."
+  (interactive)
+  (load-theme 'nano-dark t)
+  ;; TODO set all the nano faces
+  ;; nano-modeline-active
+  ;; nano-modeline-inactive
+  ;; nano-modeline-status
+  ;; nano-modeline-button-active-face
+  ;; nano-modeline-button-inactive-face
+  ;; nano-modeline-button-highlight-face
+  ;; nano-modeline--empty-face
+  )
+
 (defun quiescent-defaults ()
-  "Setup my defaults the way I like 'em."
+  "Setup my defaults the way I like them."
   (progn
     (setq frame-title-format nil)
     (when (eq system-type 'darwin)
       (setq ns-use-native-fullscreen t
-            mac-option-key-is-meta t
-            mac-command-key-is-meta nil
-            mac-option-modifier 'meta
-            mac-use-title-bar nil))
+            mac-option-modifier 'meta))
     (defun copy-from-osx ()
       (shell-command-to-string "pbpaste"))
     (defun paste-to-osx (text &optional push)
@@ -280,18 +314,8 @@
     (unless
         (or (eq system-type 'windows-nt)
             (not (file-exists-p "/bin/bash")))
-      (setq-default shell-file-name "/bin/bash")
-      (setq explicit-shell-file-name "/bin/bash"))
-    (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
-      (if (memq (process-status proc) '(signal exit))
-          (let ((buffer (process-buffer proc)))
-            ad-do-it
-            (kill-buffer buffer))
-        ad-do-it))
-    (ad-activate 'term-sentinel)
-    (setq pop-up-windows t)))
+      (setq-default shell-file-name "/bin/bash"))))
 (quiescent-defaults)
-(require 'nano-modeline)
 
 (set-face-attribute 'error nil :foreground "gray22" :box '(:line-width (2 . 2) :color "#EBCB8B"))
 
@@ -300,13 +324,11 @@
 ;;; ** Ultra Scroll (Mac only)
 
 (use-package ultra-scroll
-  :straight (ultra-scroll :type git
-                          :host github
-                          :repo "jdtsmith/ultra-scroll")
-  :init (when (eq system-type 'darwin)
-          (setq scroll-conservatively 101 ; important!
-                scroll-margin 0)
-          (ultra-scroll-mode 1)))
+  :straight t
+  :config (when (eq system-type 'darwin)
+            (setq scroll-conservatively 101 ; important!
+                  scroll-margin 0)
+            (ultra-scroll-mode 1)))
 
 ;; 
 
@@ -339,13 +361,6 @@
 
 ;; 
 
-;;; ** Crosshair
-
-(use-package xhair
-  :straight t)
-
-;; 
-
 ;;; ** Visual Bell
 
 ;; From Phil, posted on https://pragmaticemacs.wordpress.com/2017/10/15/using-a-visible-bell-in-emacs/
@@ -360,13 +375,16 @@
     (invert-face 'nano-face-header-default)
     (invert-face 'nano-face-header-strong)))
 
-(defun my-visible-bell ()
-  "A friendlier visual bell effect."
+(cl-defun my-visible-bell (&optional (len 0.1))
+  "A friendlier visual bell effect.
+
+Supply a LEN if you'd like to override the length of the inverted mode
+line."
   (quiescent-invert-nano-header)
-  (run-with-timer 0.1 nil #'quiescent-invert-nano-header))
+  (run-with-timer len nil #'quiescent-invert-nano-header))
 
 (define-minor-mode my-visible-bell-mode
-   "Use `my-visible-bell’ as the `ring-bell-function’." 
+  "Use `my-visible-bell’ as the `ring-bell-function’."
   :global t
   (let ((this 'my-visible-bell-mode))
     (if my-visible-bell-mode
@@ -497,7 +515,6 @@ i.e. the reverse of fill paragraph."
   "Disable `indent-tabs-mode'."
   (setq indent-tabs-mode nil))
 (add-hook 'prog-mode-hook #'quiescent-disable-indent-tabs-mode)
-(setq tab-width 4)
 (column-number-mode 1)
 (put 'upcase-region   'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -542,7 +559,6 @@ Maintains the point in the current window."
 
 (require 'diff-mode)
 (define-key prog-mode-map (kbd "M-'") #'isearch-forward-symbol-at-point)
-(require 'diff-mode)
 (define-key diff-mode-map (kbd "M-'") #'isearch-forward-symbol-at-point)
 
 ;; 
@@ -569,8 +585,6 @@ Maintains the point in the current window."
 
 (defvar *buffer-disjunction-results-buffer-name* "*disjunction-results*"
   "The name of the buffer to display disjunction results in.")
-
-(require 'cl-lib)
 
 (defun buffer-disjunction-lines-from-buffer (buffer)
   "Produce the lines in BUFFER as a list of strings."
@@ -631,100 +645,6 @@ Maintains the point in the current window."
 ;;; ** Hippie Expand
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
-
-;; TODO: this has a bug where the internal state of hippie expand
-;; doesn't know that I fiddled with things.
-
-(defvar quiescent-opening-brackets
-  (list ?\( ?\[ ?< ?{)
-  "Brackets that must be closed during hippie expand.")
-
-(defvar quiescent-closing-brackets
-  (list ?\) ?\] ?> ?})
-  "Brackets that close an opening bracket during hippie expand.")
-
-(defvar quiescent-start-or-end-of-string
-  (list ?\" ?\' ?\`)
-  "Characters that constitute the start of a string.")
-
-(require 'cl-lib)
-
-(defun quiescent-closing-bracket-for (char)
-  "Produce the closing bracket of CHAR.
-
-Produce nil if CHAR isn't an opening bracket."
-  (if (not (member char quiescent-opening-brackets))
-      nil
-    (nth (cl-position char quiescent-opening-brackets)
-         quiescent-closing-brackets)))
-
-(defun quiescent-balance-hippie-insertion (s)
-  "Ensure that S is balanced in brackets and string quote chars.
-
-Ignore any syntax other than strings, just push any open brackets
-to a stack and ensure they get closed.
-
-At the first char that double closes, end the string, close the
-other brackets and produce the result."
-  (let ((result)
-        (brackets)
-        (quotes))
-    (let ((final-result (cl-block outer
-                          (dotimes (i (length s) (apply #'string (nreverse result)))
-                            (let ((char (aref s i)))
-                              (cond
-                               ((and quotes
-                                     (not (member char quiescent-start-or-end-of-string)))
-                                (push char result))
-                               ((member char quiescent-start-or-end-of-string)
-                                (if (eq char (car quotes))
-                                    (push (pop quotes) result)
-                                  (progn
-                                    (push char quotes)
-                                    (push char result))))
-                               ((member char quiescent-opening-brackets)
-                                (progn
-                                  (push char brackets)
-                                  (push char result)))
-                               ((member char quiescent-closing-brackets)
-                                (progn
-                                  (if (not (eq char (quiescent-closing-bracket-for (car brackets))))
-                                      (progn
-                                        (while brackets
-                                          (push (quiescent-closing-bracket-for (pop brackets)) result))
-                                        (cl-return-from outer (apply #'string (nreverse result))))
-                                    (progn
-                                      (push char result)
-                                      (pop brackets)))))
-                               (t (push char result))))))))
-      (s-trim-right
-       (cl-concatenate 'string final-result
-                       (nreverse quotes)
-                       (mapcar #'quiescent-closing-bracket-for brackets))))))
-
-(defun quiescent-ensure-even-braces-after-hippie (f args)
-  "Run F (`hippie-expand') then ensure brackets match.
-
-Pass ARGS to F."
-  (let ((start (or he-string-beg (point))))
-    (funcall f args)
-    (let* ((end (point))
-           (inserted (buffer-substring start (point)))
-           (balanced (quiescent-balance-hippie-insertion inserted)))
-      (when (not (equal inserted balanced))
-        (kill-region start (point))
-        (insert balanced)
-        (setq this-command 'hippie-expand)))))
-
-(advice-add #'hippie-expand :around
-            #'quiescent-ensure-even-braces-after-hippie)
-
-(defun quiescent-setup-lisp-string-quotes ()
-  "Setup the quotes that open and close strings for lisps."
-  (setq-local quiescent-start-or-end-of-string (list ?\")))
-
-(add-hook 'lisp-mode-hook #'quiescent-setup-lisp-string-quotes)
-(add-hook 'emacs-lisp-mode-hook #'quiescent-setup-lisp-string-quotes)
 
 ;; 
 
@@ -845,6 +765,7 @@ to make the advice work."
 
 (use-package hydra
   :straight t
+  :defer t
   :config
   (progn
     (defhydra hydra-drawing (:color pink
@@ -1102,7 +1023,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 (use-package prescient
   :straight t)
 
-;; 
+
 
 ;;; ** Quiescent Completion -- My Implementation of Completion at Point
 
@@ -1401,9 +1322,6 @@ Completions are drawn from the dotted list ALL."
 
 (keymap-set prog-mode-map "<backtab>" #'completion-at-point)
 (keymap-set prog-mode-map "TAB" #'completion-at-point)
-(with-eval-after-load "js2-mode"
-  (keymap-set js2-mode-map "<backtab>" #'completion-at-point)
-  (keymap-set js2-mode-map "TAB" #'completion-at-point))
 (with-eval-after-load "shell-mode"
   (keymap-set shell-mode-map "<backtab>" #'completion-at-point)
   (keymap-set shell-mode-map "TAB" #'completion-at-point))
@@ -1804,6 +1722,8 @@ Usually because of too much overhead in checking.")
   (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
   (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error))
 
+;; TODO: consider flyover
+
 (use-package flycheck-posframe
   :straight t
   :after flycheck
@@ -1811,6 +1731,8 @@ Usually because of too much overhead in checking.")
             (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
             (quiescent-flycheck-posframe-configure-pretty-defaults)
             (add-hook 'pre-command-hook #'quiescent-hide-flycheck-posframe)))
+
+;; 
 
 ;;; ** Show Parenthises
 
@@ -1826,6 +1748,8 @@ Usually because of too much overhead in checking.")
 
 ;;; ** Yasnippet
 
+;; *I think* this is used in a snippet.
+;;
 ;; From SO: http://emacs.stackexchange.com/questions/12613/convert-the-first-character-to-uppercase-capital-letter-using-yasnippet
 (defun kaushalmodi-capitalize-first-char (string)
   "Capitalize only the first character of the input `STRING'."
@@ -1870,22 +1794,22 @@ DELIMITER indicates what the delimeter character is."
 
 (use-package paredit
   :straight t
+  :hook ((emacs-lisp-mode                  . quiescent-activate-paredit-mode)
+         (eval-expression-minibuffer-setup . quiescent-activate-paredit-mode)
+         (ielm-mode                        . quiescent-activate-paredit-mode)
+         (lisp-mode                        . quiescent-activate-paredit-mode)
+         (lisp-interaction-mode            . quiescent-activate-paredit-mode)
+         (scheme-mode                      . quiescent-activate-paredit-mode)
+         (cider-mode                       . quiescent-activate-paredit-mode)
+         (cider-repl-mode                  . quiescent-activate-paredit-mode)
+         (slime-repl-mode                  . quiescent-activate-paredit-mode)
+         (racket-mode                      . quiescent-activate-paredit-mode)
+         (racket-repl-mode                 . quiescent-activate-paredit-mode))
   :config (progn
             (define-key paredit-mode-map (kbd "C-M-n") #'forward-list)
             (define-key paredit-mode-map (kbd "C-M-p") #'backward-list)
             (define-key paredit-mode-map (kbd "<RET>") nil)
-            (add-to-list 'paredit-space-for-delimiter-predicates #'quiescent-supress-space-before-bracket-after-fancy-lambda)
-            (add-hook 'emacs-lisp-mode-hook                  #'quiescent-activate-paredit-mode)
-            (add-hook 'eval-expression-minibuffer-setup-hook #'quiescent-activate-paredit-mode)
-            (add-hook 'ielm-mode-hook                        #'quiescent-activate-paredit-mode)
-            (add-hook 'lisp-mode-hook                        #'quiescent-activate-paredit-mode)
-            (add-hook 'lisp-interaction-mode-hook            #'quiescent-activate-paredit-mode)
-            (add-hook 'scheme-mode-hook                      #'quiescent-activate-paredit-mode)
-            (add-hook 'cider-mode-hook                       #'quiescent-activate-paredit-mode)
-            (add-hook 'cider-repl-mode-hook                  #'quiescent-activate-paredit-mode)
-            (add-hook 'slime-repl-mode-hook                  #'quiescent-activate-paredit-mode)
-            (add-hook 'racket-mode-hook                      #'quiescent-activate-paredit-mode)
-            (add-hook 'racket-repl-mode-hook                 #'quiescent-activate-paredit-mode)))
+            (add-to-list 'paredit-space-for-delimiter-predicates #'quiescent-supress-space-before-bracket-after-fancy-lambda)))
 
 ;; 
 
@@ -1969,24 +1893,9 @@ DELIMITER indicates what the delimeter character is."
     (point)))
 
 ;; Use eshell after prompt hook here for guessing content
-(defun quiescent-format-previous-content ()
-  "Try to guess the format of the previous content in eshell and format it."
-  (save-excursion
-    (progn
-      (forward-line)
-      (while (not (= (point) (point-max)))
-        (when (temp-view-guess-data-type (thing-at-point 'line t))
-          (let ((original-buffer  (current-buffer))
-                (formatted        (temp-view-region (quiescent-point-at-start-of-line)
-                                                    (quiescent-point-at-end-of-line)
-                                                    t)))
-            (beginning-of-line)
-            (kill-line)
-            (insert formatted)))
-        (forward-line)))))
 
 (defvar *temp-view-produce-output* nil
-  "If non-nil then all functions which would create a buffer instead produce the output.")
+  "If non-nil all functions which would create a buffer instead produce the output.")
 
 (defun temp-view-region (beg end &optional produce-output)
   "View the region [BEG, END) from the current in a temp buffer.
@@ -2071,9 +1980,6 @@ which ends up being reflected.")
 
 (global-set-key (kbd "s-v") #'temp-view-region)
 
-;; Not working and a bit too slow for now
-;; (add-hook 'eshell-after-prompt-hook #'quiescent-format-previous-content)
-
 ;; 
 
 ;;; ** Insert Random Int
@@ -2094,6 +2000,8 @@ which ends up being reflected.")
   :straight t
   :init (with-eval-after-load "editorconfig"
           (editorconfig-mode 1)))
+
+;; 
 
 ;;; ** Eros
 
@@ -2214,7 +2122,6 @@ search through."
   (global-set-key (kbd "M-i") #'imenu)
   :config
   (progn
-    ; (setq flimenu-ignore-modes-list 'my-mode-where-things-shouldnt-be-active)
     (flimenu-global-mode)))
 
 ;; 
@@ -2356,7 +2263,9 @@ display."
       (set-marker live-occur-source-buffer-continue-marker (point)))))
 
 (defun live-occur-start-timer ()
-  "Start a timer to append new results to the live occur buffer and advance the marker."
+  "Start a timer to append new results to the live occur buffer.
+
+Advances the marker."
   (progn
     (when (timerp live-occur-timer)
       (cancel-timer live-occur-timer))
@@ -2376,7 +2285,7 @@ display."
                                      1))))
 
 (defun quiescent-go-up ()
-  "Do the thing which would most logically be considered going up in the current mode."
+  "Go up in a contextually sensitive way."
   (interactive)
   (cond
    ((eq major-mode 'eshell-mode)
@@ -2418,12 +2327,9 @@ outside of one."
   (save-excursion
     (progn
       (skip-chars-backward "0123456789")
-      (let ((start-of-number (point))
-            end-of-number
-            number)
-        (when (not (looking-at "[0-9]+"))
-          (error "No number to increment"))
-        (replace-match (format "%s" (1+ (string-to-number (match-string 0)))))))))
+      (when (not (looking-at "[0-9]+"))
+        (error "No number to increment"))
+      (replace-match (format "%s" (1+ (string-to-number (match-string 0))))))))
 
 (defun quiescent-decrement-number-at-point ()
   "Increment the number at point.
@@ -2434,18 +2340,17 @@ outside of one."
   (save-excursion
     (progn
       (skip-chars-backward "0123456789")
-      (let ((start-of-number (point))
-            end-of-number
-            number)
-        (when (not (looking-at "[0-9]+"))
-          (error "No number to increment"))
-        (replace-match (format "%s" (1- (string-to-number (match-string 0)))))))))
+      (when (not (looking-at "[0-9]+"))
+        (error "No number to increment"))
+      (replace-match (format "%s" (1- (string-to-number (match-string 0))))))))
 
 ;; 
 
 ;;; ** KMacro
 
 (global-set-key (kbd "C-c r") 'replace-string)
+
+;; 
 
 ;;; ** Aligned Movement
 
@@ -2535,8 +2440,6 @@ take care of when you're done with what you're doing."
 
 (defvar thought-stack '()
   "The stack of related thoughts.")
-
-(require 'cl-lib)
 
 (defun thought-stack-window-points ()
   "Produce an map of the windows to their current points."
@@ -2633,9 +2536,6 @@ the thought."
 
 ;;; ** Capitalise Word
 
-(require 'subr-x)
-(require 'cl-lib)
-
 (defun capitalise (word)
   "Produce a properly capitalised WORD."
   (format "%s%s"
@@ -2711,6 +2611,8 @@ the thought."
               (name 16 -1)
               " " filename)))
 
+;; 
+
 ;;; ** IsearchB
 
 (define-key global-map [(control ?z)] 'isearchb-activate)
@@ -2718,6 +2620,12 @@ the thought."
 ;; 
 
 ;;; ** Hilight Block
+
+(defvar highlight-block-idle-highlighter nil
+  "The timer used to keep highlighting the current block(s).")
+
+(defvar highlight-block-overlays nil
+  "A list of overlays in all windows.")
 
 (define-minor-mode highlight-block-mode
   "Highlight the containing block.
@@ -2735,12 +2643,6 @@ Should also highlight containing blocks when the buffer isn't focused."
       (setq highlight-block-overlays nil)
       (cancel-timer highlight-block-idle-highlighter)
       (setq highlight-block-idle-highlighter))))
-
-(defvar highlight-block-idle-highlighter nil
-  "The timer used to keep highlighting the current block(s).")
-
-(defvar highlight-block-overlays nil
-  "A list of overlays in all windows.")
 
 (defun highlight-block-face ()
   "Produce the colour to highlight a block in."
@@ -2863,8 +2765,6 @@ arguments actually mean."
       (read-only-mode -1)
       (delete-region (point-min) (point-max))
       (mapc (lambda (file) (insert file) (insert "\n")) matching-files))))
-
-;; 
 
 ;; 
 
@@ -3057,7 +2957,7 @@ Allows Emacs to display other buffers in that window."
 (use-package elgrep
   :straight t)
 
-;;; 
+;; 
 
 ;;; ** Duplicating Stuff
 
@@ -3069,6 +2969,8 @@ Allows Emacs to display other buffers in that window."
 
 (repeat-mode 1)
 
+;; 
+
 ;;; ** String Utilities
 
 (defun quiescent-strings ()
@@ -3077,6 +2979,8 @@ Allows Emacs to display other buffers in that window."
   (occur (rx (syntax string-quote)
              (one-or-more not-newline)
              (syntax string-quote))))
+
+;; 
 
 ;;; * Languages
 
@@ -3119,6 +3023,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** Julia Mode
 
 (use-package julia-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -3133,6 +3038,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** Groovy Mode
 
 (use-package groovy-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -3166,6 +3072,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** PlantUML Mode
 
 (use-package plantuml-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -3173,6 +3080,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** F Sharp Mode
 
 (use-package fsharp-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -3180,6 +3088,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** Graphviz Dot Mode
 
 (use-package graphviz-dot-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -3189,15 +3098,6 @@ Allows Emacs to display other buffers in that window."
 (require 'sgml-mode)
 
 (setq sgml-quick-keys 'close)
-
-(use-package company-web
-  :straight t
-  :config (add-hook 'html-mode-hook #'quiescent-setup-company-web-completion))
-
-(defun quiescent-setup-company-web-completion ()
-  "Set the company backends for web completion."
-  (when (null quiescent-starting-up)
-    (setq-local company-backends '(company-web-html company-dabbrev))))
 
 (use-package web-mode
   :straight t
@@ -3209,41 +3109,15 @@ Allows Emacs to display other buffers in that window."
   (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (with-eval-after-load "js2-mode"
-    (progn
-      (require 'js2-mode)
-      (define-key web-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim)
-      (define-key js2-mode-map (kbd "C-c C-'") #'quiescent-indirectly-edit-script-dwim))))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode)))
 
 ;; 
 
 ;;; ** SASS Mode
 
 (use-package sass-mode
+  :defer t
   :straight t)
-
-;; 
-
-;;; ** RJSX Mode
-
-(use-package rjsx-mode
-  :straight t
-  :init (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode)))
-
-(defun quiescent-electric-layout-create-tag (n &optional killflag)
-  "When N is 1 and KILLFLAG nil, if next char is ?< then insert a newline."
-  (when (and (eq n 1)
-             (null killflag)
-             (looking-at-p "<"))
-    (progn
-      (save-excursion
-        (newline 2)
-        (indent-for-tab-command))
-      (forward-line 1)
-      (indent-for-tab-command))))
-
-(advice-add #'rjsx-delete-creates-full-tag :after #'quiescent-electric-layout-create-tag)
 
 ;; 
 
@@ -3251,6 +3125,7 @@ Allows Emacs to display other buffers in that window."
 
 (use-package powershell
   :straight t
+  :defer t
   :config (add-to-list 'auto-mode-alist '("\\.ps1$" . powershell-mode)))
 
 ;; 
@@ -3264,25 +3139,15 @@ Allows Emacs to display other buffers in that window."
 
 (use-package haskell-mode
   :straight t
-  :config (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode))
-
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-
-(custom-set-variables
- '(haskell-process-suggest-remove-import-lines t)
- '(haskell-process-auto-import-loaded-modules t)
- '(haskell-process-log t))
-
-(custom-set-variables '(haskell-tags-on-save t))
-
-(custom-set-variables
- '(haskell-process-type 'stack-ghci))
-
-(with-eval-after-load "interactive-haskell-mode"
-  (define-key interactive-haskell-mode-map (kbd "M-n") #'haskell-goto-next-error)
-  (define-key interactive-haskell-mode-map (kbd "M-p") #'haskell-goto-prev-error))
+  :defer t
+  :config
+  (add-hook 'haskell-mode-hook #'quiescent-turn-on-haskell-doc-mode)
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (with-eval-after-load "interactive-haskell-mode"
+    (define-key interactive-haskell-mode-map (kbd "M-n") #'haskell-goto-next-error)
+    (define-key interactive-haskell-mode-map (kbd "M-p") #'haskell-goto-prev-error)))
 
 (defun quiescent-disable-flycheck-mode ()
   "Disable flycheck mode."
@@ -3297,6 +3162,7 @@ Allows Emacs to display other buffers in that window."
 ;;; ** Cython Mode
 
 (use-package cython-mode
+  :defer
   :load-path "~/.emacs.d/cython")
 
 ;; 
@@ -3360,8 +3226,6 @@ by using nxml's indentation rules."
       (error "Pom not found"))
     (find-file (concat pom-dir "pom.xml"))))
 
-(require 'subr-x)
-
 (defun quiescent-up-directory (dir)
   "Produce the directory one up from DIR.
 
@@ -3392,17 +3256,6 @@ Nil if root is supplied as DIR."
           (call-interactively #'indent-for-tab-command)))
     (call-interactively #'quiescent-correct-linting-errors-at-point)))
 
-;; (use-package js2-mode
-;;   :straight t
-;;   :config (progn
-;;             (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-;;             (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js2-mode))
-;;             (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-;;             (define-key js2-mode-map (kbd "M-q") #'quiescent-indent-js-function)
-;;             (define-key js2-mode-map (kbd "C-M-f") #'quiescent-js2-forward-sexp)
-;;             (define-key js2-mode-map (kbd "C-M-b") #'quiescent-js2-backward-sexp)
-;;             (define-key js2-mode-map (kbd "C-c C-z") #'quiescent-switch-to-shell)))
-
 (defun quiescent-switch-to-shell ()
   "Switch to a visible buffer with a shell-like mode active.
 
@@ -3410,14 +3263,14 @@ If there aren't any, find the most recent shell-like buffer,
 display it in other window and switch to it."
   (interactive)
   (cl-block find-window
-    (loop
+    (cl-loop
      for window being the windows
      do (when (save-window-excursion (select-window window)
                                      (member major-mode '(shell-mode)))
           (select-window window)
           (cl-return-from find-window)))
     ;; We didn't find a window.  Loop for a buffer.
-    (loop
+    (cl-loop
      for buffer being the buffers
      do (when (save-window-excursion
                 (switch-to-buffer buffer)
@@ -3435,65 +3288,13 @@ Pass ARG and INTERACTIVE to `forward-sexp'."
         (forward-word arg))
     (forward-sexp arg interactive)))
 
-(defun quiescent-js2-backward-sexp (&optional arg interactive)
-  "Go `backward-sexp' accounting for comments in `js2-mode'.
-
-Pass ARG and INTERACTIVE to `backward-sexp'."
-  (interactive)
-  (if (nth 4 (syntax-ppss))
-      (let ((superword-mode t))
-        (backward-word arg))
-    (backward-sexp arg interactive)))
-
-(use-package js2-refactor
-  :straight t)
-
 (defun quiescent-pluse-ignoring-args (&rest _)
   "Run `xref-pulse-momentarily' ignoring ARGS."
   (xref-pulse-momentarily))
 
-(advice-add #'js2-jump-to-definition :after #'quiescent-pluse-ignoring-args)
-
-(advice-add #'js2-jump-to-definition :before #'quiescent-xref-push-marker-stack)
-
-(defun quiescent-xref-jump-when-point-doesnt-move (jump-fun &rest args)
-  "Execute JUMP-FUN with ARGS, jump with xref if it didn't move."
-  (let ((start (point)))
-    (ignore-errors (apply jump-fun args))
-    (when (eql start (point))
-      (xref-find-definitions (thing-at-point 'symbol)))))
-
-;; I use global nowadays
-;; (advice-add #'js2-jump-to-definition :around #'quiescent-xref-jump-when-point-doesnt-move)
-
-(defvar quiescent-javascript-eslint-fix-modes '(js2-mode web-mode js-jsx-mode rjsx-mode)
-  "The modes which should have eslint --fix run on their files.")
-
-(defun quiescent-javascript-eslint-this-file ()
-  "Eslint this file with fix turned on."
-  (interactive)
-  (when (member major-mode quiescent-javascript-eslint-fix-modes)
-    (setq quiescent-buffer-to-revert (current-buffer))
-    (async-start-process (format "eslint-%s" (buffer-file-name))
-                         "eslint"
-                         (lambda (process) (auto-revert-buffers))
-                         "--fix"
-                         (buffer-file-name))))
-
-(defun quiescent-javascript-prettier-fix-this-file ()
-  "Fix all prettier errors on this file."
-  (interactive)
-  (progn
-    (async-start-process (format "prettier:%s" (buffer-file-name))
-                         "prettier"
-                         (lambda (process) (auto-revert-buffers))
-                         (format "--plugin-search-dir=%s" (file-truename (project-root (project-current))))
-                         "--write"
-                         (buffer-file-name))))
-
 ;; TODO account for multiple checkers reporting on the current line
-(defun quiescent-correct-linting-errors-at-point (point)
-  "Correct linting errors reported by Eslint via Flycheck at POINT."
+(defun quiescent-correct-linting-errors-at-point ()
+  "Correct linting errors at point reported by Eslint via Flycheck."
   (interactive "d")
   (let* ((error-overlay (car (flycheck-overlays-at (point))))
          (lint-suggestion (when error-overlay
@@ -3553,77 +3354,6 @@ Pass ARG and INTERACTIVE to `backward-sexp'."
                                nil
                                t)
         (replace-match "")))))
-
-(use-package js2-highlight-vars
-  :straight t)
-
-(defun quiescent-activate-js2-highlight-vars-mode ()
-  "Activate `js2-highlight-vars'."
-  (when (null quiescent-starting-up)
-    (js2-highlight-vars-mode 1)))
-
-(defun quiescent-catch-no-js-ast-error (f &rest args)
-  "Run F and catch any errors."
-  (ignore-error (error "No JavaScript AST available")
-    (apply f args)))
-
-(advice-add 'js2--do-highlight-vars :around #'quiescent-catch-no-js-ast-error)
-
-(add-hook #'js2-mode-hook #'quiescent-activate-js2-highlight-vars-mode)
-
-(defun js2-highlight-vars-post-command-hook ()
-  (ignore-errors
-    (let* ((overlays (overlays-at (point)))
-           (ovl (and overlays
-                     (catch 'found
-                       (dolist (ovl overlays)
-                         (when (overlay-get ovl 'js2-highlight-vars)
-                           (throw 'found ovl)))
-                       nil))))
-      (if (and ovl
-               (string= js2--highlight-vars-current-token-name
-                        (buffer-substring (overlay-start ovl)
-                                          (overlay-end ovl))))
-          (setq js2--highlight-vars-current-token (overlay-start ovl))
-        (js2--unhighlight-vars)
-        (when js2--highlight-vars-post-command-timer
-          (cancel-timer js2--highlight-vars-post-command-timer))
-        (setq js2--highlight-vars-post-command-timer
-              (run-with-timer 0 nil 'js2--do-highlight-vars))))))
-
-(defun quiescent-activate-js2-imenu-extras ()
-  "Activate `js2-imenu-extras-mode'."
-  (when (null quiescent-starting-up)
-    (js2-imenu-extras-mode 1)))
-
-(add-hook 'js2-mode-hook #'quiescent-activate-js2-imenu-extras)
-
-(defun quiescent-js2-raise-variable (p)
-  "Raise the variable at point, P."
-  (interactive "d")
-  (let* ((node          (ignore-errors (js2-node-at-point)))
-         (node-start    (and node (js2-node-abs-pos node)))
-         (up-list-point (save-excursion (ignore-errors (backward-up-list)) (point)))
-         (expression    (if (or (null node) (= up-list-point node-start))
-                            (let ((simple-node (js2-node-at-point)))
-                              (buffer-substring (js2-node-abs-pos simple-node)
-                                                (js2-node-abs-end simple-node)))
-                          (buffer-substring node-start (js2-node-abs-end node)))))
-    (if (eq 'rjsx-node (type-of (js2-node-at-point)))
-        (goto-char (js2-node-abs-pos (js2-node-parent (js2-node-at-point))))
-      (backward-up-list))
-    (let ((node-to-replace (js2-node-at-point)))
-      (if (eq (type-of node-to-replace) 'js2-import-clause-node)
-          (kill-sexp)
-        (delete-region (js2-node-abs-pos node-to-replace) (js2-node-abs-end node-to-replace))))
-    (save-excursion (insert expression))))
-
-(define-key js2-highlight-vars-local-keymap (kbd "M-r") nil)
-
-(define-key js2-mode-map (kbd "M-r") #'quiescent-js2-raise-variable)
-(define-key js2-mode-map (kbd "M-.") #'js2-jump-to-definition)
-(define-key js2-mode-map (kbd "M-,") #'xref-go-back)
-(define-key js2-mode-map (kbd "C-c C-r") #'rjsx-rename-tag-at-point)
 
 (defun quiescent-js-dependency-graph-for-directory ()
   "Compute the dependency graph between JS modules in DEFAULT-DIRECTORY."
@@ -3845,6 +3575,7 @@ Replaces the buffer string in that region."
     (keymap-unset combobulate-key-map "C-M-n" t)
     (keymap-unset combobulate-key-map "C-M-p" t)))
 
+(require 'js)
 (keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
 
 ;; 
@@ -3975,21 +3706,15 @@ comment."
 
 ;;; ** Slime Mode
 
-(use-package slime-company
-  :straight t)
-
 (defun quiescent-slime-completion-at-point ()
   "A completion at point function for slime.
 
 Based on `slime-expand-abbreviations-and-complete' from
 `slime-c-p-c'."
   (let* ((end (move-marker (make-marker) (slime-symbol-end-pos)))
-         (beg (move-marker (make-marker) (slime-symbol-start-pos)))
-         (prefix (buffer-substring-no-properties beg end)))
+         (beg (move-marker (make-marker) (slime-symbol-start-pos))))
     (pcase (slime-contextual-completions beg end)
       (`(,completions . ,_) `(,beg ,end ,completions . (:exclusive 'no))))))
-
-(require 'cl-lib)
 
 (defun quiescent-close-slime-help ()
   "Close the help window."
@@ -4098,11 +3823,11 @@ Source: https://github.com/fukamachi/qlot"
   "Setup hooks for clojure mode."
   (when (null quiescent-starting-up)
     (cider-mode 1)
-    (eldoc-mode 1)
-    ))
+    (eldoc-mode 1)))
 
 (use-package cider
   :straight t
+  :defer t
   :config
   (progn
     (add-hook 'clojure-mode-hook    #'quiescent-setup-clojure-hooks)
@@ -4122,9 +3847,6 @@ Source: https://github.com/fukamachi/qlot"
   (progn
     (setq debug-on-signal t)
     (debug-on-error)))
-
-(use-package eros
-  :straight t)
 
 ;; 
 
@@ -4176,10 +3898,10 @@ Store PREV-VAL in variable."
 
 (setq eros-overlays-use-font-lock t)
 
-(defun quiescent-font-lock-by-mode (major-mode)
-  "Font lock the current buffer by MAJOR-MODE."
-  (delay-mode-hooks (funcall major-mode))
-  (font-lock-default-function 'major-mode)
+(defun quiescent-font-lock-by-mode (mode)
+  "Font lock the current buffer by MODE."
+  (delay-mode-hooks (funcall mode))
+  (font-lock-default-function 'mode)
   (font-lock-default-fontify-region (point-min)
                                     (point-max)
                                     nil))
@@ -4202,10 +3924,12 @@ Store PREV-VAL in variable."
 
 (use-package scala-mode
   :straight t
+  :defer t
   :mode "\\.s\\(cala\\|bt\\)$")
 
 (use-package sbt-mode
   :straight t
+  :defer t
   :commands sbt-start sbt-command
   :config
   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
@@ -4225,6 +3949,7 @@ Store PREV-VAL in variable."
 ;;; ** Dockerfile Mode
 
 (use-package dockerfile-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4232,6 +3957,7 @@ Store PREV-VAL in variable."
 ;;; ** Kotlin Mode
 
 (use-package kotlin-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4239,6 +3965,7 @@ Store PREV-VAL in variable."
 ;;; ** Terraform Mode
 
 (use-package terraform-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4246,6 +3973,7 @@ Store PREV-VAL in variable."
 ;;; ** Python
 
 (use-package pyvenv
+  :defer t
   :load-path "~/.emacs.d/lisp/pyvenv/")
 
 (defun quiescent-python-use-conda ()
@@ -4274,6 +4002,7 @@ Store PREV-VAL in variable."
 ;;; ** Racket Mode
 
 (use-package racket-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4282,6 +4011,7 @@ Store PREV-VAL in variable."
 
 (use-package enh-ruby-mode
   :straight t
+  :defer t
   :config
   (progn
     (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
@@ -4296,6 +4026,7 @@ Store PREV-VAL in variable."
 
 (use-package robe
   :straight t
+  :defer t
   :config
   (progn
     (add-hook 'enh-ruby-mode-hook #'robe-mode)
@@ -4306,6 +4037,7 @@ Store PREV-VAL in variable."
 ;;; ** ESS (R etc.)
 
 (use-package ess
+  :defer t
   :straight t)
 
 ;; 
@@ -4313,6 +4045,7 @@ Store PREV-VAL in variable."
 ;;; ** Swift Mode
 
 (use-package swift-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4320,6 +4053,7 @@ Store PREV-VAL in variable."
 ;;; ** CSV mode
 
 (use-package csv-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4355,11 +4089,6 @@ leading whitespace."
 
 ;;; ** Flycheck
 
-(require 'flycheck)
-
-(add-hook 'js2-mode-hook #'quiescent-select-eslint)
-(add-hook 'rjsx-mode-hook #'quiescent-select-eslint)
-
 (defun quiescent-select-eslint ()
   "Select EsLint as the linter in this buffer."
   (interactive)
@@ -4384,23 +4113,22 @@ leading whitespace."
 
 ;;; ** Eglot
 
-(defun quiescent-disable-eglot-capabilities ()
-  "Disable features like inserting matching pair."
-  (add-to-list 'eglot-ignored-server-capabilities :documentOnTypeFormattingProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :hoverProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :signatureHelpProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :documentHighlightProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :documentSymbolProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :codeLensProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :documentRangeFormattingProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :documentLinkProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :colorProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :foldingRangeProvider)
-  (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider))
-
 (use-package eglot
   :straight t
   :config
+  (defun quiescent-disable-eglot-capabilities ()
+    "Disable features like inserting matching pair."
+    (add-to-list 'eglot-ignored-server-capabilities :documentOnTypeFormattingProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :hoverProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :signatureHelpProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :documentHighlightProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :documentSymbolProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :codeLensProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :documentRangeFormattingProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :documentLinkProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :colorProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :foldingRangeProvider)
+    (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider))
   (progn
     (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
     (setq eglot-server-programs
@@ -4434,6 +4162,7 @@ leading whitespace."
 ;;; ** Markdown Mode
 
 (use-package markdown-mode
+  :defer t
   :straight t)
 
 ;; 
@@ -4442,9 +4171,8 @@ leading whitespace."
 
 (use-package ggtags
   :straight t
-  :hook ((js2-mode . ggtags-mode)
-         (rjsx-mode . ggtags-mode)
-         (java-mode . ggtags-mode)
+  :defer t
+  :hook ((java-mode . ggtags-mode)
          (js-ts-mode . ggtags-mode))
   :config (define-key ggtags-mode-map (kbd "M-.") nil))
 
@@ -4457,6 +4185,8 @@ leading whitespace."
 ;; 
 
 ;;; ** Outline Minor Mode
+
+(require 'outline)
 
 (define-key outline-minor-mode-map (kbd "s-%") #'outline-cycle-buffer)
 
@@ -4489,6 +4219,8 @@ Then switch directory to where we called it from"
 (global-set-key (kbd "<f5>") #'quiescent-unique-shell)
 
 (add-hook 'shell-mode-hook #'shell-highlight-undef-mode)
+
+;; 
 
 ;;; ** Eshell
 
@@ -4530,6 +4262,7 @@ Then switch directory to where we called it from"
 ;;; ** EAT (Emulato A Terminal)
 
 (use-package eat
+  :defer t
   :straight t)
 
 ;; 
@@ -4883,6 +4616,7 @@ In particular, inode number, number of hard links, and file size."
 ;;; ** EPA
 
 (use-package epa-file
+  :defer t
   :config (epa-file-enable))
 
 ;;; ** Org Mode
@@ -5091,13 +4825,11 @@ itself."
 (use-package ob-python)
 
 (use-package ob-mermaid
+  :defer t
   :straight t)
 
-(use-package cider
-  :straight t
-  :demand t)
-
 (use-package ob-clojure
+  :defer t
   :init (setq org-babel-clojure-backend 'cider))
 
 (defun quiescent-render-html--overlays (beg end)
@@ -5243,6 +4975,7 @@ first created to remember those values."
 ;;; ** Demo It
 
 (use-package demo-it
+  :defer t
   :straight t)
 
 ;; 
@@ -5268,6 +5001,7 @@ first created to remember those values."
 ;; Source: https://macroexpand.net/pages/git-related.html
 
 (use-package git-related
+  :defer t
   :load-path "~/.emacs.d/lisp")
 
 ;; 
@@ -5276,6 +5010,7 @@ first created to remember those values."
 
 ;; Note: moved to: https://codeberg.org/pidu/git-timemachine.git
 (use-package git-timemachine
+  :defer t
   :straight t)
 
 ;; 
@@ -5283,6 +5018,7 @@ first created to remember those values."
 ;;; ** Chess
 
 (use-package chess
+  :defer t
   :straight t)
 
 ;; 
@@ -5301,6 +5037,7 @@ Enter the password for this account to unlock it."
 ;;; ** GNU Plot
 
 (use-package gnuplot
+  :defer t
   :straight t)
 
 ;; 
@@ -5345,13 +5082,12 @@ The cofee should be delivered by DELIVER-BY."
                     date amount description deliver-by))
     (org-cycle)))
 
-(require 'cl-lib)
-
 ;; 
 
 ;;; ** IA Writer Mode
 
 (use-package writeroom-mode
+  :defer t
   :straight t)
 
 (defvar ia-writer-highlight-current-sentance-delay 0.1
@@ -5461,6 +5197,7 @@ The cofee should be delivered by DELIVER-BY."
 ;;; ** Sqlite mode
 
 (use-package sqlite-mode
+  :defer t
   :config
   (progn
     (define-key sqlite-mode-map (kbd "D") #'sqlite-mode-delete)))
@@ -5499,12 +5236,14 @@ The cofee should be delivered by DELIVER-BY."
 
 (setq proced-enable-color-flag t)
 
+;; 
+
 ;;; ** Pomm
 
 (use-package pomm
   :straight (pomm :type git :host github :protocol ssh :repo "Quiescent/pomm.el")
   :commands (pomm pomm-third-time)
-  :demand t
+  :defer t
   :custom (pomm-display-timer nil)
   :init (progn
           (global-set-key (kbd "<f10>") #'pomm-third-time)
@@ -5514,7 +5253,10 @@ The cofee should be delivered by DELIVER-BY."
 
 (defun quiescent-pomm-require-recognition ()
   "Require that the reply with the phrase \"roger\" to proceed."
-  (when (not (string-equal (read-string "POMM state changed.  Please type \"roger\" and hit RET: ")
+  (my-visible-bell 0.5)
+  (run-at-time 1 nil (lambda () (my-visible-bell 0.5)))
+  (run-at-time 2 nil (lambda () (my-visible-bell 0.5)))
+  (when (not (string-equal (read-string "POMM state changed.  Please type \"roger\" and hit RET:")
                            "roger"))
     (quiescent-pomm-require-recognition)))
 
@@ -5572,11 +5314,10 @@ estimate what your state of mind (ITO flow) might be."
 (straight-use-package
  '(eplot :type git :host github :repo "larsmagne/eplot"))
 
-(require 'eplot)
-
 (defun quiescent-flow-draw-chart ()
   "Draw the today's flow state chart."
   (interactive)
+  (require 'eplot)
   (let* ((flow-state-records (quiescent-flow-read-db))
          (key-for-today      (quiescent-flow-key))
          (record             (assoc key-for-today
@@ -5616,4 +5357,5 @@ estimate what your state of mind (ITO flow) might be."
 (setq quiescent-starting-up nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
+(put 'scroll-left 'disabled nil)
 (put 'set-goal-column 'disabled nil)

@@ -19,9 +19,9 @@
  '(completions-sort 'prescient-completion-sort)
  '(confirm-nonexistent-file-or-buffer nil)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
- '(eglot-events-buffer-config '(:size 2000000 :format short))
  '(eldoc-echo-area-use-multiline-p nil)
  '(enable-recursive-minibuffers t)
+ '(epg-pinentry-mode 'loopback)
  '(eshell-history-size 1024)
  '(font-lock-maximum-decoration nil)
  '(global-subword-mode t)
@@ -50,20 +50,19 @@
  '(read-buffer-completion-ignore-case t)
  '(read-file-name-completion-ignore-case t)
  '(safe-local-variable-values
-   '((js-indent-level 2)
-     (outline-minor-mode . t)
-     (css-indent-level . 2)
-     (svelte-basic-offset . 4)
-     (js2-missing-semi-one-line-override)
+   '((js-indent-level 2) (outline-minor-mode . t) (css-indent-level . 2)
+     (svelte-basic-offset . 4) (js2-missing-semi-one-line-override)
      (js2-strict-missing-semi-warning)
      (eval progn
            (dolist
                (v
-                '("node_modules" "bower_components" ".sass_cache" ".cache" ".npm"))
+                '("node_modules" "bower_components" ".sass_cache"
+                  ".cache" ".npm"))
              (add-to-list 'grep-find-ignored-directories v))
            (dolist
                (v
-                '("*.min.js" "*.bundle.js" "*.min.css" "*.json" "*.log"))
+                '("*.min.js" "*.bundle.js" "*.min.css" "*.json"
+                  "*.log"))
              (add-to-list 'grep-find-ignored-files v)))))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
@@ -76,10 +75,8 @@
  '(warning-suppress-log-types '((iedit)))
  '(warning-suppress-types '((emacs)))
  '(zoneinfo-style-world-list
-   '(("America/Los_Angeles" "Seattle")
-     ("America/New_York" "New York")
-     ("Europe/London" "London")
-     ("Europe/Paris" "Paris")
+   '(("America/Los_Angeles" "Seattle") ("America/New_York" "New York")
+     ("Europe/London" "London") ("Europe/Paris" "Paris")
      ("Africa/Johannesburg" "Johannesburg"))))
 
 ;; Rainbow delimeters theme from: https://ericscrivner.me/2015/06/better-emacs-rainbow-delimiters-color-scheme/
