@@ -310,8 +310,6 @@ This is the default system.")
       (setq-default shell-file-name "/bin/bash"))))
 (quiescent-defaults)
 
-(set-face-attribute 'error nil :foreground "gray22" :box '(:line-width (2 . 2) :color "#EBCB8B"))
-
 ;; 
 
 ;;; ** Ultra Scroll (Mac only)
@@ -1697,6 +1695,8 @@ Usually because of too much overhead in checking.")
   :hook (flymake-mode . flymake-posframe-mode))
 
 (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
+
+;; 
 
 ;;; ** Flycheck Mode
 
