@@ -224,7 +224,7 @@ This is the default system.")
 (load-theme 'nano-dark t)
 
 (set-face-attribute 'default nil
-                    :family "Roboto Mono" :weight 'light :height 140)
+                    :family "Roboto Mono" :weight 'light :height 130)
 (set-face-attribute 'bold nil
                     :family "Roboto Mono" :weight 'regular)
 (set-face-attribute 'italic nil
