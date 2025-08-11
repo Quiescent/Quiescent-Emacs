@@ -3298,7 +3298,7 @@ Pass ARG and INTERACTIVE to `forward-sexp'."
 ;; TODO account for multiple checkers reporting on the current line
 (defun quiescent-correct-linting-errors-at-point ()
   "Correct linting errors at point reported by Eslint via Flycheck."
-  (interactive "d")
+  (interactive)
   (let* ((error-overlay (car (flycheck-overlays-at (point))))
          (lint-suggestion (when error-overlay
                             (flycheck-error-message
