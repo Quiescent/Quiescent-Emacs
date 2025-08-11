@@ -258,21 +258,38 @@ This is the default system.")
 (defun quiescent-light-mode ()
   "Set the nano theme to light."
   (interactive)
-  (load-theme 'nano-light t))
+  (load-theme 'nano-light t)
+  (custom-set-faces
+   '(nano-modeline-active
+     ((t (:foreground "#37474F" :background "#ECEFF1" :box (:line-width 1 :color "#FFFFFF")))))
+   '(nano-modeline-status
+     ((t (:foreground "#FFFFFF" :background "#90A4AE" :inherit 'bold))))
+   '(nano-modeline-button-active-face
+     ((t (:family "Roboto Mono" :weight regular :foreground "#37474F" :background "#FFFFFF" :box (:line-width 2 :color "#37474F" :style flat-button)))))
+   '(nano-modeline-button-inactive-face
+     ((t (:family "Roboto Mono" :weight regular :foreground "#90A4AE" :background "#ECEFF1" :box (:line-width 2 :color "#37474F" :style flat-button)))))
+   '(nano-modeline-button-highlight-face
+     ((t (:family "Roboto Mono" :weight bold :foreground "#FFFFFF" :background "#37474F"))))
+   '(nano-modeline--empty-face
+     ((t (:foreground "#37474F"))))))
 
 (defun quiescent-dark-mode ()
   "Set the nano theme to dark."
   (interactive)
   (load-theme 'nano-dark t)
-  ;; TODO set all the nano faces
-  ;; nano-modeline-active
-  ;; nano-modeline-inactive
-  ;; nano-modeline-status
-  ;; nano-modeline-button-active-face
-  ;; nano-modeline-button-inactive-face
-  ;; nano-modeline-button-highlight-face
-  ;; nano-modeline--empty-face
-  )
+  (custom-set-faces
+   '(nano-modeline-active
+     ((t (:foreground "#ECEFF4" :background "#434C5E" :box (:line-width 1 :color "#2E3440")))))
+   '(nano-modeline-status
+     ((t (:foreground "#2E3440" :background "#677691" :inherit 'bold))))
+   '(nano-modeline-button-active-face
+     ((t (:family "Roboto Mono" :weight regular :foreground "#ECEFF4" :background "#2E3440" :box (:line-width 2 :color "#ECEFF4" :style flat-button)))))
+   '(nano-modeline-button-inactive-face
+     ((t (:family "Roboto Mono" :weight regular :foreground "#677691" :background "#434C5E" :box (:line-width 2 :color "#ECEFF4" :style flat-button)))))
+   '(nano-modeline-button-highlight-face
+     ((t (:family "Roboto Mono" :weight bold :foreground "#2E3440" :background "#ECEFF4"))))
+   '(nano-modeline--empty-face
+     ((t (:foreground "#ECEFF4"))))))
 
 (defun quiescent-defaults ()
   "Setup my defaults the way I like them."
