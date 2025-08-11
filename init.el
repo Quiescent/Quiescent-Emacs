@@ -99,126 +99,119 @@ This is the default system.")
 (global-set-key (kbd "s-n") #'switch-to-next-buffer)
 (global-set-key (kbd "s-p") #'switch-to-prev-buffer)
 
-(when quiescent-exwm-machine
-  (eval
-   `(progn
-      (use-package xelb
-        :straight t
-        :demand t)
-      (use-package exwm
-        :straight t
-        :demand t)
+(use-package xelb
+  :straight t
+  :demand t)
+(use-package exwm
+  :straight t
+  :demand t)
 
-      (defun quiescent-exwm-setup-input-simulation ()
-        "Setup my bindings to simulate input in EXWM."
-        (setq exwm-input-simulation-keys
-              '(
-                ;; movement
-                ([?\C-b] . [left])
-                ([?\M-b] . [C-left])
-                ([?\C-f] . [right])
-                ([?\M-f] . [C-right])
-                ([?\C-p] . [up])
-                ([?\C-n] . [down])
-                ([?\C-a] . [home])
-                ([?\C-e] . [end])
-                ([?\M-v] . [prior])
-                ([?\C-v] . [next])
-                ([?\C-d] . [delete])
-                ([?\C-k] . [S-end delete])
-                ;; cut/paste.
-                ([?\C-w] . [?\C-x])
-                ([?\M-w] . [?\C-c])
-                ([?\C-y] . [?\C-v])
-                ;; search
-                ([?\C-s] . [?\C-f]))))
+(defun quiescent-exwm-setup-input-simulation ()
+  "Setup my bindings to simulate input in EXWM."
+  (setq exwm-input-simulation-keys
+        '(
+          ;; movement
+          ([?\C-b] . [left])
+          ([?\M-b] . [C-left])
+          ([?\C-f] . [right])
+          ([?\M-f] . [C-right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-a] . [home])
+          ([?\C-e] . [end])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ([?\C-k] . [S-end delete])
+          ;; cut/paste.
+          ([?\C-w] . [?\C-x])
+          ([?\M-w] . [?\C-c])
+          ([?\C-y] . [?\C-v])
+          ;; search
+          ([?\C-s] . [?\C-f]))))
 
-      (defun quiescent-exwm-setup-global-bindings ()
-        "Setup global bindings for EXWM mode."
-        (setq exwm-input-global-keys
-              `(
-                ;; Bind "s-r" to exit char-mode and fullscreen mode.
-                ([?\s-r] . exwm-reset)
-                ;; Bind "s-w" to switch workspace interactively.
-                ([?\s-w] . exwm-workspace-switch)
-                ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-                ,@(mapcar (lambda (i)
-                            `(,(kbd (format "s-%d" i)) .
-                              (lambda ()
-                                (interactive)
-                                (exwm-workspace-switch-create ,i))))
-                          (number-sequence 0 9))
-                ;; Bind "s-&" to launch applications ('M-&' also works if the output
-                ;; buffer does not bother you).
-                ([?\s-&] . (lambda (command)
-                             (interactive (list (read-shell-command "$ ")))
-                             (start-process-shell-command command nil command)))
-                ([?\s-*] . (lambda ()
-                             (interactive)
-                             (start-process-shell-command "*Firefox*" nil "firefox --new-tab --url https://www.duckduckgo.com/")))
-                ([?\s-$] . (lambda ()
-                             (interactive)
-                             (start-process-shell-command "*Screenshot*" nil "import /home/edward/screenshot.png")))
-                ;; Bind "s-<f2>" to "slock", a simple X display locker.
-                ([s-f2] . (lambda ()
-                            (interactive)
-                            (start-process "" nil "/usr/bin/slock"))))))
+(defun quiescent-exwm-setup-global-bindings ()
+  "Setup global bindings for EXWM mode."
+  (setq exwm-input-global-keys
+        `(
+          ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+          ,@(mapcar (lambda (i)
+                      `(,(kbd (format "s-%d" i)) .
+                        (lambda ()
+                          (interactive)
+                          (exwm-workspace-switch-create ,i))))
+                    (number-sequence 0 9))
+          ;; Bind "s-&" to launch applications ('M-&' also works if the output
+          ;; buffer does not bother you).
+          ([?\s-&] . (lambda (command)
+                       (interactive (list (read-shell-command "$ ")))
+                       (start-process-shell-command command nil command)))
+          ([?\s-*] . (lambda ()
+                       (interactive)
+                       (start-process-shell-command "*Firefox*" nil "firefox --new-tab --url https://www.duckduckgo.com/")))
+          ([?\s-$] . (lambda ()
+                       (interactive)
+                       (start-process-shell-command "*Screenshot*" nil "import /home/edward/screenshot.png")))
+          ;; Bind "s-<f2>" to "slock", a simple X display locker.
+          ([s-f2] . (lambda ()
+                      (interactive)
+                      (start-process "" nil "/usr/bin/slock"))))))
 
-      (defun quiescent-exwm-setup-exwm-keys ()
-        "Setup some keys which I use in EXWM."
-        (progn
-          (define-key exwm-mode-map [?\C-q]     #'exwm-input-send-next-key)
-          (define-key exwm-mode-map (kbd "s-c") #'org-capture)
-          (exwm-input-set-key (kbd "C-c C-j")   #'exwm-input-grab-keyboard)
-          (exwm-input-set-key (kbd "s-b")       #'quiescent-toggle-buffer)
-          (exwm-input-set-key (kbd "s-z")       #'isearchb-activate)
-          (exwm-input-set-key (kbd "s-n")       #'switch-to-next-buffer)
-          (exwm-input-set-key (kbd "s-p")       #'switch-to-prev-buffer)))
+(defun quiescent-exwm-setup-exwm-keys ()
+  "Setup some keys which I use in EXWM."
+  (progn
+    (define-key exwm-mode-map [?\C-q]     #'exwm-input-send-next-key)
+    (define-key exwm-mode-map (kbd "s-c") #'org-capture)
+    (exwm-input-set-key (kbd "C-c C-j")   #'exwm-input-grab-keyboard)
+    (exwm-input-set-key (kbd "s-b")       #'quiescent-toggle-buffer)
+    (exwm-input-set-key (kbd "s-z")       #'isearchb-activate)
+    (exwm-input-set-key (kbd "s-n")       #'switch-to-next-buffer)
+    (exwm-input-set-key (kbd "s-p")       #'switch-to-prev-buffer)))
 
-      (defun quiescent-exwm-setup-displays-and-start ()
-        "Setup settings for multiple displays and fire it up!"
-        (if quiescent-exwm-multiple-monitors
-            ;; From https://github.com/ch11ng/exwm/wiki
-            (progn
-              (require 'exwm-randr)
-              (when quiescent-home-pc-linux
-                (setq exwm-randr-workspace-output-plist
-                      '(0 "DisplayPort-1" 1 "DisplayPort-1"
-                          2 "HDMI-A-0" 3 "HDMI-A-0"
-                          4 "HDMI-A-0" 5 "HDMI-A-0"
-                          6 "HDMI-A-0" 7 "HDMI-A-0"))
-                (add-hook 'exwm-randr-screen-change-hook
-                          (lambda ()
-                            (start-process-shell-command
-                             "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
-                (start-process-shell-command
-                 "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
-              (when quiescent-work-machine
-                (setq exwm-randr-workspace-output-plist
-                      '(0 "DP-2" 1 "DP-2"
-                          2 "DP-1" 3 "DP-1"
-                          4 "DP-1" 5 "DP-1"
-                          6 "DP-1" 7 "DP-1"))
-                (add-hook 'exwm-randr-screen-change-hook
-                          (lambda ()
-                            (start-process-shell-command
-                             "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
-                (start-process-shell-command
-                 "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
-              (exwm-randr-enable))
-          (exwm-enable)))
+(defun quiescent-exwm-setup-displays-and-start ()
+  "Setup settings for multiple displays and fire it up!"
+  (if quiescent-exwm-multiple-monitors
+      ;; From https://github.com/ch11ng/exwm/wiki
+      (progn
+        (require 'exwm-randr)
+        (exwm-randr-mode 1)
+        (when quiescent-home-pc-linux
+          (setq exwm-randr-workspace-output-plist
+                '(0 "DisplayPort-1" 1 "DisplayPort-1"
+                    2 "HDMI-A-0" 3 "HDMI-A-0"
+                    4 "HDMI-A-0" 5 "HDMI-A-0"
+                    6 "HDMI-A-0" 7 "HDMI-A-0"))
+          (add-hook 'exwm-randr-screen-change-hook
+                    (lambda ()
+                      (start-process-shell-command
+                       "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
+          (start-process-shell-command
+           "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
+        (when quiescent-work-machine
+          (setq exwm-randr-workspace-output-plist
+                '(0 "DP-2" 1 "DP-2"
+                    2 "DP-1" 3 "DP-1"
+                    4 "DP-1" 5 "DP-1"
+                    6 "DP-1" 7 "DP-1"))
+          (add-hook 'exwm-randr-screen-change-hook
+                    (lambda ()
+                      (start-process-shell-command
+                       "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
+          (start-process-shell-command
+           "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
+        ;; (exwm-randr-enable)
+	    ))
+  (exwm-enable)
+  (exwm-wm-mode))
 
-      (when quiescent-exwm-machine
-        (require 'exwm-config)
-        (defun exwm-config-ido ()
-          "Override the config function for ido to do nothing since I don't use it."
-          nil)
-        (exwm-config-default)
-        (fringe-mode 15)
-        (quiescent-exwm-setup-input-simulation)
-        (quiescent-exwm-setup-exwm-keys)
-        (quiescent-exwm-setup-global-bindings)
-        (quiescent-exwm-setup-displays-and-start)))))
+(defun exwm-config-ido ()
+  "Override the config function for ido to do nothing since I don't use it."
+  nil)
+(quiescent-exwm-setup-input-simulation)
+(quiescent-exwm-setup-exwm-keys)
+(quiescent-exwm-setup-global-bindings)
+(quiescent-exwm-setup-displays-and-start)
+(fringe-mode 15)
 
 ;;; * Themes
 
@@ -1710,27 +1703,9 @@ Usually because of too much overhead in checking.")
 (use-package flycheck
   :straight t)
 
-(defun quiescent-hide-flycheck-posframe ()
-  "Hide the posframe associated with flycheck in the current buffer."
-  (posframe-hide flycheck-posframe-buffer))
-
-;; Adapted from flycheck-posframe
-(defun quiescent-flycheck-posframe-configure-pretty-defaults ()
-  "Configure some nicer settings for prettier display."
-  (setq flycheck-posframe-warning-prefix "⚠ ")
-  (setq flycheck-posframe-error-prefix "X ")
-  (set-face-attribute 'flycheck-posframe-warning-face nil :inherit 'warning)
-  (set-face-attribute 'flycheck-posframe-error-face nil :inherit 'error))
-
-;; TODO: consider flyover
-
-(use-package flycheck-posframe
+(use-package flyover
   :straight t
-  :after flycheck
-  :config (progn
-            (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
-            (quiescent-flycheck-posframe-configure-pretty-defaults)
-            (add-hook 'pre-command-hook #'quiescent-hide-flycheck-posframe)))
+  :hook ((flycheck-mode . flyover-mode)))
 
 ;; 
 
@@ -3292,6 +3267,17 @@ Pass ARG and INTERACTIVE to `forward-sexp'."
   "Run `xref-pulse-momentarily' ignoring ARGS."
   (xref-pulse-momentarily))
 
+(defun quiescent-javascript-prettier-fix-this-file ()
+  "Fix all prettier errors on this file."
+  (interactive)
+  (progn
+    (async-start-process (format "prettier:%s" (buffer-file-name))
+                         "prettier"
+                         (lambda (process) (auto-revert-buffers))
+                         (format "--plugin-search-dir=%s" (file-truename (project-root (project-current))))
+                         "--write"
+                         (buffer-file-name))))
+
 ;; TODO account for multiple checkers reporting on the current line
 (defun quiescent-correct-linting-errors-at-point ()
   "Correct linting errors at point reported by Eslint via Flycheck."
@@ -3543,6 +3529,8 @@ Replaces the buffer string in that region."
   :config
   (mp-setup-install-grammars)
 
+  (add-to-list 'auto-mode-alist '("\\.mjs$" . js-ts-mode))
+
   ;; Do not forget to customize Combobulate to your liking:
   ;;
   ;;  M-x customize-group RET combobulate RET
@@ -3701,6 +3689,26 @@ comment."
         (indent-region (region-beginning) (region-end))))))
 
 (define-key rustic-mode-map (kbd "M-q") #'quiescent-indent-defun-or-fill-paragraph)
+
+(defun quiescent-indent-rust-type-string ()
+  "Indent a Rust type printed by the Rust function type_name."
+  (interactive)
+  (let ((depth 0))
+    (goto-char (point-min))
+    (while (ignore-errors (progn
+                            (forward-char 1)
+                            (not (= (point-max) (point)))))
+      (cond
+       ((equal (thing-at-point 'char) "<") (progn
+                                                 (cl-incf depth)
+                                                 (insert "\n")
+                                                 (dotimes (_i depth)
+                                                   (insert "  "))))
+       ((equal (thing-at-point 'char) ">") (progn
+                                                 (cl-decf depth)
+                                                 (insert "\n")
+                                                 (dotimes (_i depth)
+                                                   (insert "  "))))))))
 
 ;; 
 
@@ -4996,6 +5004,18 @@ first created to remember those values."
 
 ;; 
 
+;;; ** VC
+
+;; (defun quiescent-vc-latest-change-nearest-point (point)
+;;   "Jump to the latest VC change.
+
+;; If there are multiple, go to the one closest to POINT."
+;;   (save-window-excursion
+;;     (vc-diff (point-min) (point-max))
+;;     ()))
+
+;; 
+
 ;;; ** Git Related Navigation
 
 ;; Source: https://macroexpand.net/pages/git-related.html
@@ -5192,6 +5212,30 @@ The cofee should be delivered by DELIVER-BY."
 
 ;; 
 
+;; Push Timer
+;;
+;; This reminds me to constantly push my work so that the impact of
+;; loadshedding is minimal.
+
+(defvar quiescent-push-timer-timer nil
+  "A timer that'll remind me to push my code.")
+
+(define-minor-mode quiescent-push-timer-mode
+  "Remind myself to push on a regular timer to avoid losing work.
+
+Load shedding is a big problem and I don't want to feel at-risk
+of losing work when I'm on my desktop."
+  :init-value nil
+  :lighter    nil
+  :global     t
+  :group      'quiescent-push-timer
+  (if quiescent-push-timer-mode
+      (setq quiescent-push-timer-timer
+            (run-at-time "5 minutes" t (lambda () (alert "Push your code" :severity 'high :style 'fringe-message))))
+    (progn
+      (cancel-timer quiescent-push-timer-timer)
+      (setq quiescent-push-timer-timer nil))))
+
 ;; 
 
 ;;; ** Sqlite mode
@@ -5205,6 +5249,8 @@ The cofee should be delivered by DELIVER-BY."
 ;; 
 
 ;;; ** PDF Tools
+
+;; There's a bug in here re. bookmark heading...
 
 ;; (defvar install-pdf-tools
 ;;   '(use-package pdf-tools
@@ -5347,7 +5393,12 @@ estimate what your state of mind (ITO flow) might be."
 ;; 
 
 ;; Reload custom in case anything overwrote it
-(load custom-file)
+(defun quiescent-load-custom-file ()
+  "Load the custom file."
+  (load custom-file))
+
+(add-hook 'after-init-hook #'quiescent-load-custom-file)
+
 ;;; ** Plottr
 
 (add-to-list 'auto-mode-alist '("\\.pltr\\'" . json-mode))

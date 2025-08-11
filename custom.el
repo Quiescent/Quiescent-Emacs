@@ -85,7 +85,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(error ((t (:inherit nano-face-critical :foreground "gray22" :box (:line-width (2 . 2) :color "#EBCB8B")))))
  '(js2-external-variable ((t (:foreground "orange2" :weight bold))))
  '(js2-highlight-vars-face ((t (:underline t))))
  '(js2-highlight-vars-second-face ((t (:underline "white"))))
