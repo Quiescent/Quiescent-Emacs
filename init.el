@@ -2101,6 +2101,12 @@ search through."
            (list regexp))))))
   (vc-git-grep regexp "*" (vc-git-root default-directory)))
 
+(defun quiescent-vc-git-grep-instant ()
+  "Search the symbol at point in the project."
+  (interactive)
+  (vc-git-grep (thing-at-point 'symbol) "*" (vc-git-root default-directory)))
+
+(global-set-key (kbd "C-S-f") #'quiescent-vc-git-grep-instant)
 (global-set-key (kbd "C-c p s g") #'quiescent-vc-git-grep)
 (global-set-key (kbd "C-c C-r") #'quiescent-vc-git-grep)
 
