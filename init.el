@@ -220,20 +220,6 @@ This is the default system.")
 (straight-use-package '(nano-theme :type git :host github
                                    :repo "rougier/nano-theme"))
 
-(load-theme 'nano t)
-(load-theme 'nano-dark t)
-
-(set-face-attribute 'default nil
-                    :family "Roboto Mono" :weight 'light :height 130)
-(set-face-attribute 'bold nil
-                    :family "Roboto Mono" :weight 'regular)
-(set-face-attribute 'italic nil
-                    :family "Victor Mono" :weight 'semilight :slant 'italic)
-(set-fontset-font t 'unicode
-    (font-spec :name "Inconsolata Light" :size 16) nil)
-(set-fontset-font t '(#xe000 . #xffdd)
-    (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
-
 (use-package nano-modeline
   :straight (nano-modeline :type git
                            :host github
@@ -290,6 +276,20 @@ This is the default system.")
      ((t (:family "Roboto Mono" :weight bold :foreground "#2E3440" :background "#ECEFF4"))))
    '(nano-modeline--empty-face
      ((t (:foreground "#ECEFF4"))))))
+
+(load-theme 'nano t)
+(quiescent-dark-mode)
+
+(set-face-attribute 'default nil
+                    :family "Roboto Mono" :weight 'light :height 130)
+(set-face-attribute 'bold nil
+                    :family "Roboto Mono" :weight 'regular)
+(set-face-attribute 'italic nil
+                    :family "Victor Mono" :weight 'semilight :slant 'italic)
+(set-fontset-font t 'unicode
+    (font-spec :name "Inconsolata Light" :size 16) nil)
+(set-fontset-font t '(#xe000 . #xffdd)
+    (font-spec :name "RobotoMono Nerd Font" :size 12) nil)
 
 (defun quiescent-defaults ()
   "Setup my defaults the way I like them."
