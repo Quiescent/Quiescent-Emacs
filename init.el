@@ -1695,10 +1695,11 @@ Usually because of too much overhead in checking.")
 
 ;;; ** Flymake
 
-(require 'flymake)
-
-(define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error)
-(define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error)
+(use-package flymake
+  :straight t
+  :config
+  (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error)
+  (define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error))
 
 (defun quiescent-enable-flymake-mode ()
   "Enable `flymake-mode' in the current buffer."
@@ -1707,10 +1708,10 @@ Usually because of too much overhead in checking.")
 
 (use-package posframe
   :straight t)
-(use-package flymake-posframe
-  :load-path "~/frm-src/flymake-posframe"
-  :hook (flymake-mode . flymake-posframe-mode))
 
+(add-to-list 'load-path "~/frm-src/flymake-posframe")
+(require 'flymake-posframe)
+(add-hook 'flymake-mode-hook #'flymake-posframe-mode)
 (add-hook 'emacs-lisp-mode-hook #'flymake-mode)
 
 ;; 
@@ -4122,7 +4123,21 @@ leading whitespace."
   :straight (gdscript-mode
              :type git
              :host github
-             :repo "godotengine/emacs-gdscript-mode"))
+             :repo "godotengine/emacs-gdscript-mode")
+  :hook ((gdscript-mode . eglot-ensure)
+         (gdscript-mode . quiescent-disable-flycheck))
+  :custom (gdscript-eglot-version "4.4")
+  :config
+  (when (eq system-type 'darwin)
+    (setq gdscript-godot-executable
+          "/Applications/Godot.app/Contents/MacOS/Godot"))
+  (add-to-list 'eglot-server-programs '(gdscript-mode . ("127.0.0.1" 6005)))
+  :after eglot)
+
+(use-package company-mode
+  :straight t
+  :hook ((gdscript-mode . company-mode))
+  :after gdscript)
 
 ;;; * Post Programming Languages Config
 
@@ -4158,16 +4173,17 @@ leading whitespace."
   (defun quiescent-disable-eglot-capabilities ()
     "Disable features like inserting matching pair."
     (add-to-list 'eglot-ignored-server-capabilities :documentOnTypeFormattingProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :hoverProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :signatureHelpProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :documentHighlightProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :documentSymbolProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :codeLensProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :documentRangeFormattingProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :documentLinkProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :colorProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :foldingRangeProvider)
-    (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider))
+    ;; (add-to-list 'eglot-ignored-server-capabilities :hoverProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :signatureHelpProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :documentHighlightProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :documentSymbolProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :codeLensProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :documentRangeFormattingProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :documentLinkProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :colorProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :foldingRangeProvider)
+    ;; (add-to-list 'eglot-ignored-server-capabilities :inlayHintProvider)
+    )
   (progn
     (add-to-list 'eglot-server-programs '(scala-mode . ("metals-emacs")))
     (setq eglot-server-programs
@@ -4189,12 +4205,12 @@ leading whitespace."
     (quiescent-disable-eglot-capabilities))
   :after track-changes)
 
-(use-package eglot-booster
-  :straight (eglot-booster :type git
-                           :host github
-                           :repo "jdtsmith/eglot-booster")
-  :after eglot
-  :config (eglot-booster-mode))
+;; (use-package eglot-booster
+;;   :straight (eglot-booster :type git
+;;                            :host github
+;;                            :repo "jdtsmith/eglot-booster")
+;;   :after eglot
+;;   :config (eglot-booster-mode))
 
 ;; 
 
