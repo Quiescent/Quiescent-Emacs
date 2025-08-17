@@ -1656,7 +1656,7 @@ Ignore REST."
 
     Ignore REST."
     (flycheck-mode -1))
-  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode lisp-mode)
+  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode lisp-mode gdscript-mode)
     "Modes in which flycheck should not be activated.
 
 Usually because of too much overhead in checking.")
@@ -4139,7 +4139,7 @@ leading whitespace."
 (use-package company-mode
   :straight t
   :hook ((gdscript-mode . company-mode))
-  :after gdscript)
+  :after gdscript-mode)
 
 ;;; * Post Programming Languages Config
 
