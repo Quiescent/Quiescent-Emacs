@@ -4126,7 +4126,8 @@ leading whitespace."
              :host github
              :repo "godotengine/emacs-gdscript-mode")
   :hook ((gdscript-mode . eglot-ensure)
-         (gdscript-mode . quiescent-disable-flycheck))
+         (gdscript-mode . quiescent-disable-flycheck)
+         (gdscript-mode . indent-tabs-mode))
   :custom (gdscript-eglot-version "4.4")
   :config
   (when (eq system-type 'darwin)
