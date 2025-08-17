@@ -85,6 +85,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-tooltip-annotation-selection ((t (:inherit nano-salient-i))))
+ '(company-tooltip-search ((t (:inherit (highlight nano-strong)))))
+ '(company-tooltip-search-selection ((t (:inherit (highlight nano-strong)))))
  '(flyover-info ((t (:slant italic :weight normal :height 0.8))))
  '(flyover-marker ((t (:weight bold :height 0.8))))
  '(js2-external-variable ((t (:foreground "orange2" :weight bold))))
