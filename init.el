@@ -329,6 +329,19 @@ This is the default system.")
 
 ;; 
 
+;;; ** Position Text in Middle of Window
+
+(use-package perfect-margin
+  :straight (perfect-margin :type git
+                            :host github
+                            :repo "mpwang/perfect-margin")
+  :custom
+  (perfect-margin-visible-width 128)
+  :config
+  (perfect-margin-mode 1))
+
+;; 
+
 ;;; ** Ultra Scroll (Mac only)
 
 (use-package ultra-scroll
