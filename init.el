@@ -337,6 +337,7 @@ This is the default system.")
                             :repo "mpwang/perfect-margin")
   :custom
   (perfect-margin-visible-width 128)
+  (perfect-margin-disable-in-splittable-check t)
   :config
   (perfect-margin-mode 1))
 
