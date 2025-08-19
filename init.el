@@ -1582,6 +1582,7 @@ If it's dotted list, produce the values in the dotted list."
     (define-key map (kbd "w") #'copy-region-as-kill)
     (define-key map (kbd "k") #'kill-region)
     (define-key map (kbd "r") #'reverse-region)
+    (define-key map (kbd ";") #'comment-region)
     map)
   "Keymap used by `quiescent-transient-command-mode'.")
 
