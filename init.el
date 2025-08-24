@@ -3748,17 +3748,6 @@ Based on `slime-expand-abbreviations-and-complete' from
      (call-interactively #'quit-window))
     (select-window original-window)))
 
-(defun quiescent-slime-company-doc-mode (&rest _)
-  "Fontify the current buffer as a Slime documentation buffer."
-  (run-at-time 0.1 nil
-               (lambda () (let ((original-window (selected-window)))
-                            (cl-loop
-                             for window being the windows
-                             when (equal "*slime-description*" (buffer-name (window-buffer window)))
-                             do (select-window window)
-                             (slime-company-doc-mode))
-                            (select-window original-window)))))
-
 ;; These forms need to be protected from compilation so that they use
 ;; dynamic scoping for the repl history file.
 (eval `(defun quiescent-slime-load-history (&optional path)
@@ -3798,8 +3787,6 @@ Based on `slime-expand-abbreviations-and-complete' from
   (progn
     (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
     (define-key slime-mode-map (kbd "M-.") #'quiescent-slime-edit-definition)
-    (advice-add 'slime-describe-symbol :after #'quiescent-slime-company-doc-mode)
-    (advice-add 'slime-describe-function :after #'quiescent-slime-company-doc-mode)
     (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
 
     (require 'slime-repl)
@@ -3813,7 +3800,7 @@ Based on `slime-expand-abbreviations-and-complete' from
 
 (defun quiescent-setup-slime ()
   "Setup slime."
-  (slime-setup '(slime-fancy slime-company slime-c-p-c slime-highlight-edits slime-xref-browser slime-asdf)))
+  (slime-setup '(slime-fancy slime-c-p-c slime-highlight-edits slime-xref-browser slime-asdf)))
 
 (add-hook 'after-init-hook #'quiescent-setup-slime)
 
