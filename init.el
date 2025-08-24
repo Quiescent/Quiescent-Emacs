@@ -3655,7 +3655,7 @@ Replaces the buffer string in that region."
 
 (use-package typescript-mode
   :straight t
-  :config (add-to-list 'auto-mode-alist '("\\.tsx$" . typescript-mode)))
+  :config (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode)))
 
 ;; 
 
