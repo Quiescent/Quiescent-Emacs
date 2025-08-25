@@ -2954,6 +2954,10 @@ Allows Emacs to display other buffers in that window."
     :repeat (:enter (duplicate-dwim))
     "j" #'duplicate-dwim)
 
+(defvar-keymap transpose-lines-map
+    :repeat (:enter (transpose-lines))
+    "C-t" #'transpose-lines)
+
 (repeat-mode 1)
 
 ;; 
