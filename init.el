@@ -2958,6 +2958,16 @@ Allows Emacs to display other buffers in that window."
     :repeat (:enter (transpose-lines))
     "C-t" #'transpose-lines)
 
+(defun quiescent-prog-transpose-advice (func &rest args)
+  "Indent the region of text that FUNC modifies.
+
+Call func with supplied ARGS."
+  (let ((start (point)))
+    (apply func args)
+    (indent-region start (point))))
+
+(advice-add #'transpose-lines :around #'quiescent-prog-transpose-advice)
+
 (repeat-mode 1)
 
 ;; 
