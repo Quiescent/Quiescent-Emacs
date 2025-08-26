@@ -3635,7 +3635,7 @@ Replaces the buffer string in that region."
   "A Javascript syntax checker using tsserver."
   :start #'tide-flycheck-start
   :verify #'tide-flycheck-verify
-  :modes '(typescript-mode typescript-ts-mode)
+  :modes '(typescript-mode typescript-ts-mode tsx-ts-mode)
   :predicate #'tide-flycheck-predicate)
 
 (add-to-list 'flycheck-checkers 'quiescent-javascript-tide-ts t)
@@ -3655,6 +3655,7 @@ Replaces the buffer string in that region."
 
 (use-package typescript-mode
   :straight t
+  :hook ((tsx-ts-mode . quiescent-setup-tide-mode-ts))
   :config (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode)))
 
 ;; 
