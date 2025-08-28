@@ -3587,7 +3587,9 @@ Replaces the buffer string in that region."
     (keymap-set combobulate-key-map "M-s" #'combobulate-splice-up)
     (keymap-set combobulate-key-map "M-r" #'combobulate-splice-self)
     (keymap-unset combobulate-key-map "C-M-n" t)
-    (keymap-unset combobulate-key-map "C-M-p" t)))
+    (keymap-unset combobulate-key-map "C-M-p" t)
+    (advice-add #'combobulate-navigate-up :before #'quiescent-push-mark-to-ring)
+    (advice-add #'combobulate-navigate-down :before #'quiescent-push-mark-to-ring)))
 
 (require 'js)
 (keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
