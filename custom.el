@@ -93,6 +93,12 @@
  '(js2-external-variable ((t (:foreground "orange2" :weight bold))))
  '(js2-highlight-vars-face ((t (:underline t))))
  '(js2-highlight-vars-second-face ((t (:underline "white"))))
+ '(magit-diff-added-highlight ((t (:inherit (nano-salient nano-strong smerge-lower) :extend t))))
+ '(magit-diff-our-highlight ((t (:inherit (smerge-lower nano-salient nano-strong)))))
+ '(magit-diff-removed-highlight ((t (:inherit (smerge-upper nano-popout nano-strong) :extend t))))
+ '(magit-diff-their-highlight ((t (:inherit (smerge-upper nano-popout nano-strong)))))
+ '(org-agenda-clocking ((t (:inherit (nano-popout-i nano-strong)))))
+ '(org-scheduled-today ((t (:inherit nano-strong))))
  '(slime-highlight-edits-face ((t (:underline "light gray"))))
  '(visible-mark-face1 ((t (:background "slate gray")))))
 
