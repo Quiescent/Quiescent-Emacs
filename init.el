@@ -246,6 +246,7 @@ This is the default system.")
   (interactive)
   (load-theme 'nano-light t)
   (custom-set-faces
+   '(tide-hl-identifier-face ((t (:background "gray90"))))
    '(highlight ((t (:background "gray98"))))
    '(nano-modeline-active
      ((t (:foreground "#37474F" :background "#ECEFF1" :box (:line-width 1 :color "#FFFFFF")))))
@@ -265,6 +266,7 @@ This is the default system.")
   (interactive)
   (load-theme 'nano-dark t)
   (custom-set-faces
+   '(tide-hl-identifier-face ((t (:background "#373e4c"))))
    '(highlight ((t (:background "#373e4c"))))
    '(nano-modeline-active
      ((t (:foreground "#ECEFF4" :background "#434C5E" :box (:line-width 1 :color "#2E3440")))))
