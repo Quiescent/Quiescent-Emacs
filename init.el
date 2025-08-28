@@ -2880,15 +2880,6 @@ arguments actually mean."
 
 ;; Magit
 (add-to-list 'display-buffer-alist
-             '((major-mode . magit-status-mode)
-               (display-buffer-reuse-window
-                display-buffer-in-side-window)
-               (reusable-frames . t)
-               (side . right)
-               (slot . 0)
-               (window-width . 100)))
-
-(add-to-list 'display-buffer-alist
              '((major-mode . magit-process-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
