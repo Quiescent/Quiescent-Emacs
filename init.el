@@ -7,6 +7,17 @@
 ;;    Sets the list of files which org should use for agenda on
 ;;    this computer.
 
+;; Notes:
+;; 
+;; I couldn't think where to put some cool things I discover and want
+;; to remember, so they're going here until I figure out a new home
+;; for them.
+;; 
+;;  - `kill-ring-deindent-mode': will kill and yank stripping off the
+;;    whitespace that's common to the start of every line(!).  Combine
+;;    this with `quiescent-yank-with-current-indentation' for
+;;    super-charged behaviour!
+
 ;;; Code:
 
 ;; For debugging what gets compiled at startup
@@ -4233,6 +4244,36 @@ leading whitespace."
 (define-key outline-minor-mode-map (kbd "s-%") #'outline-cycle-buffer)
 
 ;; 
+
+;;; ** Yanking Into The Same Indentation
+
+(defun quiescent-yank-with-current-indentation ()
+  "Yank to point, inferring the correct level of indentation.
+
+Infer indentation by whether the point has whitespace to the start of
+the line before it.  e.g. this is usually the case when you're inside a
+switch statement."
+  (interactive)
+  (let ((start (point))
+        (text-up-to-point (save-excursion
+                            (buffer-substring (point)
+                                              (progn (beginning-of-line)
+                                                     (point))))))
+    (if (string-match (rx (seq line-start (one-or-more blank)))
+                      text-up-to-point)
+        (progn
+          (yank)
+          (save-excursion
+            (narrow-to-region start (point))
+            (goto-char start)
+            (while (/= (point) (progn
+                                 (ignore-errors
+                                   (end-of-line)
+                                   (forward-char))
+                                 (point)))
+              (insert text-up-to-point))
+            (widen)))
+      (yank))))
 
 ;;; * Applications
 
