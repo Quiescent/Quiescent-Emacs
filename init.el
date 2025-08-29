@@ -4255,22 +4255,23 @@ the line before it.  e.g. this is usually the case when you're inside a
 switch statement."
   (interactive)
   (let ((start (point))
+        (starts-with-whitespace (rx (seq line-start (one-or-more blank))))
         (text-up-to-point (save-excursion
                             (buffer-substring (point)
                                               (progn (beginning-of-line)
                                                      (point))))))
-    (if (string-match (rx (seq line-start (one-or-more blank)))
-                      text-up-to-point)
+    (if (string-match starts-with-whitespace text-up-to-point)
         (progn
           (yank)
           (save-excursion
             (narrow-to-region start (point))
             (goto-char start)
-            (while (/= (point) (progn
-                                 (ignore-errors
-                                   (end-of-line)
-                                   (forward-char))
-                                 (point)))
+            (while (and (/= (point) (progn
+                                      (ignore-errors
+                                        (end-of-line)
+                                        (forward-char))
+                                      (point)))
+                        (/= (point) (point-max)))
               (insert text-up-to-point))
             (widen)))
       (yank))))
