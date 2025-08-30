@@ -4276,6 +4276,9 @@ switch statement."
             (widen)))
       (yank))))
 
+(kill-ring-deindent-mode)
+(define-key global-map [remap yank] #'quiescent-yank-with-current-indentation)
+
 ;;; * Applications
 
 ;;; ** Shell
