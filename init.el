@@ -4260,7 +4260,10 @@ switch statement."
                             (buffer-substring (point)
                                               (progn (beginning-of-line)
                                                      (point))))))
-    (if (string-match starts-with-whitespace text-up-to-point)
+    (if (= (progn
+             (string-match starts-with-whitespace text-up-to-point)
+             (match-end 0))
+           (length text-up-to-point))
         (progn
           (yank)
           (save-excursion
@@ -4274,7 +4277,9 @@ switch statement."
                         (/= (point) (point-max)))
               (insert text-up-to-point))
             (widen)))
-      (yank))))
+      (progn
+        (yank)
+        (indent-region (mark) (point))))))
 
 (kill-ring-deindent-mode)
 (define-key global-map [remap yank] #'quiescent-yank-with-current-indentation)
