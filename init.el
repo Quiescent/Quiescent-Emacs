@@ -3678,7 +3678,7 @@ Replaces the buffer string in that region."
 (use-package typescript-mode
   :straight t
   :hook ((tsx-ts-mode . quiescent-setup-tide-mode-ts))
-  :config (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode)))
+  :init (add-to-list 'auto-mode-alist '("\\.tsx$" . tsx-ts-mode)))
 
 ;; 
 
