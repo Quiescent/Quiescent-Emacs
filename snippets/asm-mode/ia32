@@ -7,7 +7,7 @@
     STDOUT     equ 1
 
 section .text
-    global start
+    global _start
 
 _start:
     $0
