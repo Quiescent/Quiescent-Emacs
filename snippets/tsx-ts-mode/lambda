@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: lamba
+# key: l
+# --
+($1) => {$0}
