@@ -5476,13 +5476,6 @@ estimate what your state of mind (ITO flow) might be."
 
 ;; 
 
-;; Reload custom in case anything overwrote it
-(defun quiescent-load-custom-file ()
-  "Load the custom file."
-  (load custom-file))
-
-(add-hook 'after-init-hook #'quiescent-load-custom-file)
-
 ;;; ** Plottr
 
 (add-to-list 'auto-mode-alist '("\\.pltr\\'" . json-mode))
