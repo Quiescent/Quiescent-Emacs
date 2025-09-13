@@ -2,4 +2,4 @@
 # name: mapcar
 # key: m
 # --
-(mapcar ${1:function} ${2:list})$0
+(mapcar ${1:function} ${2:list}$0)

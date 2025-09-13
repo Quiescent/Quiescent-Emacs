@@ -2,4 +2,4 @@
 # name: lambda
 # key: l
 # --
-(lambda (${1:args}) (${2:body}))
+(lambda (${1:args}) (${2:body})$0)

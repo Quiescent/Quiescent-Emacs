@@ -2,4 +2,4 @@
 # name: gethash
 # key: get
 # --
-(gethash ${2:key} ${1:map} ${3:default})
+(gethash ${2:key} ${1:map} ${3:default}$0)

@@ -2,4 +2,4 @@
 # name: for-iter
 # key: f
 # --
-(for $1 in $2)$0
+(for $1 in $2$0)

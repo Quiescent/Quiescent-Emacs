@@ -2,4 +2,4 @@
 # name: aset
 # key: as
 # --
-(setf (aref ${1:array} ${2:idx}) ${3:newelt})$0
+(setf (aref ${1:array} ${2:idx}) ${3:newelt}$0)

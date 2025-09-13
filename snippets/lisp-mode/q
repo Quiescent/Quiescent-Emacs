@@ -2,4 +2,4 @@
 # name: quickload
 # key: q
 # --
-(ql:quickload '($1))$0
+(ql:quickload '($1)$0)

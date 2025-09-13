@@ -2,4 +2,4 @@
 # name: cl-remove-if-not
 # key: rn
 # --
-(remove-if-not ${1:predicate} ${2:list})$0
+(remove-if-not ${1:predicate} ${2:list}$0)

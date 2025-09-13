@@ -2,4 +2,4 @@
 # name: use
 # key: u
 # --
-(:use :$1)$0
+(:use :$1$0)

@@ -2,4 +2,4 @@
 # name: mref
 # key: mr
 # --
-(aref ${1:matrix} ${2:x} ${3: y})$0
+(aref ${1:matrix} ${2:x} ${3: y}$0)

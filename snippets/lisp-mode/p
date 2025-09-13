@@ -2,4 +2,4 @@
 # name: read-problem
 # key: p
 # --
-(read-problem "day$1.in")$0
+(read-problem "day$1.in"$0)

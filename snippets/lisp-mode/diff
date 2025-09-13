@@ -2,4 +2,4 @@
 # name: cl-set-difference
 # key: diff
 # --
-(set-difference ${1:remove-from} ${2:elems-to-remove} ${3:keywords})
+(set-difference ${1:remove-from} ${2:elems-to-remove} ${3:keywords}$0)
