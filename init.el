@@ -1725,9 +1725,42 @@ Usually because of too much overhead in checking.")
 (use-package flycheck
   :straight t)
 
-(use-package flyover
-  :straight t
-  :hook ((flycheck-mode . flyover-mode)))
+(use-package eldoc-box
+  :straight t)
+
+(defun quiescent-eldoc-error-box ()
+  "Display an eldoc-box for the error at point.
+
+Compatible with flycheck for now.
+
+Ripped from on `eldoc-box-help-at-point' and modified for needs."
+  (interactive)
+  (let ((error-overlays (flycheck-overlays-at (point))))
+    (when (boundp 'eldoc--doc-buffer)
+      (let ((eldoc-box-position-function
+             eldoc-box-at-point-position-function)
+            (doc (mapconcat (lambda (overlay)
+                              (flycheck-error-message
+                               (overlay-get overlay
+                                            'flycheck-error)))
+                            error-overlays
+                            "\n\n")))
+        (eldoc-box--display
+         (if (equal doc "")
+             "There’s no error to display at this point" doc)))
+      (setq eldoc-box--help-at-point-last-point (point))
+      (run-with-timer 0.1 nil #'eldoc-box--help-at-point-cleanup)
+      (when eldoc-box-clear-with-C-g
+        (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame)))))
+
+(define-key tsx-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
+(define-key tsx-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
+
+(remove-hook 'flycheck-mode-hook #'flover-move)
+
+;; (use-package flyover
+;;   :straight t
+;;   :hook ((flycheck-mode . flyover-mode)))
 
 ;; 
 
