@@ -1774,15 +1774,14 @@ Ripped from on `eldoc-box-help-at-point' and modified for needs."
   "Add a typescript prettifier to eldocbox."
   (add-hook 'eldoc-box-buffer-setup-hook #'eldoc-box-prettify-ts-errors 0 t))
 
-(with-eval-after-load "tsx-ts-mode"
-  (define-key tsx-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
-  (define-key tsx-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
-  (add-hook 'tsx-ts-mode-hook #'quiescent-add-eldoc-box-ts-error-setup-hook))
+(require #'typescript-ts-mode)
+(define-key tsx-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
+(define-key tsx-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
+(add-hook 'tsx-ts-mode-hook #'quiescent-add-eldoc-box-ts-error-setup-hook)
 
-(with-eval-after-load "typescript-ts-mode"
-  (define-key typescript-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
-  (define-key typescript-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
-  (add-hook 'typescript-ts-mode-hook #'quiescent-add-eldoc-box-ts-error-setup-hook))
+(define-key typescript-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
+(define-key typescript-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
+(add-hook 'typescript-ts-mode-hook #'quiescent-add-eldoc-box-ts-error-setup-hook)
 
 (remove-hook 'flycheck-mode-hook #'flover-move)
 
