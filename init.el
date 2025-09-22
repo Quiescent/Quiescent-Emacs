@@ -1736,7 +1736,7 @@ for margins."
   (let* ((pos (eldoc-box--default-at-point-position-function-1 width height))
          (x (car pos))
          (y (cdr pos)))
-    (cons (+ (* (car (window-margins)) (string-pixel-width " ")) x)
+    (cons (+ (* (or (car (window-margins)) 0) (string-pixel-width " ")) x)
           y)))
 
 (use-package eldoc-box
