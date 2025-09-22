@@ -1753,8 +1753,9 @@ Ripped from on `eldoc-box-help-at-point' and modified for needs."
       (when eldoc-box-clear-with-C-g
         (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame)))))
 
-(define-key tsx-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
-(define-key tsx-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
+(with-eval-after-load "tsx-ts-mode"
+  (define-key tsx-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
+  (define-key tsx-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box))
 
 (remove-hook 'flycheck-mode-hook #'flover-move)
 
