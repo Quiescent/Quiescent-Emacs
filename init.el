@@ -3695,17 +3695,16 @@ Replaces the buffer string in that region."
     (add-hook 'js-ts-mode-hook #'quiescent-setup-tide-mode)
     (add-hook 'typescript-ts-mode-hook #'quiescent-setup-tide-mode-ts)))
 
-(defun quiescent-tide-flycheck-predicate ()
+(defun quiescent-tide-flycheck-enabled-in-buffer ()
   "Produce t if the checker should be used in the current buffer."
-  (and (buffer-file-name (window-buffer))
-       (tide-flycheck-predicate)))
+  (buffer-file-name (current-buffer)))
 
 (flycheck-define-generic-checker 'quiescent-javascript-tide
   "A Javascript syntax checker using tsserver."
   :start #'tide-flycheck-start
   :verify #'tide-flycheck-verify
   :modes '(js-mode js2-mode js3-mode js-ts-mode)
-  :predicate #'quiescent-tide-flycheck-predicate)
+  :predicate #'tide-flycheck-predicate)
 
 (add-to-list 'flycheck-checkers 'quiescent-javascript-tide t)
 
@@ -3735,7 +3734,8 @@ Replaces the buffer string in that region."
   (tide-hl-identifier-mode +1)
   (setq tide-jump-to-fallback #'ggtags-find-tag-dwim)
   (define-key tide-mode-map (kbd "M-.") #'tide-jump-to-definition)
-  (flycheck-select-checker 'quiescent-javascript-tide-ts)
+  (when (buffer-file-name (current-buffer))
+    (flycheck-select-checker 'quiescent-javascript-tide-ts))
   (setq imenu-create-index-function #'treesit-simple-imenu))
 
 ;; 
