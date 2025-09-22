@@ -1725,8 +1725,25 @@ Usually because of too much overhead in checking.")
 (use-package flycheck
   :straight t)
 
+(defun quiescent-eldoc-box-window-at-point-function (width height)
+  "Set `eldoc-box-position-function' to this function.
+
+To have childframe appear under point.  Position is calculated
+base on WIDTH and HEIGHT of childframe text window.
+
+Adapted from `eldoc-box--default-at-point-position-function' to account
+for margins."
+  (let* ((pos (eldoc-box--default-at-point-position-function-1 width height))
+         (x (car pos))
+         (y (cdr pos)))
+    (cons (+ (* (car (window-margins)) (string-pixel-width " ")) x)
+          y)))
+
 (use-package eldoc-box
-  :straight t)
+  :straight t
+  :config
+  (setq eldoc-box-position-function #'quiescent-eldoc-box-window-at-point-function)
+  (setq eldoc-box-at-point-position-function #'quiescent-eldoc-box-window-at-point-function))
 
 (defun quiescent-eldoc-error-box ()
   "Display an eldoc-box for the error at point.
