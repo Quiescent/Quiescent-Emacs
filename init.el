@@ -1783,6 +1783,9 @@ Ripped from on `eldoc-box-help-at-point' and modified for needs."
 (define-key typescript-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
 (add-hook 'typescript-ts-mode-hook #'quiescent-add-eldoc-box-ts-error-setup-hook)
 
+(define-key js-ts-mode-map (kbd "C-c C-d h") #'eldoc-box-help-at-point)
+(define-key js-ts-mode-map (kbd "C-c C-d e") #'quiescent-eldoc-error-box)
+
 (remove-hook 'flycheck-mode-hook #'flover-move)
 
 ;; (use-package flyover
