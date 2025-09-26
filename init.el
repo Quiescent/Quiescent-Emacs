@@ -1700,7 +1700,9 @@ Usually because of too much overhead in checking.")
 ;;; ** Flymake
 
 (use-package flymake
-  :straight t
+  :straight (perfect-margin :type git
+                            :host github
+                            :repo "emacs-straight/flymake")
   :config
   (define-key flymake-mode-map (kbd "M-p") #'flymake-goto-prev-error)
   (define-key flymake-mode-map (kbd "M-n") #'flymake-goto-next-error))
