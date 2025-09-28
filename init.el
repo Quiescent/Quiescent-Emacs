@@ -1772,25 +1772,6 @@ Ripped from on `eldoc-box-help-at-point' and modified for needs."
       (when eldoc-box-clear-with-C-g
         (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame)))))
 
-(defun quiescent-eldoc-note-box-slime ()
-  "Display an eldoc-box for the slime error at point."
-  (interactive)
-  (when (boundp 'eldoc--doc-buffer)
-    (let ((eldoc-box-position-function
-           eldoc-box-at-point-position-function)
-          (doc (get-char-property (point) 'help-echo)))
-      (eldoc-box--display
-       (if (equal doc "")
-           "There’s no note to display at this point" doc)))
-    (setq eldoc-box--help-at-point-last-point (point))
-    (run-with-timer 0.1 nil #'eldoc-box--help-at-point-cleanup)
-    (when eldoc-box-clear-with-C-g
-      (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame))))
-
-(with-eval-after-load "slime"
-  (advice-add #'slime-next-note :after #'quiescent-eldoc-note-box-slime)
-  (advice-add #'slime-previous-note :after #'quiescent-eldoc-note-box-slime))
-
 (defun quiescent-add-eldoc-box-ts-error-setup-hook ()
   "Add a typescript prettifier to eldocbox."
   (add-hook 'eldoc-box-buffer-setup-hook #'eldoc-box-prettify-ts-errors 0 t))
@@ -3898,17 +3879,33 @@ Based on `slime-expand-abbreviations-and-complete' from
 (use-package slime
   :straight t
   :config
-  (progn
-    (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
-    (define-key slime-mode-map (kbd "M-.") #'quiescent-slime-edit-definition)
-    (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
+  (define-key slime-mode-map (kbd "s-q") #'quiescent-close-slime-help)
+  (define-key slime-mode-map (kbd "M-.") #'quiescent-slime-edit-definition)
+  (advice-add 'slime-edit-definition :before #'quiescent-xref-push-marker-stack)
 
-    (require 'slime-repl)
-    (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
-    (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
-    (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
-    (add-hook 'slime-mode-hook      #'quiescent-setup-lisp-completion)
-    (add-hook 'slime-repl-mode-hook #'quiescent-setup-lisp-completion))
+  (require 'slime-repl)
+  (define-key slime-repl-mode-map (kbd "C-x C-s") #'quiescent-slime-save-history)
+  (define-key slime-repl-mode-map (kbd "C-x C-f") #'quiescent-slime-load-history)
+  (define-key slime-repl-mode-map (kbd "C-M-r")   #'slime-repl-previous-matching-input)
+  (add-hook 'slime-mode-hook      #'quiescent-setup-lisp-completion)
+  (add-hook 'slime-repl-mode-hook #'quiescent-setup-lisp-completion)
+  (defun quiescent-eldoc-note-box-slime ()
+    "Display an eldoc-box for the slime error at point."
+    (interactive)
+    (when (boundp 'eldoc--doc-buffer)
+      (let ((eldoc-box-position-function
+             eldoc-box-at-point-position-function)
+            (doc (get-char-property (point) 'help-echo)))
+        (eldoc-box--display
+         (if (equal doc "")
+             "There’s no note to display at this point" doc)))
+      (setq eldoc-box--help-at-point-last-point (point))
+      (run-with-timer 0.1 nil #'eldoc-box--help-at-point-cleanup)
+      (when eldoc-box-clear-with-C-g
+        (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame))))
+  
+  (advice-add #'slime-next-note :after #'quiescent-eldoc-note-box-slime)
+  (advice-add #'slime-previous-note :after #'quiescent-eldoc-note-box-slime)
   :init (progn (setq inferior-lisp-program "sbcl --dynamic-space-size 8192")
                (setq auto-mode-alist (cons '("\.cl$" . common-lisp-mode) auto-mode-alist))))
 
