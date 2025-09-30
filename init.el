@@ -4340,34 +4340,38 @@ leading whitespace."
 
 Infer indentation by whether the point has whitespace to the start of
 the line before it.  e.g. this is usually the case when you're inside a
-switch statement."
+switch statement.
+
+When called with the universal argument, simply `yank'."
   (interactive)
-  (let ((start (point))
-        (starts-with-whitespace (rx (seq line-start (one-or-more blank))))
-        (text-up-to-point (save-excursion
-                            (buffer-substring (point)
-                                              (progn (beginning-of-line)
-                                                     (point))))))
-    (if (= (progn
-             (string-match starts-with-whitespace text-up-to-point)
-             (match-end 0))
-           (length text-up-to-point))
+  (if (equal current-prefix-arg '(4))
+      (yank)
+    (let ((start (point))
+          (starts-with-whitespace (rx (seq line-start (one-or-more blank))))
+          (text-up-to-point (save-excursion
+                              (buffer-substring (point)
+                                                (progn (beginning-of-line)
+                                                       (point))))))
+      (if (= (progn
+               (string-match starts-with-whitespace text-up-to-point)
+               (match-end 0))
+             (length text-up-to-point))
+          (progn
+            (yank)
+            (save-excursion
+              (narrow-to-region start (point))
+              (goto-char start)
+              (while (and (/= (point) (progn
+                                        (ignore-errors
+                                          (end-of-line)
+                                          (forward-char))
+                                        (point)))
+                          (/= (point) (point-max)))
+                (insert text-up-to-point))
+              (widen)))
         (progn
           (yank)
-          (save-excursion
-            (narrow-to-region start (point))
-            (goto-char start)
-            (while (and (/= (point) (progn
-                                      (ignore-errors
-                                        (end-of-line)
-                                        (forward-char))
-                                      (point)))
-                        (/= (point) (point-max)))
-              (insert text-up-to-point))
-            (widen)))
-      (progn
-        (yank)
-        (indent-region (mark) (point))))))
+          (indent-region (mark) (point)))))))
 
 (kill-ring-deindent-mode)
 (define-key global-map [remap yank] #'quiescent-yank-with-current-indentation)
