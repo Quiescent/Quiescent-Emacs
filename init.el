@@ -4376,6 +4376,35 @@ When called with the universal argument, simply `yank'."
 (kill-ring-deindent-mode)
 (define-key global-map [remap yank] #'quiescent-yank-with-current-indentation)
 
+;;; ** Assembly
+
+(defun quiescent-index-assembly-labels ()
+  "Produce an alist of positions in the file that are labels in asm."
+  (let (hits)
+    (goto-char (point-min))
+    (while (re-search-forward (rx
+                               (seq
+                                line-start
+                                (one-or-more (or alpha "_"))
+                                ":"))
+                              nil
+                              t)
+      (beginning-of-line)
+      (let ((hit-start (point)))
+        (push (cons (buffer-substring-no-properties (point)
+                                                    (progn (search-forward ":")
+                                                           (point)))
+                    hit-start)
+              hits)
+        (end-of-line)))
+    hits))
+
+(defun quiescent-set-assembly-imenu-index-function ()
+  "Set the imenu index function for assembly mode."
+  (setq imenu-create-index-function #'quiescent-index-assembly-labels))
+
+(add-hook 'asm-mode-hook #'quiescent-set-assembly-imenu-index-function)
+
 ;;; * Applications
 
 ;;; ** Shell
