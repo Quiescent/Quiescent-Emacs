@@ -4393,7 +4393,7 @@ When called with the universal argument, simply `yank'."
       (let ((hit-start (point)))
         (push (cons (buffer-substring-no-properties (point)
                                                     (progn (search-forward ":")
-                                                           (point)))
+                                                           (1- (point))))
                     hit-start)
               hits)
         (end-of-line)))
