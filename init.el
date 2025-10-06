@@ -5502,6 +5502,17 @@ of losing work when I'm on my desktop."
   :config (add-hook 'pomm-on-status-changed-hook
                     #'quiescent-pomm-require-recognition))
 
+(defun quiescent-ask-to-start-pomm (&rest _ignore)
+  "If the pomm timer isn't running, ask whether we should start it."
+  (let ((status (alist-get 'status pomm--state)))
+    ;; Condition taken from pomm.el verbatim
+    (when (and (or (eq 'stopped status)
+                   (not (alist-get 'current pomm--state)))
+               (y-or-n-p "Start pomm timer?"))
+      (pomm-third-time-start))))
+
+(advice-add #'org-agenda-clock-in :after #'quiescent-ask-to-start-pomm)
+
 (defun quiescent-pomm-require-recognition ()
   "Require that the reply with the phrase \"roger\" to proceed."
   (my-visible-bell 0.5)
