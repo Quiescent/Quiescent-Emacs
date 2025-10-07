@@ -354,7 +354,9 @@ This is the default system.")
   (perfect-margin-visible-width 128)
   (perfect-margin-disable-in-splittable-check t)
   :config
-  (perfect-margin-mode 1))
+  (perfect-margin-mode 1)
+  ;; Center completion minibuffer
+  (add-to-list 'perfect-margin-force-regexps "*Minibuf"))
 
 ;; 
 
