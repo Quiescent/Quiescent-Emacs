@@ -358,6 +358,23 @@ This is the default system.")
   ;; Center completion minibuffer
   (add-to-list 'perfect-margin-force-regexps "*Minibuf"))
 
+;; Taken from: https://emacs.stackexchange.com/questions/27767/center-text-in-minibuffer-echo-area
+
+(advice-add #'message :filter-args #'message-filter-center)
+
+(defun message-filter-center (args)
+  "Center message string.
+
+This is a :filter-args advice for `message`.
+
+Not sure what ARGS are."
+  (if (car args)
+      (with-current-buffer (window-buffer (minibuffer-window))
+        (let* ((str (apply #'format-message args))
+               (filler (make-string (max 0 (/ (- (window-width (minibuffer-window)) (string-width str)) 2)) ? )))
+          (list "%s%s" filler str)))
+    args))
+
 ;; 
 
 ;;; ** Ultra Scroll (Mac only)
