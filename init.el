@@ -250,7 +250,7 @@ This is the default system.")
          (org-agenda-mode      . nano-modeline-org-agenda-mode))
   :init
   (nano-modeline-prog-mode t)
-  (setq-default mode-line-format nil))
+  (setq-default mode-line-format ""))
 
 (defun quiescent-light-mode ()
   "Set the nano theme to light."
@@ -270,7 +270,30 @@ This is the default system.")
    '(nano-modeline-button-highlight-face
      ((t (:family "Roboto Mono" :weight bold :foreground "#FFFFFF" :background "#37474F"))))
    '(nano-modeline--empty-face
-     ((t (:foreground "#37474F"))))))
+     ((t (:foreground "#37474F")))))
+  (set-face-attribute 'mode-line nil
+                      :height 0.1
+                      :foreground (if (display-graphic-p)
+                                      (face-background 'nano-default)
+                                    (face-foreground 'nano-default))
+                      :background (face-background 'nano-default)
+                      :underline  (if (display-graphic-p)
+                                      (face-background 'nano-subtle)
+                                    t)
+                      :overline nil
+                      :box nil)
+  (set-face-attribute 'mode-line-inactive nil
+                      :height 0.1
+                      :foreground (if (display-graphic-p)
+                                      (face-background 'nano-default)
+                                    (face-foreground 'nano-default))
+                      :background (face-background 'nano-default)
+                      :underline (if (display-graphic-p)
+                                     (face-background 'nano-subtle)
+                                   t)
+                      :overline nil
+                      :inherit nil
+                      :box nil))
 
 (defun quiescent-dark-mode ()
   "Set the nano theme to dark."
@@ -290,7 +313,31 @@ This is the default system.")
    '(nano-modeline-button-highlight-face
      ((t (:family "Roboto Mono" :weight bold :foreground "#2E3440" :background "#ECEFF4"))))
    '(nano-modeline--empty-face
-     ((t (:foreground "#ECEFF4"))))))
+     ((t (:foreground "#ECEFF4")))))
+  ;; From the nano-emacs project
+  (set-face-attribute 'mode-line nil
+                      :height 0.1
+                      :foreground (if (display-graphic-p)
+                                      (face-background 'nano-default)
+                                    (face-foreground 'nano-default))
+                      :background (face-background 'nano-default)
+                      :underline  (if (display-graphic-p)
+                                      (face-background 'nano-subtle)
+                                    t)
+                      :overline nil
+                      :box nil)
+  (set-face-attribute 'mode-line-inactive nil
+                      :height 0.1
+                      :foreground (if (display-graphic-p)
+                                      (face-background 'nano-default)
+                                    (face-foreground 'nano-default))
+                      :background (face-background 'nano-default)
+                      :underline (if (display-graphic-p)
+                                     (face-background 'nano-subtle)
+                                   t)
+                      :overline nil
+                      :inherit nil
+                      :box nil))
 
 (load-theme 'nano t)
 (quiescent-dark-mode)
