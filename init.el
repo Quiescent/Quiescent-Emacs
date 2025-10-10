@@ -5690,9 +5690,7 @@ of losing work when I'm on my desktop."
   :custom (pomm-display-timer nil)
   :init (progn
           (global-set-key (kbd "<f10>") #'pomm-third-time)
-          (setq pomm-third-time-fraction "1/4"))
-  :config (add-hook 'pomm-on-status-changed-hook
-                    #'quiescent-pomm-require-recognition))
+          (setq pomm-third-time-fraction "1/4")))
 
 (defun quiescent-ask-to-start-pomm (&rest _ignore)
   "If the pomm timer isn't running, ask whether we should start it."
@@ -5704,15 +5702,6 @@ of losing work when I'm on my desktop."
       (pomm-third-time-start))))
 
 (advice-add #'org-agenda-clock-in :after #'quiescent-ask-to-start-pomm)
-
-(defun quiescent-pomm-require-recognition ()
-  "Require that the reply with the phrase \"roger\" to proceed."
-  (my-visible-bell 0.5)
-  (run-at-time 1 nil (lambda () (my-visible-bell 0.5)))
-  (run-at-time 2 nil (lambda () (my-visible-bell 0.5)))
-  (when (not (string-equal (read-string "POMM state changed.  Please type \"roger\" and hit RET:")
-                           "roger"))
-    (quiescent-pomm-require-recognition)))
 
 ;; 
 
