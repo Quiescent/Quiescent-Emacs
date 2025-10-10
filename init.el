@@ -339,6 +339,131 @@ This is the default system.")
                       :inherit nil
                       :box nil))
 
+;; Setup gdb locals header to use the header line instead of mode
+;; line.
+(with-eval-after-load "gdb-mi"
+  (setq gdb-locals-header
+        (list
+         (gdb-propertize-header "Locals" gdb-locals-buffer
+                                nil nil header-line)
+         " "
+         (gdb-propertize-header "Registers" gdb-registers-buffer
+                                "mouse-1: select" mode-line-highlight
+                                header-line-inactive)))
+  (setq gdb-threads-header
+        (list
+         (gdb-propertize-header
+          "Breakpoints" gdb-breakpoints-buffer
+          "mouse-1: select" mode-line-highlight header-line-inactive)
+         " "
+         (gdb-propertize-header "Threads" gdb-threads-buffer
+                                nil nil header-line)))
+  (setq gdb-memory-header
+        '(:eval
+          (concat
+           "Start address "
+           ;; If `gdb-memory-address-expression' is nil, `propertize' would error.
+           (propertize (or gdb-memory-address-expression "N/A")
+                       'face font-lock-warning-face
+                       'help-echo "mouse-1: set start address"
+                       'mouse-face 'header-line-highlight
+                       'local-map (gdb-make-header-line-mouse-map
+                                   'mouse-1
+                                   #'gdb-memory-set-address-event))
+           (if gdb--memory-display-warning
+               (propertize " !" 'face '(:inherit error :weight bold))
+             "")
+           " ["
+           (propertize "-"
+                       'face font-lock-warning-face
+                       'help-echo "mouse-1: decrement address"
+                       'mouse-face 'header-line-highlight
+                       'local-map (gdb-make-header-line-mouse-map
+                                   'mouse-1
+                                   #'gdb-memory-show-previous-page))
+           "|"
+           (propertize "+"
+                       'face font-lock-warning-face
+                       'help-echo "mouse-1: increment address"
+                       'mouse-face 'header-line-highlight
+                       'local-map (gdb-make-header-line-mouse-map
+                                   'mouse-1
+                                   #'gdb-memory-show-next-page))
+           "]: "
+           ;; If `gdb-memory-address' is nil, `propertize' would error.
+           (propertize (or gdb-memory-address "N/A")
+                       'face font-lock-warning-face)
+           "  Rows: "
+           (propertize (number-to-string gdb-memory-rows)
+                       'face font-lock-warning-face
+                       'help-echo "mouse-1: set number of columns"
+                       'mouse-face 'header-line-highlight
+                       'local-map (gdb-make-header-line-mouse-map
+                                   'mouse-1
+                                   #'gdb-memory-set-rows))
+           "  Columns: "
+           (propertize (number-to-string gdb-memory-columns)
+                       'face font-lock-warning-face
+                       'help-echo "mouse-1: set number of columns"
+                       'mouse-face 'header-line-highlight
+                       'local-map (gdb-make-header-line-mouse-map
+                                   'mouse-1
+                                   #'gdb-memory-set-columns))
+           "  Display Format: "
+           (propertize gdb-memory-format
+                       'face font-lock-warning-face
+                       'help-echo "mouse-3: select display format"
+                       'mouse-face 'header-line-highlight
+                       'local-map gdb-memory-format-map)
+           "  Unit Size: "
+           (propertize (number-to-string gdb-memory-unit)
+                       'face font-lock-warning-face
+                       'help-echo "mouse-3: select unit size"
+                       'mouse-face 'header-line-highlight
+                       'local-map gdb-memory-unit-map))))
+
+  (setq gdb-breakpoints-header
+        (list
+         (gdb-propertize-header "Breakpoints" gdb-breakpoints-buffer
+                                nil nil header-line)
+         " "
+         (gdb-propertize-header "Threads" gdb-threads-buffer
+                                "mouse-1: select" header-line-highlight
+                                header-line-inactive)))
+
+  (setq gdb-registers-header
+        (list
+         (gdb-propertize-header "Locals" gdb-locals-buffer
+                                "mouse-1: select" header-line-highlight
+                                header-line-inactive)
+         " "
+         (gdb-propertize-header "Registers" gdb-registers-buffer
+                                nil nil header-line)
+         " "
+         '(:eval
+           (format
+            "[filter %s %s]"
+            (propertize
+             (if gdb-registers-enable-filter "[on]" "[off]")
+             'face (if gdb-registers-enable-filter
+                       '(:weight bold :inherit success)
+                     'shadow)
+             'help-echo "mouse-1: toggle filter"
+             'mouse-face 'header-line-highlight
+             'local-map (gdb-make-header-line-mouse-map
+                         'mouse-1 (gdb-header-click-event-handler
+                                   #'gdb-registers-toggle-filter)))
+            (propertize
+             "[set]"
+             'face 'header-line
+             'help-echo "mouse-1: Customize filter patterns"
+             'mouse-face 'header-line-highlight
+             'local-map (gdb-make-header-line-mouse-map
+                         'mouse-1 (lambda ()
+                                    (interactive)
+                                    (customize-variable-other-window
+                                     'gdb-registers-filter-pattern-list)))))))))
+
 (load-theme 'nano t)
 (quiescent-dark-mode)
 
