@@ -4132,8 +4132,8 @@ Based on `slime-expand-abbreviations-and-complete' from
 `slime-c-p-c'."
   (let* ((end (move-marker (make-marker) (slime-symbol-end-pos)))
          (beg (move-marker (make-marker) (slime-symbol-start-pos))))
-    (pcase (slime-contextual-completions beg end)
-      (`(,completions . ,_) `(,beg ,end ,completions . (:exclusive 'no))))))
+    (let ((completions (mapcar #'car (slime-contextual-completions beg end))))
+      `(,beg ,end ,completions . (:exclusive 'no)))))
 
 (defun quiescent-close-slime-help ()
   "Close the help window."
