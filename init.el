@@ -1238,6 +1238,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   :straight t
   :custom
   (helm-display-buffer-width 120)
+  (helm-mode-handle-completion-in-region nil)
   :config
   (helm-mode 1)
   (global-set-key (kbd "M-x") 'helm-M-x)
@@ -1324,6 +1325,9 @@ version < emacs-28."
 ;; 
 
 ;;; ** Quiescent Completion -- My Implementation of Completion at Point
+
+(use-package prescient
+  :straight t)
 
 (defvar quiescent-completion-search-text nil
   "What we're searching for in all completions.")
