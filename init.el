@@ -1243,6 +1243,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "C-c p s g") #'helm-grep-do-git-grep)
   (setq helm-display-function #'quiescent-helm-display-buffer-in-own-frame))
 
 ;; Copied from helm sources and modified according to this Reddit
@@ -2466,7 +2467,8 @@ search through."
   (vc-git-grep (thing-at-point 'symbol) "*" (vc-git-root default-directory)))
 
 (global-set-key (kbd "C-S-f") #'quiescent-vc-git-grep-instant)
-(global-set-key (kbd "C-c p s g") #'quiescent-vc-git-grep)
+;; Switch to helm
+;; (global-set-key (kbd "C-c p s g") #'quiescent-vc-git-grep)
 (global-set-key (kbd "C-c C-r") #'quiescent-vc-git-grep)
 
 ;; 
