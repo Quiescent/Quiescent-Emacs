@@ -303,7 +303,7 @@ This is the default system.")
   (custom-set-faces
    '(tide-hl-identifier-face ((t (:background "#373e4c"))))
    '(highlight ((t (:background "#373e4c"))))
-   '(helm-selection ((t (:background "#373e4c"))))
+   '(helm-selection ((t (:background "#373e4c" :foreground "#ECEFF4"))))
    '(nano-modeline-active
      ((t (:foreground "#ECEFF4" :background "#434C5E" :box (:line-width 1 :color "#2E3440")))))
    '(nano-modeline-status
