@@ -1920,7 +1920,7 @@ If it's dotted list, produce the values in the dotted list."
 
 ;; 
 
-;; Compilation Mode
+;; ** Compilation Mode
 
 (require 'compile)
 
