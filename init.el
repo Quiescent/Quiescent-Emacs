@@ -1244,7 +1244,13 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   (global-set-key (kbd "C-x b") 'helm-mini)
-  (global-set-key (kbd "C-c p s g") #'helm-grep-do-git-grep)
+  (defun quiescent-helm-git-grep (arg)
+    "Run helm git grep from the root of the project.
+
+  With a prefix arg, run grep from the current directory."
+    (interactive "P")
+    (helm-grep-git-1 default-directory (not arg)))
+  (global-set-key (kbd "C-c p s g") #'quiescent-helm-git-grep)
   (setq helm-display-function #'quiescent-helm-display-buffer-in-own-frame))
 
 ;; Copied from helm sources and modified according to this Reddit
