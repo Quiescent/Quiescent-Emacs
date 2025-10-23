@@ -534,21 +534,22 @@ This is the default system.")
   (add-to-list 'perfect-margin-force-regexps "*transient"))
 
 ;; Taken from: https://emacs.stackexchange.com/questions/27767/center-text-in-minibuffer-echo-area
+;;
+;; This doesn't work enough of the time that I'm commenting it for now.
+;; (advice-add #'message :filter-args #'message-filter-center)
 
-(advice-add #'message :filter-args #'message-filter-center)
+;; (defun message-filter-center (args)
+;;   "Center message string.
 
-(defun message-filter-center (args)
-  "Center message string.
+;; This is a :filter-args advice for `message`.
 
-This is a :filter-args advice for `message`.
-
-Not sure what ARGS are."
-  (if (car args)
-      (with-current-buffer (window-buffer (minibuffer-window))
-        (let* ((str (apply #'format-message args))
-               (filler (make-string (max 0 (/ (- (window-width (minibuffer-window)) (string-width str)) 2)) ? )))
-          (list "%s%s" filler str)))
-    args))
+;; Not sure what ARGS are."
+;;   (if (car args)
+;;       (with-current-buffer (window-buffer (minibuffer-window))
+;;         (let* ((str (apply #'format-message args))
+;;                (filler (make-string (max 0 (/ (- (window-width (minibuffer-window)) (string-width str)) 2)) ? )))
+;;           (list "%s%s" filler str)))
+;;     args))
 
 ;; 
 
