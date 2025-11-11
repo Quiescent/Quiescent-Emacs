@@ -531,7 +531,8 @@ This is the default system.")
   (perfect-margin-mode 1)
   ;; Center completion minibuffer
   (add-to-list 'perfect-margin-force-regexps "*Minibuf")
-  (add-to-list 'perfect-margin-force-regexps "*transient"))
+  (add-to-list 'perfect-margin-force-regexps "*transient")
+  (add-to-list 'perfect-margin-force-regexps "*Org Agenda*"))
 
 ;; Taken from: https://emacs.stackexchange.com/questions/27767/center-text-in-minibuffer-echo-area
 ;;
