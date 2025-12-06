@@ -25,6 +25,21 @@
 
 ;; * Initial Setup
 
+;; For debugging performance on Windows
+;; (debug-on-entry 'call-process)
+;; (debug-on-entry 'call-process-region)
+;; (debug-on-entry 'start-process)
+;; (debug-on-entry 'start-process-shell-command)
+;; (debug-on-entry 'make-process)
+;; (eval-after-load "flycheck"
+;;   (debug-on-entry 'flycheck-mode))
+
+;; Windows only, for performance...
+(when (eq system-type 'windows-nt)
+  (defun vc-after-save () nil)
+  (defun vc-before-save () nil)
+  (defun vc-refresh-state () nil))
+
 ;; Load system specific configuration
 (defvar quiescent-starting-up nil
   "Whether We're busy starting Emacs.")
@@ -1964,7 +1979,7 @@ Ignore REST."
 
     Ignore REST."
     (flycheck-mode -1))
-  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode lisp-mode gdscript-mode)
+  (defvar quiescent-modes-not-to-activate-flycheck-in '(haskell-mode emacs-lisp-mode rust-mode lisp-mode gdscript-mode lisp-interaction-mode)
     "Modes in which flycheck should not be activated.
 
 Usually because of too much overhead in checking.")
@@ -2027,9 +2042,6 @@ Usually because of too much overhead in checking.")
 ;; 
 
 ;;; ** Flycheck Mode
-
-(use-package flycheck
-  :straight t)
 
 (defun quiescent-eldoc-box-window-at-point-function (width height)
   "Set `eldoc-box-position-function' to this function.
@@ -5276,10 +5288,14 @@ itself."
 (defvar quiescent-org-reloaded nil
   "Nil if `org-mode' wasn't yet reloaded.")
 
-(with-eval-after-load 'org
+(defun quiescent-org-startup-hook ()
+  "Reload `org-mode' if it wasn't yet reloaded."
   (when (not quiescent-org-reloaded)
     (org-reload)
     (setq quiescent-org-reloaded t)))
+
+(with-eval-after-load "org"
+  (add-hook 'org-mode-hook #'quiescent-org-startup-hook))
 
 (defun quiescent-setup-agenda-line-spacing ()
   "Setup line spacing for my agenda in org mode."
@@ -5505,8 +5521,12 @@ first created to remember those values."
 (use-package magit
   :straight t
   :custom (magit-diff-refine-hunk t)
+  :defer t
   :config
   (progn
+    ;; For performance on Windows
+    (when (eq system-type 'windows-nt)
+      (magit-auto-revert-mode -1))
     (setenv "GIT_ASKPASS" "git-gui--askpass")
     (global-set-key (kbd "C-c m") #'magit-status)
     (defun quiescent-magit-list-branches-by-recent-changes ()
