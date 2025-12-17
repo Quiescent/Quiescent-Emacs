@@ -630,13 +630,15 @@ This is the default system.")
 
 ;;; ** Manipulating Windows and Frames
 
-(defun quiescent-close-help ()
+(defun quiescent-close-help-or-grep ()
   "Close the help window."
   (interactive)
   (let ((original-window (selected-window)))
     (cl-loop
      for window being the windows
-     when (equal "*Help*" (buffer-name (window-buffer window)))
+     when (cl-member (buffer-name (window-buffer window))
+                     (list "*Help*" "*grep*")
+                     :test #'string-equal)
      do (select-window window)
      (call-interactively #'quit-window))
     (select-window original-window)))
@@ -644,7 +646,7 @@ This is the default system.")
 (global-set-key (kbd "C-c f") #'make-frame)
 (global-set-key (kbd "C-c B") #'browse-url-at-point)
 (global-set-key (kbd "s-o")   #'other-frame)
-(global-set-key (kbd "s-q")   #'quiescent-close-help)
+(global-set-key (kbd "s-q")   #'quiescent-close-help-or-grep)
 
 (global-set-key (kbd "s-)") #'delete-window)
 (global-set-key (kbd "s-!") #'delete-other-windows)
