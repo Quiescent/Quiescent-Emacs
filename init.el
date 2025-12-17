@@ -3442,21 +3442,122 @@ Call func with supplied ARGS."
       c-basic-offset  4)
 (setq auto-mode-alist (cons '("\.ino$" . c-mode) auto-mode-alist))
 
+(defvar quiescent-c++-keywords '("static"
+                                 "const"
+                                 "void"
+                                 "DWORD"
+                                 "int"
+                                 "long"
+                                 "float"
+                                 "double"
+                                 "int64"
+                                 "int32"
+                                 "int16"
+                                 "int8"
+                                 "uint64"
+                                 "uint32"
+                                 "uint16"
+                                 "uint8")
+  "A list of keywords in C++.")
+
+(defun quiescent-complete-c++-symbol-from-backward-up-list ()
+  "Find any symbols in enclosing scopes that completes the symbol at point."
+  (let ((search-string (thing-at-point 'symbol))
+        (options))
+    (save-excursion
+      (while (condition-case _error (progn (backward-up-list) t) (t nil))
+        (let* ((start (point))
+               (end (ignore-errors
+                      (save-excursion
+                        (forward-list)
+                        (point)))))
+          (when (and end (/= start end))
+            (let* ((symbols-from-contents (quiescent-all-regexp-matches-in-region "[a-zA-Z0-9_]+"
+                                                                                  start
+                                                                                  end))
+                   (names-from-contents (cl-remove search-string
+                                                   (cl-set-difference symbols-from-contents
+                                                                      quiescent-c++-keywords
+                                                                      :test #'string-equal)
+                                                   :test #'string-equal))
+                   (matches (cl-remove-if-not (apply-partially #'cl-search search-string)
+                                              names-from-contents)))
+              (when matches
+                (setq options (cl-remove-duplicates (nconc options matches)
+                                                    :test #'string-equal))))))))
+    (let ((argument-options (caddr (quiescent-complete-c++-function-argument))))
+      (when (or options argument-options)
+        (let ((bounds (bounds-of-thing-at-point 'symbol)))
+          (list (car bounds) (cdr bounds) (append options argument-options)))))))
+
+(defun quiescent-complete-c++-symbol-from-top-level-variable ()
+  "Complete symbol at point by looking at functions and variables at top-level."
+  (let* ((search-string (thing-at-point 'symbol))
+         (re-function "^[a-zA-Z]+\\s-+.* \\([a-zA-Z0-0_^]+\\)\\s-?(")
+         (options))
+    (cl-labels ((accumulate (candidate)
+                  (when (not (string-equal candidate search-string))
+                    (push candidate options))))
+      (save-match-data
+        (save-excursion
+          (goto-char (point-min))
+          (while (not (eobp))
+            (cond
+             ((looking-at re-function) (accumulate (match-string-no-properties 1))))
+            (forward-line)))))
+    (when options
+      (let ((bounds (bounds-of-thing-at-point 'symbol)))
+        (list (car bounds)
+              (cdr bounds)
+              (cl-remove search-string
+                         options
+                         :test #'string-equal))))))
+
+(defun quiescent-complete-c++-function-argument ()
+  "Create a list of matching arguments to the function we're in with heuristics."
+  (save-excursion
+    (let* ((search-string (thing-at-point 'symbol))
+           (bounds (bounds-of-thing-at-point 'symbol))
+           (options (progn
+                      (beginning-of-defun)
+                      (mapcan (lambda (group)
+                                (->> (split-string (thread-last (1- (length group))
+                                                                (substring group 1))
+                                                   ","
+                                                   t
+                                                   "\\s-")
+                                     (cl-remove-if-not (lambda (candidate)
+                                                         (cl-search search-string candidate)))))
+                              (quiescent-all-regexp-matches-in-region "([a-zA-Z0-9_, ]+)"
+                                                                      (point)
+                                                                      (save-excursion (search-forward "{" nil t)
+                                                                                      (point)))))))
+      (when options
+        (list (car bounds)
+              (cdr bounds)
+              (cl-remove search-string
+                         options
+                         :test #'string-equal))))))
+
 (defun quiescent-setup-c++-completion ()
-  "Setup completion for c++ mode."
-  (when (null quiescent-starting-up)
-    (setq-local company-backends '(company-capf company-dabbrev))
-    (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
+  "Setup completion for C++ buffers."
+  (setq-local completion-at-point-functions (list #'quiescent-complete-c++-symbol-from-backward-up-list
+                                                  #'quiescent-complete-c++-symbol-from-top-level-variable
+                                                  t)))
 
 (add-hook 'c++-mode-hook #'quiescent-setup-c++-completion)
 
 (defun quiescent-setup-c-completion ()
   "Setup completion for `c-mode'."
-  (when (null quiescent-starting-up)
-    (setq-local company-backends '(company-capf company-dabbrev))
-    (setq-local completion-at-point-functions '(tags-completion-at-point-function))))
+  (setq-local completion-at-point-functions (list #'quiescent-complete-c++-symbol-from-backward-up-list
+                                                  #'quiescent-complete-c++-symbol-from-top-level-variable
+                                                  t)))
 
 (add-hook 'c-mode-hook #'quiescent-setup-c-completion)
+
+(keymap-set c-mode-base-map "C-<tab>" #'c-indent-line-or-region)
+(keymap-set c-mode-base-map "<backtab>" #'completion-at-point)
+(keymap-set c-mode-base-map "TAB" #'completion-at-point)
 
 ;; 
 
