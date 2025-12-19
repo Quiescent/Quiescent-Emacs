@@ -40,6 +40,11 @@
   (defun vc-before-save () nil)
   (defun vc-refresh-state () nil))
 
+;; Don't send the left Windows key to windows on windows
+(setq w32-pass-lwindow-to-system nil)
+(setq w32-lwindow-modifier 'super)
+(w32-register-hot-key [s-])
+
 ;; Load system specific configuration
 (defvar quiescent-starting-up nil
   "Whether We're busy starting Emacs.")
@@ -1069,6 +1074,8 @@ to make the advice work."
           (global-set-key (kbd "s-u") #'window-jump-up)
           (global-set-key (kbd "s-d") #'window-jump-down)
           (global-set-key (kbd "s-l") #'window-jump-left)
+          (when (eq system-type 'windows-nt)
+            (global-set-key (kbd "s-/") #'window-jump-left))
           (global-set-key (kbd "s-r") #'window-jump-right)))
 
 ;; 
