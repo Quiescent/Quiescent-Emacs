@@ -646,6 +646,18 @@ This is the default system.")
               #'endless/colorize-compilation)))
 
 ;; 
+
+;;; ** Highlighting TODO etc
+
+(use-package hl-todo
+  :straight t
+  :config (setq hl-todo-keyword-faces
+                '(("TODO"   . "#FF0000")
+                  ("FIXME"  . "#FF0000")
+                  ("NOTE"  . "#0A5C36")
+                  ("IMPORTANT" . "#0A5C36")))
+  :init (add-hook 'c++-mode-hook #'hl-todo-mode))
+
 ;;; * Editing Anything
 
 ;;; ** Manipulating Windows and Frames
