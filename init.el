@@ -1290,7 +1290,7 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (interactive "P")
     (helm-grep-git-1 default-directory (not arg)))
   (global-set-key (kbd "C-c p s g") #'quiescent-helm-git-grep)
-  (setq helm-display-function #'quiescent-helm-display-buffer-in-own-frame))
+  (setq helm-display-function #'helm-default-display-buffer))
 
 ;; Copied from helm sources and modified according to this Reddit
 ;; article:
