@@ -3266,7 +3266,7 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . right)
+               (side . left)
                (window-width . 0.5)))
 
 ;; Rustic Compilation
@@ -3275,16 +3275,16 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . right)
+               (side . left)
                (window-width . 100)))
 
-;; Rustic Compilation
+;; Rustic Test
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-cargo-test-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . right)
+               (side . left)
                (window-width . 100)))
 
 ;; Shell Mode
@@ -3293,10 +3293,10 @@ arguments actually mean."
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
-               (side . right)
+               (side . left)
                (window-width . 100)))
 
-;; Magit
+;; Magit (process, diffs, etc.)
 (add-to-list 'display-buffer-alist
              '((major-mode . magit-process-mode)
                (display-buffer-reuse-window
