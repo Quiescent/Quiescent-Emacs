@@ -761,7 +761,7 @@ i.e. the reverse of fill paragraph."
 
 ;; 
 
-;;; ** Using the Other Window 
+;;; ** Using the Other Window
 
 (defmacro quiescent-in-other-buffer (&rest body)
   "Execute BODY in the other window and return to the startindg window."
