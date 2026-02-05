@@ -3395,6 +3395,20 @@ Call func with supplied ARGS."
 
 ;; 
 
+;;; ** Copy the Current Buffer's File Name Into the Kill Ring
+
+(defun quiescent-copy-buffer-filename-into-killring ()
+  "Copy the current buffer's file name into the kill ring."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (if file-name
+        (with-temp-buffer
+          (insert file-name)
+          (kill-ring-save (point-min) (point-max)))
+      (error "Buffer is not visiting a file"))))
+
+(global-set-key (kbd "s-B") #'quiescent-copy-buffer-filename-into-killring)
+
 ;;; * Languages
 
 ;;; ** Json Mode
