@@ -17,6 +17,9 @@
 ;;    whitespace that's common to the start of every line(!).  Combine
 ;;    this with `quiescent-yank-with-current-indentation' for
 ;;    super-charged behaviour!
+;;
+;; To grep multi-line, use ~pcregrep -M~,
+;; e.g. ~pcregrep -M -r 'React\.FC.*(\n).*(\n).*function' *~
 
 ;;; Code:
 
