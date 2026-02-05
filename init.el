@@ -4815,9 +4815,6 @@ When called with the universal argument, simply `yank'."
           (yank)
           (indent-region (mark) (point)))))))
 
-(kill-ring-deindent-mode)
-(define-key global-map [remap yank] #'quiescent-yank-with-current-indentation)
-
 ;;; ** Assembly
 
 (defun quiescent-index-assembly-labels ()
