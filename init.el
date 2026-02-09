@@ -888,6 +888,15 @@ Maintains the point in the current window."
 
 ;;; ** Hippie Expand
 
+(setq hippie-expand-try-functions-list '(try-complete-file-name-partially try-complete-file-name
+                                                                          try-expand-all-abbrevs
+                                                                          try-complete-lisp-symbol-partially
+                                                                          try-complete-lisp-symbol
+                                                                          try-expand-dabbrev
+                                                                          try-expand-dabbrev-all-buffers
+                                                                          try-expand-dabbrev-from-kill
+                                                                          try-expand-list try-expand-line))
+
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 ;; 
