@@ -659,7 +659,9 @@ This is the default system.")
                   ("FIXME"  . "#FF0000")
                   ("NOTE"  . "#0A5C36")
                   ("IMPORTANT" . "#0A5C36")))
-  :init (add-hook 'c++-mode-hook #'hl-todo-mode))
+  :init (progn
+          (add-hook 'c++-mode-hook #'hl-todo-mode)
+          (add-hook 'c-mode-hook #'hl-todo-mode)))
 
 ;;; * Editing Anything
 
@@ -1294,81 +1296,6 @@ current buffer through time (i.e. undo/redo while you scroll.)"
     (helm-grep-git-1 default-directory (not arg)))
   (global-set-key (kbd "C-c p s g") #'quiescent-helm-git-grep)
   (setq helm-display-function #'helm-default-display-buffer))
-
-;; Copied from helm sources and modified according to this Reddit
-;; article:
-;; https://www.reddit.com/r/emacs/comments/jj269n/display_helm_frames_in_the_center_of_emacs/
-
-(with-eval-after-load "helm"
-  (require 'helm)
-  (require 'helm-core)
-
-  (defun quiescent-helm-display-buffer-in-own-frame (buffer &optional resume)
-    "Display Helm buffer BUFFER in a separate frame.
-
-Function suitable for `helm-display-function',
-`helm-completion-in-region-display-function' and/or
-`helm-show-completion-default-display-function'.
-
-See `helm-display-buffer-height' and `helm-display-buffer-width'
-to configure frame size.
-
-Note that this feature is available only with emacs-25+.
-Note also it is not working properly in helm nested session with emacs
-version < emacs-28."
-    (cl-assert (and (fboundp 'window-absolute-pixel-edges)
-                    (fboundp 'frame-geometry))
-               nil "Helm buffer in own frame is only available starting at emacs-25+")
-    (if (not (display-graphic-p))
-        ;; Fallback to default when frames are not usable.
-        (helm-default-display-buffer buffer)
-      (setq helm--buffer-in-new-frame-p t)
-      (let* ((parent (selected-frame))
-             (frame-pos (frame-position parent))
-             (parent-left (car frame-pos))
-             (parent-top (cdr frame-pos))
-             (frame-info (frame-geometry))
-             (screen-width (display-pixel-width))
-             (helm-frame-width (* (frame-char-width) (+ 2 helm-display-buffer-width)))
-             tab-bar-mode
-             (new-frame-alist
-              (if resume
-                  (buffer-local-value 'helm--last-frame-parameters
-                                      (get-buffer buffer))
-                `((width . ,helm-display-buffer-width)
-                  (height . ,helm-display-buffer-height)
-                  (tool-bar-lines . 0)
-                  ;; This positioning is way off for some reason, but
-                  ;; it's good enough for now...
-                  ;;
-                  ;; It's probably a MacOS resolution scaling thing :/
-                  (left . ,(floor (- (/ screen-width 2.0) helm-frame-width)))
-                  (top . ,(- parent-top 200))
-                  (title . "Helm")
-                  (undecorated . ,helm-use-undecorated-frame-option)
-                  (background-color . ,(or helm-frame-background-color
-                                           (face-attribute 'default :background)))
-                  (foreground-color . ,(or helm-frame-foreground-color
-                                           (face-attribute 'default :foreground)))
-                  (alpha . ,(or helm-frame-alpha 100))
-                  (font . ,(assoc-default 'font (frame-parameters)))
-                  (vertical-scroll-bars . nil)
-                  (menu-bar-lines . 0)
-                  (fullscreen . nil)
-                  (visibility . ,(null helm-display-buffer-reuse-frame))
-                  (minibuffer . t))))
-             display-buffer-alist)
-        (helm-display-buffer-popup-frame buffer new-frame-alist)
-        ;; When frame size have been modified manually by user restore
-        ;; it to default value unless resuming or not using
-        ;; `helm-display-buffer-reuse-frame'.
-        ;; This have to be done AFTER raising the frame otherwise
-        ;; minibuffer visibility is lost until next session.
-        (unless (or resume (not helm-display-buffer-reuse-frame))
-          (set-frame-size helm-popup-frame
-                          helm-display-buffer-width
-                          helm-display-buffer-height)))
-      (helm-log-run-hook "helm-display-buffer-in-own-frame" 'helm-window-configuration-hook))))
 
 ;; 
 
@@ -3281,9 +3208,18 @@ arguments actually mean."
                (side . left)
                (window-width . 100)))
 
-;; Rustic Test
+;; Rustic Test Compilation
 (add-to-list 'display-buffer-alist
              '((major-mode . rustic-cargo-test-mode)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . left)
+               (window-width . 100)))
+
+;; Compilation
+(add-to-list 'display-buffer-alist
+             '((major-mode . compilation-mode)
                (display-buffer-reuse-window
                 display-buffer-in-side-window)
                (reusable-frames . t)
