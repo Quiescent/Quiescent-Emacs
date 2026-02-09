@@ -41,12 +41,11 @@
 (when (eq system-type 'windows-nt)
   (defun vc-after-save () nil)
   (defun vc-before-save () nil)
-  (defun vc-refresh-state () nil))
-
-;; Don't send the left Windows key to windows on windows
-(setq w32-pass-lwindow-to-system nil)
-(setq w32-lwindow-modifier 'super)
-(w32-register-hot-key [s-])
+  (defun vc-refresh-state () nil)
+  ;; Don't send the left Windows key to windows on windows
+  (setq w32-pass-lwindow-to-system nil)
+  (setq w32-lwindow-modifier 'super)
+  (w32-register-hot-key [s-]))
 
 ;; Load system specific configuration
 (defvar quiescent-starting-up nil
