@@ -4802,6 +4802,11 @@ When called with the universal argument, simply `yank'."
 
 (add-hook 'asm-mode-hook #'quiescent-set-assembly-imenu-index-function)
 
+;;; * C/C++
+
+(define-key c++-mode-map (kbd "C-c o") #'ff-find-related-file)
+(define-key c-mode-map (kbd "C-c o") #'ff-find-related-file)
+
 ;;; * Applications
 
 ;;; ** Shell
