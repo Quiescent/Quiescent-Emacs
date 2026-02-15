@@ -4807,6 +4807,10 @@ When called with the universal argument, simply `yank'."
 (define-key c++-mode-map (kbd "C-c o") #'ff-find-related-file)
 (define-key c-mode-map (kbd "C-c o") #'ff-find-related-file)
 
+(defvar-keymap ff-find-related-file-map
+  :repeat (:enter (ff-find-related-file))
+  "o" #'ff-find-related-file)
+
 ;;; * Applications
 
 ;;; ** Shell
