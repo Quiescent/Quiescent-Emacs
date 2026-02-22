@@ -3535,6 +3535,9 @@ Call func with supplied ARGS."
 
 (add-hook 'c-mode-hook #'quiescent-setup-c-completion)
 
+;; Tree sitter-specific config:
+(setq c-ts-mode-indent-offset 4)
+
 (keymap-set c-mode-base-map "C-<tab>" #'c-indent-line-or-region)
 (keymap-set c-mode-base-map "<backtab>" #'completion-at-point)
 (keymap-set c-mode-base-map "TAB" #'completion-at-point)
@@ -3992,7 +3995,8 @@ Replaces the buffer string in that region."
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
-               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))))
+               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
+               (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
@@ -4021,7 +4025,9 @@ Replaces the buffer string in that region."
              ;; (bash-mode . bash-ts-mode)
              ;; (css-mode . css-ts-mode)
              ;; (json-mode . json-ts-mode)
-             (js-json-mode . json-ts-mode)))
+             (js-json-mode . json-ts-mode)
+             (c++-mode . c++-ts-mode)
+             (c-mode . c-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
   :config
   (mp-setup-install-grammars)
