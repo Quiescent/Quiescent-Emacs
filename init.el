@@ -660,7 +660,11 @@ This is the default system.")
                   ("IMPORTANT" . "#0A5C36")))
   :init (progn
           (add-hook 'c++-mode-hook #'hl-todo-mode)
-          (add-hook 'c-mode-hook #'hl-todo-mode)))
+          (add-hook 'c-mode-hook #'hl-todo-mode)
+          (add-hook 'c-or-c++-mode-hook #'hl-todo-mode)
+          (add-hook 'c++-ts-mode-hook #'hl-todo-mode)
+          (add-hook 'c-ts-mode-hook #'hl-todo-mode)
+          (add-hook 'c-or-c++-ts-mode-hook #'hl-todo-mode)))
 
 ;;; * Editing Anything
 
@@ -3996,7 +4000,8 @@ Replaces the buffer string in that region."
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
                (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
-               (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))))
+               (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))
+               (c . ("https://github.com/tree-sitter/tree-sitter-c" "v0.23.6"))))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
@@ -4027,7 +4032,8 @@ Replaces the buffer string in that region."
              ;; (json-mode . json-ts-mode)
              (js-json-mode . json-ts-mode)
              (c++-mode . c++-ts-mode)
-             (c-mode . c-ts-mode)))
+             (c-mode . c-ts-mode)
+             (c-or-c++-mode . c-or-c++-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
   :config
   (mp-setup-install-grammars)
