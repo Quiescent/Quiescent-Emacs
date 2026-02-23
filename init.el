@@ -2177,7 +2177,12 @@ DELIMITER indicates what the delimeter character is."
         scala-mode-hook
         java-mode-hook
         conf-unix-mode-hook
+        c-mode-hook
         c++-mode-hook
+        c-or-c++-mode-hook
+        c-ts-mode-hook
+        c++-ts-mode-hook
+        c-or-c++-ts-mode-hook
         yaml-mode-hook
         ruby-mode-hook
         intero-repl-mode-hook
@@ -2191,7 +2196,6 @@ DELIMITER indicates what the delimeter character is."
         ess-r-mode-hook
         inferior-ess-r-mode-hook
         terraform-mode-hook
-        c-mode-hook
         csharp-mode-hook
         svelte-mode-hook
         ts-mode-hook
