@@ -664,7 +664,7 @@ This is the default system.")
           (add-hook 'c-or-c++-mode-hook #'hl-todo-mode)
           (add-hook 'c++-ts-mode-hook #'hl-todo-mode)
           (add-hook 'c-ts-mode-hook #'hl-todo-mode)
-          (add-hook 'c-or-c++-ts-mode-hook #'hl-todo-mode)))
+          (add-hook 'c-or-c++-ts-mode-hook #'hl-todo-mode)
           (add-hook 'js-ts-mode-hook #'hl-todo-mode)))
 
 ;;; * Editing Anything
@@ -4744,11 +4744,12 @@ leading whitespace."
   "Outside of the xref buffer, execute `xref-find-definition'."
   (interactive)
   (when (not (eq major-mode 'xref--xref-buffer-mode))
-    (xref-find-definitions (print (thing-at-point 'symbol)))))
+    (xref-find-definitions (thing-at-point 'symbol))))
 
 (defvar quiescent-xref-left-mouse-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "<mouse-1>") #'quiescent-left-mouse-goto-xref-definition)
+    (define-key map (kbd "<mouse-3>") #'xref-go-back)
     map)
   "Keymap used by `quiescent-xref-left-mouse-mode'.")
 
