@@ -4744,7 +4744,9 @@ leading whitespace."
   "Outside of the xref buffer, execute `xref-find-definition'."
   (interactive)
   (when (not (eq major-mode 'xref--xref-buffer-mode))
-    (xref-find-definitions (thing-at-point 'symbol))))
+    (if (memq major-mode '(js-ts-mode typescript-ts-mode))
+        (tide-jump-to-definition)
+        (xref-find-definitions (thing-at-point 'symbol)))))
 
 (defvar quiescent-xref-left-mouse-mode-map
   (let ((map (make-sparse-keymap)))
