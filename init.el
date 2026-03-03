@@ -4740,6 +4740,22 @@ leading whitespace."
 
 (add-hook 'xref-after-update-hook #'outline-minor-mode)
 
+(defun quiescent-left-mouse-goto-xref-definition ()
+  "Outside of the xref buffer, execute `xref-find-definition'."
+  (interactive)
+  (when (not (eq major-mode 'xref--xref-buffer-mode))
+    (xref-find-definitions (print (thing-at-point 'symbol)))))
+
+(defvar quiescent-xref-left-mouse-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<mouse-1>") #'quiescent-left-mouse-goto-xref-definition)
+    map)
+  "Keymap used by `quiescent-xref-left-mouse-mode'.")
+
+(define-minor-mode quiescent-xref-left-mouse-mode
+  "Use the left mouse button to navigate to cross refs."
+  :global t)
+
 ;; 
 
 ;;; ** Outline Minor Mode
