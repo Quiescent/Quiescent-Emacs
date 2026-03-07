@@ -665,7 +665,8 @@ This is the default system.")
           (add-hook 'c++-ts-mode-hook #'hl-todo-mode)
           (add-hook 'c-ts-mode-hook #'hl-todo-mode)
           (add-hook 'c-or-c++-ts-mode-hook #'hl-todo-mode)
-          (add-hook 'js-ts-mode-hook #'hl-todo-mode)))
+          (add-hook 'js-ts-mode-hook #'hl-todo-mode)
+          (add-hook 'lisp-mode-hook #'hl-todo-mode)))
 
 ;;; * Editing Anything
 
