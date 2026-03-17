@@ -3536,6 +3536,9 @@ Call func with supplied ARGS."
                                                   t)))
 
 (add-hook 'c++-mode-hook #'quiescent-setup-c++-completion)
+(add-hook 'c-ts-mode-hook #'quiescent-setup-c++-completion)
+(add-hook 'c++-ts-mode-hook #'quiescent-setup-c++-completion)
+(add-hook 'c-or-c++-ts-mode-hook #'quiescent-setup-c++-completion)
 
 (defun quiescent-setup-c-completion ()
   "Setup completion for `c-mode'."
@@ -4843,8 +4846,13 @@ When called with the universal argument, simply `yank'."
 
 (define-key c++-mode-map (kbd "C-c o") #'ff-find-related-file)
 (define-key c-mode-map (kbd "C-c o") #'ff-find-related-file)
-(define-key c++-ts-mode-map (kbd "C-c o") #'ff-find-related-file)
-(define-key c-ts-mode-map (kbd "C-c o") #'ff-find-related-file)
+(defun quiescent-setup-ts-c/c++-mode-map ()
+  "Setup key bindings for ts versions of c and c++ mode."
+  (define-key c++-ts-mode-map (kbd "C-c o") #'ff-find-related-file)
+  (define-key c-ts-mode-map (kbd "C-c o") #'ff-find-related-file))
+
+(add-hook 'c-ts-mode-hook #'quiescent-setup-ts-c/c++-mode-map)
+(add-hook 'c++-ts-mode-hook #'quiescent-setup-ts-c/c++-mode-map)
 
 (defvar-keymap ff-find-related-file-map
   :repeat (:enter (ff-find-related-file))
