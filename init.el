@@ -6061,3 +6061,8 @@ estimate what your state of mind (ITO flow) might be."
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'scroll-left 'disabled nil)
 (put 'set-goal-column 'disabled nil)
+
+(save-window-excursion
+  (switch-to-buffer "*scratch*")
+  (goto-char (point-max))
+  (insert "When you arise in the morning, think of what a privilege it is to be alive, to think to enjoy, to love."))
