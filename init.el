@@ -1910,6 +1910,10 @@ If it's dotted list, produce the values in the dotted list."
 (advice-add #'set-mark-command :after #'quiescent--toggle-transient-command-mode)
 (advice-add #'deactivate-mark :after #'quiescent--toggle-transient-command-mode)
 (advice-add #'exchange-point-and-mark :after #'quiescent--activate-transient-command-mode)
+(with-eval-after-load "expreg"
+  (advice-add #'expreg-expand :after #'quiescent--activate-transient-command-mode))
+(with-eval-after-load "surround"
+  (advice-add #'surround-mark :after #'quiescent--activate-transient-command-mode))
 
 ;; 
 
