@@ -2216,6 +2216,22 @@ DELIMITER indicates what the delimeter character is."
 
 ;; 
 
+;;; ** Expreg
+
+(use-package expreg
+  :straight t
+  :bind (("M-h" . expreg-expand)))
+
+;; 
+
+;;; ** Surround
+
+(use-package surround
+  :straight t
+  :bind-keymap ("C-," . surround-keymap))
+
+;; 
+
 ;;; ** Save Place
 
 (use-package saveplace
@@ -4902,8 +4918,6 @@ Then switch directory to where we called it from"
           (string-match quiescent-eshell-project-buffer-regexp (buffer-name)))
       (delete-window)
     (quiescent-eshell-switch-to-and-change-dir)))
-
-(global-set-key (kbd "C-, C-s") #'quiescent-eshell)
 
 ;; This is originally borrowed from Ben's journal, but has since been
 ;; heavily modified
