@@ -2224,7 +2224,12 @@ DELIMITER indicates what the delimeter character is."
 
 (use-package expreg
   :straight t
-  :bind (("M-h" . expreg-expand)))
+  :bind (("M-h" . expreg-expand))
+  :config (setq-default expreg-functions '(;expreg--subword -- I don't like this setting
+                                           expreg--word
+                                           expreg--list expreg--string
+                                           expreg--treesit expreg--comment
+                                           expreg--paragraph-defun)))
 
 ;; 
 
