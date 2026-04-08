@@ -3811,7 +3811,7 @@ Pass ARG and INTERACTIVE to `forward-sexp'."
   (progn
     (async-start-process (format "prettier:%s" (buffer-file-name))
                          "prettier"
-                         (lambda (process) (auto-revert-buffers))
+                         (lambda (process) nil)
                          (format "--plugin-search-dir=%s" (file-truename (project-root (project-current))))
                          "--write"
                          (buffer-file-name))))
