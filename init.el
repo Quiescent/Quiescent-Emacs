@@ -1921,6 +1921,8 @@ If it's dotted list, produce the values in the dotted list."
 
 (require 'compile)
 
+(add-hook 'compilation-mode-hook #'hl-line-mode)
+
 ;; TODO more carefully consider which modes need flycheck
 (use-package flycheck
   :straight t
