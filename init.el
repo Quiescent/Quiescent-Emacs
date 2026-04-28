@@ -3376,7 +3376,7 @@ Allows Emacs to display other buffers in that window."
 
 ;; 
 
-;;; ** Duplicating Stuff
+;;; ** Repeating Stuff (with some misc things)
 
 (global-set-key (kbd "C-c j") #'duplicate-dwim)
 
@@ -3387,6 +3387,10 @@ Allows Emacs to display other buffers in that window."
 (defvar-keymap transpose-lines-map
     :repeat (:enter (transpose-lines))
     "C-t" #'transpose-lines)
+
+(defvar-keymap other-frame-map
+  :repeat (:enter (other-frame))
+  "o" #'other-frame)
 
 (defun quiescent-prog-transpose-advice (func &rest args)
   "Indent the region of text that FUNC modifies.
