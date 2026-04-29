@@ -692,15 +692,7 @@ nothing to the overlay so that it uses the default (already set)
              (save-excursion
                (goto-char (1- (overlay-start ov)))
                (looking-at-p "{")))
-    (let* ((outer-indent-depth (save-excursion
-                                 (- (1- (overlay-start ov))
-                                    (progn (goto-char (overlay-start ov))
-                                           (move-beginning-of-line nil)
-                                           (point)))))
-           (outer-indent (quiescent-n-whitespaces outer-indent-depth))
-           (inner-indent-depth (+ outer-indent-depth js-indent-level))
-           (inner-indent (quiescent-n-whitespaces inner-indent-depth)))
-      (overlay-put ov 'display (format "\n%s...\n%s" inner-indent outer-indent)))))
+    (overlay-put ov 'display "...\n")))
 
 (require 'hideshow)
 
