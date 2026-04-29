@@ -668,6 +668,44 @@ This is the default system.")
           (add-hook 'js-ts-mode-hook #'hl-todo-mode)
           (add-hook 'lisp-mode-hook #'hl-todo-mode)))
 
+;;; ** Hide Show Mode
+
+(add-hook 'js-ts-mode-hook #'hs-minor-mode)
+
+(require 'js)
+
+(defun quiescent-n-whitespaces (n)
+  "Produce N whitespace characters in a string."
+  (cl-loop
+   for i from 0 below n
+   concat " "))
+
+(defun quiescent-setup-hs-overlay (ov)
+  "Setup OV for `hs-mode'.
+
+In C-like languages, display a new line at the start and end of the
+overlay at the curly brace pair, if there was one.  Otherwise, do
+nothing to the overlay so that it uses the default (already set)
+`display'."
+  (when (and (eq 'code (overlay-get ov 'hs))
+             (eq major-mode 'js-ts-mode)
+             (save-excursion
+               (goto-char (1- (overlay-start ov)))
+               (looking-at-p "{")))
+    (let* ((outer-indent-depth (save-excursion
+                                 (- (1- (overlay-start ov))
+                                    (progn (goto-char (overlay-start ov))
+                                           (move-beginning-of-line nil)
+                                           (point)))))
+           (outer-indent (quiescent-n-whitespaces outer-indent-depth))
+           (inner-indent-depth (+ outer-indent-depth js-indent-level))
+           (inner-indent (quiescent-n-whitespaces inner-indent-depth)))
+      (overlay-put ov 'display (format "\n%s...\n%s" inner-indent outer-indent)))))
+
+(require 'hideshow)
+
+(setq hs-set-up-overlay #'quiescent-setup-hs-overlay)
+
 ;;; * Editing Anything
 
 ;;; ** Manipulating Windows and Frames
