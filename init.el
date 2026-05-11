@@ -2421,6 +2421,13 @@ which ends up being reflected.")
 
 ;; 
 
+;;; ** ZTree
+
+(use-package ztree
+  :straight t)
+
+;; 
+
 ;;; ** Ediff
 
 (require 'ediff)
