@@ -6025,12 +6025,14 @@ of losing work when I'm on my desktop."
 
 (defun quiescent-ask-to-start-pomm (&rest _ignore)
   "If the pomm timer isn't running, ask whether we should start it."
-  (let ((status (alist-get 'status pomm-third-time--state)))
-    ;; Condition taken from pomm.el verbatim
-    (when (and (or (eq 'stopped status)
-                   (not (alist-get 'current pomm-third-time--state)))
-               (y-or-n-p "Start pomm timer?"))
-      (pomm-third-time-start))))
+  (progn
+    (require 'pomm)
+    (let ((status (alist-get 'status pomm-third-time--state)))
+      ;; Condition taken from pomm.el verbatim
+      (when (and (or (eq 'stopped status)
+                     (not (alist-get 'current pomm-third-time--state)))
+                 (y-or-n-p "Start pomm timer?"))
+        (pomm-third-time-start)))))
 
 (advice-add #'org-agenda-clock-in :after #'quiescent-ask-to-start-pomm)
 
