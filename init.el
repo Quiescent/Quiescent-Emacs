@@ -3353,6 +3353,13 @@ arguments actually mean."
                (slot . 0)
                (window-width . 68)))
 
+;; Helm Mode
+(add-to-list 'display-buffer-alist
+             '("^\\*helm"
+               (display-buffer-in-side-window)
+               (side . bottom)
+               (window-height . 200)))
+
 (defun quiescent-dedicate-current-window ()
   "Set the current window as dedicated to its buffer.
 
