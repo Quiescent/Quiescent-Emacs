@@ -3279,7 +3279,7 @@ arguments actually mean."
                 display-buffer-in-side-window)
                (reusable-frames . t)
                (side . left)
-               (window-width . 0.5)))
+               (window-width . 100)))
 
 ;; Rustic Compilation
 (add-to-list 'display-buffer-alist
