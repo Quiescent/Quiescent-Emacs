@@ -3317,6 +3317,13 @@ arguments actually mean."
                (side . left)
                (window-width . 100)))
 
+;; Comint still uses this when you get a new buffer.
+(setq display-comint-buffer-action
+      '(display-buffer-in-side-window (reusable-frames . t)
+                                      (side . left)
+                                      (window-width . 100)
+                                      (category . comint)))
+
 ;; Magit (process, diffs, etc.)
 (add-to-list 'display-buffer-alist
              '((major-mode . magit-process-mode)
