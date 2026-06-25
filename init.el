@@ -924,14 +924,24 @@ Maintains the point in the current window."
 
 ;;; ** Hippie Expand
 
-(setq hippie-expand-try-functions-list '(try-complete-file-name-partially try-complete-file-name
-                                                                          try-expand-all-abbrevs
-                                                                          try-complete-lisp-symbol-partially
-                                                                          try-complete-lisp-symbol
-                                                                          try-expand-dabbrev
-                                                                          try-expand-dabbrev-all-buffers
-                                                                          try-expand-dabbrev-from-kill
-                                                                          try-expand-list try-expand-line))
+(make-variable-buffer-local 'hippie-expand-try-functions-list)
+(setq-default hippie-expand-try-functions-list '(try-complete-file-name-partially try-complete-file-name
+                                                                                  try-complete-lisp-symbol-partially
+                                                                                  try-complete-lisp-symbol
+                                                                                  try-expand-dabbrev
+                                                                                  try-expand-dabbrev-all-buffers
+                                                                                  try-expand-dabbrev-from-kill
+                                                                                  try-expand-list try-expand-line))
+
+(defun quiescent-setup-hippie-expand-functions-for-js ()
+  "Setup the `hippie-expand' functions for `js-ts-mode'."
+  (setq hippie-expand-try-functions-list '(try-complete-file-name-partially try-complete-file-name
+                                                                            try-expand-dabbrev
+                                                                            try-expand-dabbrev-all-buffers
+                                                                            try-expand-dabbrev-from-kill
+                                                                            try-expand-list try-expand-line)))
+
+(add-hook 'js-ts-mode-hook #'quiescent-setup-hippie-expand-functions-for-js)
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
