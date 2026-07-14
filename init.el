@@ -6059,7 +6059,8 @@ of losing work when I'm on my desktop."
       ;; Condition taken from pomm.el verbatim
       (when (and (or (eq 'stopped status)
                      (not (alist-get 'current pomm-third-time--state)))
-                 (y-or-n-p "Start pomm timer?"))
+                 (y-or-n-p "(re)Start pomm timer?"))
+        (pomm-third-time-reset)
         (pomm-third-time-start)))))
 
 (advice-add #'org-agenda-clock-in :after #'quiescent-ask-to-start-pomm)
