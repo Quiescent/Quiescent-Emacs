@@ -1332,6 +1332,15 @@ current buffer through time (i.e. undo/redo while you scroll.)"
 
 ;; NOTE: Use C-j in a helm buffer for an aux command.
 
+(defun quiescent-yank-or-show-kill-ring ()
+  "Either cycle through yank entries or show the helm kill ring.
+
+If we just yanked, then cycle, otherwise show the helm kill ring."
+  (interactive)
+  (if (eq last-command 'yank)
+      (yank-pop)
+    (helm-show-kill-ring)))
+
 (use-package helm
   :straight t
   :custom
@@ -1339,9 +1348,10 @@ current buffer through time (i.e. undo/redo while you scroll.)"
   (helm-mode-handle-completion-in-region nil)
   :config
   (helm-mode 1)
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (global-set-key (kbd "C-x b") #'helm-mini)
+  (global-set-key (kbd "M-y") #'quiescent-yank-or-show-kill-ring)
   (defun quiescent-helm-git-grep (arg)
     "Run helm git grep from the root of the project.
 
