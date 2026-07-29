@@ -6165,3 +6165,4 @@ estimate what your state of mind (ITO flow) might be."
   (switch-to-buffer "*scratch*")
   (goto-char (point-max))
   (insert "When you arise in the morning, think of what a privilege it is to be alive, to think to enjoy, to love."))
+(put 'list-timers 'disabled nil)
