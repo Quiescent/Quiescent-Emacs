@@ -4967,18 +4967,6 @@ When called with the universal argument, simply `yank'."
 (defvar quiescent-supress-cd nil
   "Whether to not cd to the directory where shell was called.")
 
-(defun quiescent-shell-here (call-shell &rest args)
-  "Start shell with CALL-SHELL and ARGS.
-Then switch directory to where we called it from"
-  (let ((target-directory default-directory))
-    (apply call-shell args)
-    (unless quiescent-supress-cd
-      (run-at-time 0.1 nil (lambda ()
-                             (insert (format "cd %s" target-directory))
-                             (comint-send-input))))))
-
-(advice-add #'shell :around #'quiescent-shell-here)
-
 (defun quiescent-unique-shell (name)
   "Create a new shell in this directory with a user specified NAME."
   (interactive "sShell name: ")
