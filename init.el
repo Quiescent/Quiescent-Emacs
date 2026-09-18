@@ -209,31 +209,12 @@ This is the default system.")
         (require 'exwm-randr)
         (exwm-randr-mode 1)
         (when quiescent-home-pc-linux
-          (setq exwm-randr-workspace-output-plist
-                '(0 "DisplayPort-1" 1 "DisplayPort-1"
-                    2 "HDMI-A-0" 3 "HDMI-A-0"
-                    4 "HDMI-A-0" 5 "HDMI-A-0"
-                    6 "HDMI-A-0" 7 "HDMI-A-0"))
           (add-hook 'exwm-randr-screen-change-hook
                     (lambda ()
                       (start-process-shell-command
-                       "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto")))
+                       "xrandr" nil "xrandr --output DisplayPort-1")))
           (start-process-shell-command
-           "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))
-        (when quiescent-work-machine
-          (setq exwm-randr-workspace-output-plist
-                '(0 "DP-2" 1 "DP-2"
-                    2 "DP-1" 3 "DP-1"
-                    4 "DP-1" 5 "DP-1"
-                    6 "DP-1" 7 "DP-1"))
-          (add-hook 'exwm-randr-screen-change-hook
-                    (lambda ()
-                      (start-process-shell-command
-                       "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto")))
-          (start-process-shell-command
-           "xrandr" nil "xrandr --output DP-1 --left-of DP-2 --auto"))
-        ;; (exwm-randr-enable)
-	    ))
+           "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))))
   (exwm-enable)
   (exwm-wm-mode))
 
@@ -274,10 +255,9 @@ This is the default system.")
   (nano-modeline-prog-mode t)
   (setq-default mode-line-format ""))
 
-(defun quiescent-light-mode ()
-  "Set the nano theme to light."
+(defun quiescent-activate-light-mode-faces ()
+  "Setup the faces for light mode."
   (interactive)
-  (load-theme 'nano-light t)
   (custom-set-faces
    '(tide-hl-identifier-face ((t (:background "gray90"))))
    '(highlight ((t (:background "gray98"))))
@@ -318,10 +298,15 @@ This is the default system.")
                       :inherit nil
                       :box nil))
 
-(defun quiescent-dark-mode ()
-  "Set the nano theme to dark."
+(defun quiescent-light-mode ()
+  "Set the nano theme to light."
   (interactive)
-  (load-theme 'nano-dark t)
+  (load-theme 'nano-light t)
+  (quiescent-activate-light-mode-faces))
+
+(defun quiescent-setup-dark-mode-faces ()
+  "Setup the faces for dark mode."
+  (interactive)
   (custom-set-faces
    '(tide-hl-identifier-face ((t (:background "#373e4c"))))
    '(highlight ((t (:background "#373e4c"))))
@@ -362,6 +347,12 @@ This is the default system.")
                       :overline nil
                       :inherit nil
                       :box nil))
+
+(defun quiescent-dark-mode ()
+  "Set the nano theme to dark."
+  (interactive)
+  (load-theme 'nano-dark t)
+  (quiescent-setup-dark-mode-faces))
 
 ;; Setup gdb locals header to use the header line instead of mode
 ;; line.
@@ -489,10 +480,16 @@ This is the default system.")
                                      'gdb-registers-filter-pattern-list)))))))))
 
 (load-theme 'nano t)
-(quiescent-dark-mode)
+(quiescent-light-mode)
+
+(defun quiescent-make-frame-light-mode (_frame)
+  "Enable light mode when a _frame is created."
+  (quiescent-activate-light-mode-faces))
+
+(add-hook 'after-make-frame-functions #'quiescent-make-frame-light-mode)
 
 (set-face-attribute 'default nil
-                    :family "Roboto Mono" :weight 'light :height 130)
+                    :family "Roboto Mono" :weight 'light :height 120)
 (set-face-attribute 'bold nil
                     :family "Roboto Mono" :weight 'regular)
 (set-face-attribute 'italic nil
