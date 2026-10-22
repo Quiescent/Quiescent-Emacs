@@ -3462,6 +3462,21 @@ Call func with supplied ARGS."
 
 (global-set-key (kbd "s-B") #'quiescent-copy-buffer-filename-into-killring)
 
+;;; ** Highlight Symbols in Region That Don't Appear Elsewhere in File
+
+(defun quiescent-highlight-unreferenced-symbols (start end)
+  "Highlight the symbols between START and END that don't appear elsewhere in the file."
+  (interactive "r")
+  (save-excursion
+    (goto-char start)
+    (while (< (point) end)
+      (let ((symbol (thing-at-point 'symbol)))
+        (when (and symbol (= 1 (save-excursion
+                                 (goto-char (point-min))
+                                 (count-matches symbol))))
+          (highlight-regexp symbol)))
+      (forward-symbol 1))))
+
 ;;; * Languages
 
 ;;; ** Json Mode
