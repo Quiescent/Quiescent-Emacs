@@ -215,8 +215,20 @@ This is the default system.")
                        "xrandr" nil "xrandr --output DisplayPort-1")))
           (start-process-shell-command
            "xrandr" nil "xrandr --output HDMI-A-0 --left-of DisplayPort-1 --auto"))))
-  (exwm-enable)
   (exwm-wm-mode))
+
+;; From: https://github.com/ch11ng/exwm/issues/198#issuecomment-249723369
+(defun vedvyas-exwm-rename-buffer ()
+  "Rename a buffer displaying an EXWM window."
+  (interactive)
+  (exwm-workspace-rename-buffer
+   (concat exwm-class-name ":"
+           (if (<= (length exwm-title) 50) exwm-title
+             (concat (substring exwm-title 0 49) "...")))))
+
+;; Add these hooks in a suitable place (e.g., as done in exwm-config-default)
+(add-hook 'exwm-update-class-hook 'vedvyas-exwm-rename-buffer)
+(add-hook 'exwm-update-title-hook 'vedvyas-exwm-rename-buffer)
 
 (defun exwm-config-ido ()
   "Override the config function for ido to do nothing since I don't use it."
