@@ -3340,18 +3340,19 @@ arguments actually mean."
 ;; Shell Mode
 (add-to-list 'display-buffer-alist
              '((major-mode . shell-mode)
-               (display-buffer-reuse-window
-                display-buffer-in-side-window)
+               (display-buffer-in-side-window)
                (reusable-frames . t)
                (side . left)
-               (window-width . 100)))
+               (window-width . 100)
+               (category . comint)))
 
-;; Comint still uses this when you get a new buffer.
-(setq display-comint-buffer-action
-      '(display-buffer-in-side-window (reusable-frames . t)
-                                      (side . left)
-                                      (window-width . 100)
-                                      (category . comint)))
+(add-to-list 'display-buffer-alist
+             '("^\\*[^h][^e][^l][^m].*-shell\\*$"
+               (display-buffer-in-side-window)
+               (reusable-frames . t)
+               (side . left)
+               (window-width . 100)
+               (category . comint)))
 
 ;; Magit (process, diffs, etc.)
 (add-to-list 'display-buffer-alist
