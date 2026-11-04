@@ -6191,6 +6191,42 @@ estimate what your state of mind (ITO flow) might be."
 
 (add-to-list 'auto-mode-alist '("\\.pltr\\'" . json-mode))
 
+
+
+;;; ** GPTEL
+
+(use-package gptel
+  :straight t
+  :custom (gptel-default-mode 'org-mode))
+
+(gptel-make-ollama "Otter AI"
+  :host "192.168.101.127:11434"
+  :stream t
+  :models '(qwen3.5:9b))
+
+(setq gptel-model 'qwen3.5:9b
+      gptel-backend (gptel-make-ollama "Otter AI"
+                      :host "192.168.101.127:11434"
+                      :stream t
+                      :models '(qwen3.5:9b)))
+
+;; Tools
+
+;; Based on the configuration on From the gptel manual.
+
+(gptel-make-tool
+ :name "read_buffer"
+ :function (lambda (buffer)
+             (unless (buffer-live-p (get-buffer buffer))
+               (error "Error: buffer %s is not live" buffer))
+             (with-current-buffer buffer
+               (buffer-substring-no-properties (point-min) (point-max))))
+ :description "Return the contents of an emacs buffer"
+ :args (list '(:name "buffer"
+               :type string
+               :description "The name of the buffer whose contens are to be retrieved"))
+ :category "emacs")
+
 ;;; * DONE!
 
 (setq quiescent-starting-up nil)
