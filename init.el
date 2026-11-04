@@ -5765,8 +5765,21 @@ first created to remember those values."
 
 ;; ** Magit
 
+(use-package transient
+  :straight (transient
+             :type git
+             :host github
+             :repo "magit/transient"))
+
+(use-package cond-let
+  :straight t)
+
 (use-package magit
-  :straight t
+  :straight (magit
+             :type git
+             :host github
+             :repo "magit/magit"
+             :commit "659f899") ;; "v4.7.1"
   :custom (magit-diff-refine-hunk t)
   :defer t
   :config
