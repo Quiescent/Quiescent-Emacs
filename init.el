@@ -4212,6 +4212,21 @@ Replaces the buffer string in that region."
     (advice-add #'combobulate-navigate-up :before #'quiescent-push-mark-to-ring)
     (advice-add #'combobulate-navigate-down :before #'quiescent-push-mark-to-ring)))
 
+(defun quiescent-forward-sexp-for-combobulate (f &rest args)
+  "Intercept errors calling F and redirect ARGS to default function.
+
+Intended for use with combobulate.
+
+Attempts combobulate's function, and if that fails, uses the default.
+Combobulate can fail when there's a multi-mode buffer and it's enabled
+for the parent grammer but there's no combobulate machinery for a child
+grammar."
+  (interactive)
+  (condition-case _error (apply f args)
+    (t (apply #'forward-sexp-default-function args))))
+
+(advice-add #'combobulate-forward-sexp-function :around #'quiescent-forward-sexp-for-combobulate)
+
 (require 'js)
 (keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
 
