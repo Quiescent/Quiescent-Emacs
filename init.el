@@ -3490,6 +3490,25 @@ Call func with supplied ARGS."
           (highlight-regexp symbol)))
       (forward-symbol 1))))
 
+;;; ** Rectangular Editing
+
+(defun quiescent-yank-rectangle-to-comma-separated-list ()
+  "Split the rectangular yank data on newline and insert it as comma-sepated items."
+  (interactive)
+  (insert (mapconcat #'identity killed-rectangle ", ")))
+
+(defun quiescent-yank-rectangle (arg)
+  "Yank the rectangle kill data into the buffer.
+
+If the universal ARG was supplied, yank the rectangle as a
+comma-separated list."
+  (interactive "P")
+  (if (equal arg (list 4))
+      (quiescent-yank-rectangle-to-comma-separated-list)
+    (yank-rectangle)))
+
+(keymap-global-set "C-x r y" #'quiescent-yank-rectangle)
+
 ;;; * Languages
 
 ;;; ** Json Mode
