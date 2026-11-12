@@ -4261,6 +4261,21 @@ grammar."
 
 (advice-add #'combobulate-transpose-sexps :around #'quiescent-transpose-sexps-for-combobulate)
 
+(defun quiescent-backwards-up-list-for-combobulate (f &rest args)
+  "Intercept errors calling F and redirect ARGS to default function.
+
+Intended for use with combobulate.
+
+Attempts combobulate's function, and if that fails, uses the default.
+Combobulate can fail when there's a multi-mode buffer and it's enabled
+for the parent grammer but there's no combobulate machinery for a child
+grammar."
+  (interactive)
+  (condition-case _error (apply f args)
+    (t (apply #'backward-up-list args))))
+
+(advice-add #'combobulate-navigate-up :around #'quiescent-backwards-up-list-for-combobulate)
+
 (require 'js)
 (keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
 
