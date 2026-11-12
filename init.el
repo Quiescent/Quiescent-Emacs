@@ -3509,6 +3509,23 @@ comma-separated list."
 
 (keymap-global-set "C-x r y" #'quiescent-yank-rectangle)
 
+(defun quiescent-comma-separated-to-line-separated (beg end)
+  "Parse out comma separated items in region [BEG, END] and put them on new lines.
+
+Uses `default-indent-newline' to respect formatting at point."
+  (interactive "r")
+  (when (/= (line-number-at-pos beg) (line-number-at-pos end))
+    (error "Region must be on the same line"))
+  (goto-char beg)
+  (let ((last-valid-point (point)))
+    (while (let ((start-line (line-number-at-pos (point))))
+             (and (re-search-forward ", *")
+                  (= start-line (line-number-at-pos (point)))))
+      (default-indent-new-line)
+      (setq last-valid-point (point)))
+    (goto-char last-valid-point))
+  (replace-regexp-in-region ", *$" "" beg (point)))
+
 ;;; * Languages
 
 ;;; ** Json Mode
