@@ -4295,6 +4295,7 @@ grammar."
 
 (require 'js)
 (keymap-set js-ts-mode-map "M-q" #'quiescent-indent-js-function)
+(keymap-set js-ts-mode-map "C-c C-f" #'quiescent-javascript-prettier-fix-this-file)
 
 ;; 
 
